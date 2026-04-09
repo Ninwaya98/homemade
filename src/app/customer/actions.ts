@@ -21,6 +21,7 @@ export async function placeOrder(
   const type = String(formData.get("type") ?? "pickup") as "pickup" | "delivery";
   const scheduledFor = String(formData.get("scheduled_for") ?? "");
   const notes = String(formData.get("notes") ?? "").trim() || null;
+  const deliveryAddress = String(formData.get("delivery_address") ?? "").trim() || null;
   const allergenAck = formData.get("allergen_ack") === "on";
 
   if (!dishId || !scheduledFor) {
@@ -63,6 +64,14 @@ export async function placeOrder(
   // hand it to the client to confirm, and only flip the order to
   // "confirmed" after the webhook fires. For the MVP we treat the
   // order as paid immediately.
+
+  // Save delivery address if provided (column from migration 006, not in generated types yet)
+  if (deliveryAddress && type === "delivery") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from("orders") as any)
+      .update({ delivery_address: deliveryAddress })
+      .eq("id", orderId);
+  }
 
   revalidatePath("/customer/orders");
   redirect(`/customer/orders/${orderId}?placed=1`);

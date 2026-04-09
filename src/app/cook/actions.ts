@@ -372,7 +372,11 @@ export async function saveAvailability(formData: FormData) {
 // Order management (cook side)
 // =====================================================================
 
-export async function setOrderStatus(orderId: string, status: "confirmed" | "ready" | "completed" | "cancelled") {
+export async function setOrderStatus(
+  orderId: string,
+  status: "confirmed" | "ready" | "completed" | "cancelled",
+  estimatedReadyTime?: string,
+) {
   const profile = await requireRole("cook");
   const supabase = await createClient();
 
@@ -396,6 +400,22 @@ export async function setOrderStatus(orderId: string, status: "confirmed" | "rea
     return;
   }
   await supabase.from("orders").update({ status }).eq("id", orderId);
+
+  // Record status timestamps + estimated ready time (columns from migration 006).
+  // Uses rpc-style raw update since these columns aren't in generated types yet.
+  const now = new Date().toISOString();
+  const extras: Record<string, string> = {};
+  if (status === "confirmed") {
+    extras.confirmed_at = now;
+    if (estimatedReadyTime) extras.estimated_ready_time = estimatedReadyTime;
+  }
+  if (status === "ready") extras.ready_at = now;
+  if (status === "completed") extras.completed_at = now;
+  if (status === "cancelled") extras.cancelled_at = now;
+  if (Object.keys(extras).length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabase.from("orders") as any).update(extras).eq("id", orderId);
+  }
 
   // Refund portions when cook cancels an order
   if (status === "cancelled" && order.scheduled_for) {
