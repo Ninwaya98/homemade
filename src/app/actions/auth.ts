@@ -134,3 +134,46 @@ export async function signOut() {
   revalidatePath("/", "layout");
   redirect("/");
 }
+
+export type DeleteAccountState = { error?: string } | undefined;
+
+export async function deleteAccount(
+  _state: DeleteAccountState,
+  formData: FormData,
+): Promise<DeleteAccountState> {
+  const confirmation = String(formData.get("confirmation") ?? "").trim();
+  if (confirmation !== "DELETE") {
+    return { error: "Type DELETE to confirm account deletion." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Not authenticated." };
+  }
+
+  // Delete profile (cascades to cook_profiles, dishes, availability, reviews, payouts).
+  // Orders are kept (on delete restrict) — we soft-delete by anonymising.
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .delete()
+    .eq("id", user.id);
+
+  if (profileError) {
+    // If deletion fails due to active orders, inform the user.
+    if (profileError.message.includes("restrict")) {
+      return {
+        error:
+          "You have active orders. Please wait until all orders are completed or cancelled before deleting your account.",
+      };
+    }
+    return { error: `Could not delete account: ${profileError.message}` };
+  }
+
+  // Sign out and redirect to home.
+  await supabase.auth.signOut();
+  revalidatePath("/", "layout");
+  redirect("/?deleted=1");
+}

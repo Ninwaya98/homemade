@@ -5,11 +5,19 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
-import { ALLERGENS } from "@/lib/constants";
+import { ALLERGENS, DEFAULT_DAILY_PORTION_CAP } from "@/lib/constants";
 import type {
   AvailabilityMode,
   DishStatus,
 } from "@/lib/types";
+
+const ALLOWED_IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
+const ALLOWED_CERT_EXTS = new Set(["pdf", "jpg", "jpeg", "png", "webp"]);
+
+function safeExt(filename: string, allowed: Set<string>, fallback: string): string {
+  const raw = filename.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "";
+  return allowed.has(raw) ? raw : fallback;
+}
 
 // =====================================================================
 // Cook onboarding
@@ -44,6 +52,9 @@ export async function submitOnboarding(
   if (!phone) {
     return { error: "We need a phone number so customers can reach you about pickups." };
   }
+  if (!/^[+\d\s\-()]{7,20}$/.test(phone)) {
+    return { error: "Please enter a valid phone number." };
+  }
   if (!location) {
     return { error: "Add a location (city or neighbourhood) so we can match you with nearby customers." };
   }
@@ -75,9 +86,7 @@ export async function submitOnboarding(
   // 2) Upload certificate (private bucket, path = <user_id>/cert_<ts>.<ext>)
   let certPath: string;
   {
-    const ext =
-      certFile.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") ||
-      "pdf";
+    const ext = safeExt(certFile.name, ALLOWED_CERT_EXTS, "pdf");
     certPath = `${profile.id}/cert_${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from("certificates")
@@ -91,9 +100,7 @@ export async function submitOnboarding(
   // 3) Optional: upload cook photo (public bucket — size already validated above)
   let photoPath: string | null = null;
   if (photoFile && photoFile.size > 0) {
-    const ext =
-      photoFile.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") ||
-      "jpg";
+    const ext = safeExt(photoFile.name, ALLOWED_IMAGE_EXTS, "jpg");
     photoPath = `${profile.id}/avatar_${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from("cook-photos")
@@ -192,9 +199,7 @@ export async function createDish(
     if (photoFile.size > 5 * 1024 * 1024) {
       return { error: "Photo is too large (max 5 MB)." };
     }
-    const ext =
-      photoFile.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") ||
-      "jpg";
+    const ext = safeExt(photoFile.name, ALLOWED_IMAGE_EXTS, "jpg");
     const path = `${profile.id}/dish_${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from("dish-photos")
@@ -260,9 +265,7 @@ export async function updateDish(
 
   const photoFile = formData.get("photo") as File | null;
   if (photoFile && photoFile.size > 0) {
-    const ext =
-      photoFile.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") ||
-      "jpg";
+    const ext = safeExt(photoFile.name, ALLOWED_IMAGE_EXTS, "jpg");
     const path = `${profile.id}/dish_${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from("dish-photos")
@@ -341,7 +344,7 @@ export async function saveAvailability(formData: FormData) {
     const mode = String(formData.get(`mode_${date}`) ?? "preorder") as AvailabilityMode;
     const maxPortions = Math.max(
       1,
-      Math.min(50, Number(formData.get(`portions_${date}`) ?? 6)),
+      Math.min(50, Number(formData.get(`portions_${date}`) ?? DEFAULT_DAILY_PORTION_CAP)),
     );
     return {
       cook_id: profile.id,

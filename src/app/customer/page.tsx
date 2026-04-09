@@ -20,8 +20,8 @@ export default async function CustomerBrowsePage({
   const supabase = await createClient();
   const sp = await searchParams;
 
-  // Pull approved cooks with their active dishes and (optionally) today's
-  // availability. We do two queries — Supabase joins via foreign keys.
+  // Pull approved cooks with their active dishes. Include today's
+  // availability in the same query to avoid an N+1.
   let cooksQuery = supabase
     .from("cook_profiles")
     .select(
@@ -33,10 +33,12 @@ export default async function CustomerBrowsePage({
       avg_rating,
       rating_count,
       profiles!cook_profiles_id_fkey!inner(full_name, location),
-      dishes(id, name, description, price_cents, photo_url, allergens, status, cuisine_tag)
+      dishes(id, name, description, price_cents, photo_url, allergens, status, cuisine_tag),
+      availability(cook_id, is_open, date)
       `,
     )
     .eq("status", "approved")
+    .eq("availability.date", todayIso())
     .limit(30);
 
   if (sp.cuisine) {
@@ -45,25 +47,15 @@ export default async function CustomerBrowsePage({
 
   const { data: cooks } = await cooksQuery;
 
-  // Optionally filter to "open today"
-  let openTodayCookIds: Set<string> | null = null;
-  if (sp.today) {
-    const { data: todayAvail } = await supabase
-      .from("availability")
-      .select("cook_id")
-      .eq("date", todayIso())
-      .eq("is_open", true);
-    openTodayCookIds = new Set((todayAvail ?? []).map((r) => r.cook_id));
-  }
-
   const filtered = (cooks ?? [])
     .map((c) => ({
       ...c,
       profile: c.profiles as { full_name?: string; location?: string | null } | null,
       activeDishes: (c.dishes ?? []).filter((d) => d.status === "active"),
+      isOpenToday: (c.availability ?? []).some((a) => a.is_open),
     }))
     .filter((c) => c.activeDishes.length > 0)
-    .filter((c) => !openTodayCookIds || openTodayCookIds.has(c.id));
+    .filter((c) => !sp.today || c.isOpenToday);
 
   return (
     <div className="space-y-6">

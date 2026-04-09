@@ -122,6 +122,10 @@ export default async function LandingPage() {
           cook is independently approved and responsible for their
           dishes.
         </p>
+        <div className="mt-4 flex justify-center gap-4">
+          <Link href="/terms" className="hover:text-amber-700">Terms of Service</Link>
+          <Link href="/privacy" className="hover:text-amber-700">Privacy Policy</Link>
+        </div>
       </footer>
     </main>
   );

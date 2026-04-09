@@ -17,6 +17,7 @@ export function ReviewForm({
   const [text, setText] = useState<string>(existing?.text ?? "");
   const [pending, start] = useTransition();
   const [done, setDone] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const submit = () => {
     if (rating < 1) return;
@@ -27,10 +28,11 @@ export function ReviewForm({
     start(async () => {
       await leaveReview(fd);
       setDone(true);
+      setEditing(false);
     });
   };
 
-  if (done || existing) {
+  if (done && !editing) {
     return (
       <Card className="border-emerald-200 bg-emerald-50">
         <p className="text-sm font-medium text-emerald-900">
@@ -40,6 +42,34 @@ export function ReviewForm({
           <p className="text-amber-600">{"⭐".repeat(rating)}</p>
           {text && <p className="mt-1 text-stone-700">{text}</p>}
         </div>
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className="mt-2 text-xs text-amber-700 hover:text-amber-800"
+        >
+          Edit review
+        </button>
+      </Card>
+    );
+  }
+
+  if (existing && !editing) {
+    return (
+      <Card className="border-emerald-200 bg-emerald-50">
+        <p className="text-sm font-medium text-emerald-900">
+          Your review
+        </p>
+        <div className="mt-2 text-sm">
+          <p className="text-amber-600">{"⭐".repeat(existing.rating)}</p>
+          {existing.text && <p className="mt-1 text-stone-700">{existing.text}</p>}
+        </div>
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          className="mt-2 text-xs text-amber-700 hover:text-amber-800"
+        >
+          Edit review
+        </button>
       </Card>
     );
   }

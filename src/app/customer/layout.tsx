@@ -24,14 +24,19 @@ export default async function CustomerLayout({
             <Link href="/customer" className="text-lg font-semibold text-stone-900">
               Authentic Kitchen
             </Link>
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="text-sm text-stone-500 hover:text-stone-900"
-              >
-                Sign out
-              </button>
-            </form>
+            <div className="flex items-center gap-3">
+              <Link href="/account" className="text-sm text-stone-500 hover:text-stone-900">
+                Account
+              </Link>
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="text-sm text-stone-500 hover:text-stone-900"
+                >
+                  Sign out
+                </button>
+              </form>
+            </div>
           </div>
           <p className="mt-1 text-sm text-stone-600">
             Hi {profile.full_name.split(" ")[0]} — what are you hungry for?
