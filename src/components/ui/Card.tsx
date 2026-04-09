@@ -3,15 +3,19 @@ import type { ReactNode } from "react";
 export function Card({
   children,
   className = "",
+  hover = false,
   as: Component = "div",
 }: {
   children: ReactNode;
   className?: string;
+  hover?: boolean;
   as?: "div" | "section" | "article";
 }) {
   return (
     <Component
-      className={`rounded-2xl border border-stone-200 bg-white p-6 ${className}`}
+      className={`rounded-2xl border border-stone-200/80 bg-white p-6 shadow-sm ${
+        hover ? "card-hover cursor-pointer" : ""
+      } ${className}`}
     >
       {children}
     </Component>
@@ -50,7 +54,7 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-stone-300 bg-white p-10 text-center">
+    <div className="rounded-2xl border border-dashed border-stone-300 bg-gradient-to-b from-white to-stone-50 p-10 text-center">
       <p className="text-base font-medium text-stone-900">{title}</p>
       {body && <p className="mt-2 text-sm text-stone-600">{body}</p>}
       {action && <div className="mt-4">{action}</div>}

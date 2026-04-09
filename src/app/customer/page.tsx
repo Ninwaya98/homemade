@@ -60,9 +60,10 @@ export default async function CustomerBrowsePage({
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold text-stone-900">
-          Real food, real people, near you
+        <h1 className="text-2xl font-bold text-stone-900">
+          Real food, real people
         </h1>
+        <p className="mt-1 text-sm text-stone-500">Discover home cooks near you</p>
       </header>
 
       {/* Filter pills */}
@@ -90,34 +91,50 @@ export default async function CustomerBrowsePage({
       {filtered.length > 0 ? (
         <div className="space-y-5">
           {filtered.map((cook) => (
-            <Card key={cook.id} className="overflow-hidden p-0">
+            <article
+              key={cook.id}
+              className="card-hover overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm"
+            >
+              {/* Cook header */}
               <Link
                 href={`/customer/cooks/${cook.id}`}
-                className="flex items-start gap-4 p-5 hover:bg-stone-50"
+                className="flex items-start gap-4 p-5 transition hover:bg-stone-50/50"
               >
                 {cook.photo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={cook.photo_url}
                     alt=""
-                    className="h-16 w-16 flex-none rounded-full object-cover"
+                    className="h-16 w-16 flex-none rounded-2xl object-cover shadow-sm ring-2 ring-amber-100"
                   />
                 ) : (
-                  <div className="flex h-16 w-16 flex-none items-center justify-center rounded-full bg-amber-100 text-xl font-semibold text-amber-700">
+                  <div className="flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-xl font-bold text-amber-700 shadow-sm">
                     {cook.profile?.full_name?.[0]?.toUpperCase() ?? "?"}
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <h2 className="text-lg font-semibold text-stone-900">
-                    {cook.profile?.full_name}
-                  </h2>
-                  <p className="text-xs text-stone-500">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-stone-900">
+                      {cook.profile?.full_name}
+                    </h2>
+                    {cook.isOpenToday && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                        Open
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-stone-500">
                     {cook.profile?.location ?? "—"}
                     {cook.rating_count > 0 && (
-                      <> · ⭐ {Number(cook.avg_rating).toFixed(1)} ({cook.rating_count})</>
+                      <span className="ml-1.5 inline-flex items-center gap-0.5 text-amber-600">
+                        <span className="text-xs">★</span>
+                        {Number(cook.avg_rating).toFixed(1)}
+                        <span className="text-stone-400">({cook.rating_count})</span>
+                      </span>
                     )}
                   </p>
-                  <div className="mt-1 flex flex-wrap gap-1">
+                  <div className="mt-1.5 flex flex-wrap gap-1">
                     {cook.cuisine_tags.slice(0, 4).map((t) => (
                       <Badge key={t} tone="neutral">
                         {t}
@@ -125,15 +142,16 @@ export default async function CustomerBrowsePage({
                     ))}
                   </div>
                   {cook.bio && (
-                    <p className="mt-2 line-clamp-2 text-sm text-stone-600">
+                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-stone-600">
                       {cook.bio}
                     </p>
                   )}
                 </div>
               </Link>
 
-              <div className="border-t border-stone-100 bg-stone-50/50 p-5">
-                <p className="mb-3 text-xs font-medium uppercase tracking-wide text-stone-500">
+              {/* Dishes */}
+              <div className="border-t border-stone-100 bg-gradient-to-b from-stone-50/50 to-stone-50 p-5">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-stone-400">
                   On the menu
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -141,23 +159,25 @@ export default async function CustomerBrowsePage({
                     <Link
                       key={dish.id}
                       href={`/customer/order/${dish.id}`}
-                      className="flex items-center gap-3 rounded-lg border border-stone-200 bg-white p-3 hover:border-amber-300"
+                      className="group flex items-center gap-3 rounded-xl border border-stone-200/80 bg-white p-3 shadow-sm transition hover:border-amber-300 hover:shadow-md"
                     >
                       {dish.photo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={dish.photo_url}
                           alt=""
-                          className="h-14 w-14 flex-none rounded object-cover"
+                          className="h-14 w-14 flex-none rounded-lg object-cover"
                         />
                       ) : (
-                        <div className="h-14 w-14 flex-none rounded bg-stone-100" />
+                        <div className="flex h-14 w-14 flex-none items-center justify-center rounded-lg bg-stone-100 text-2xl">
+                          🍽
+                        </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-stone-900">
+                        <p className="truncate text-sm font-semibold text-stone-900 group-hover:text-amber-800">
                           {dish.name}
                         </p>
-                        <p className="text-xs text-stone-500">
+                        <p className="text-sm font-medium text-amber-700">
                           {formatPrice(dish.price_cents)}
                         </p>
                         {dish.allergens.length > 0 && (
@@ -170,7 +190,7 @@ export default async function CustomerBrowsePage({
                   ))}
                 </div>
               </div>
-            </Card>
+            </article>
           ))}
         </div>
       ) : (
@@ -206,10 +226,10 @@ function FilterPill({
   return (
     <Link
       href={href}
-      className={`rounded-full border px-3 py-1.5 text-sm transition ${
+      className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
         active
-          ? "border-amber-700 bg-amber-700 text-white"
-          : "border-stone-300 bg-white text-stone-700 hover:border-amber-400"
+          ? "border-amber-700 bg-amber-700 text-white shadow-sm shadow-amber-700/20"
+          : "border-stone-200 bg-white text-stone-600 shadow-sm hover:border-amber-300 hover:text-amber-800"
       }`}
     >
       {children}

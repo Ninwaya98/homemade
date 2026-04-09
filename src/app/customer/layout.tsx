@@ -12,46 +12,47 @@ export default async function CustomerLayout({
   const profile = await requireRole("customer");
 
   const navItems = [
-    { href: "/customer", label: "Browse" },
-    { href: "/customer/orders", label: "Orders" },
+    { href: "/customer", label: "Browse", icon: "◉" },
+    { href: "/customer/orders", label: "Orders", icon: "▤" },
   ];
 
   return (
     <div className="min-h-screen bg-stone-50">
-      <header className="border-b border-stone-200 bg-white">
+      <header className="glass-header sticky top-0 z-30 border-b border-stone-200/60">
         <div className="mx-auto max-w-3xl px-5 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/customer" className="text-lg font-semibold text-stone-900">
-              Authentic Kitchen
+            <Link href="/customer" className="text-lg font-bold text-stone-900">
+              <span className="text-amber-700">A</span>uthentic Kitchen
             </Link>
             <div className="flex items-center gap-3">
-              <Link href="/account" className="text-sm text-stone-500 hover:text-stone-900">
+              <Link href="/account" className="text-sm text-stone-500 transition hover:text-amber-700">
                 Account
               </Link>
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="text-sm text-stone-500 hover:text-stone-900"
+                  className="text-sm text-stone-500 transition hover:text-stone-900"
                 >
                   Sign out
                 </button>
               </form>
             </div>
           </div>
-          <p className="mt-1 text-sm text-stone-600">
-            Hi {profile.full_name.split(" ")[0]} — what are you hungry for?
+          <p className="mt-1 text-sm text-stone-500">
+            Hi <span className="font-medium text-stone-700">{profile.full_name.split(" ")[0]}</span> — what are you hungry for?
           </p>
         </div>
         <nav className="mx-auto max-w-3xl px-5">
-          <ul className="flex gap-1 overflow-x-auto pb-2 text-sm">
+          <ul className="flex gap-1 overflow-x-auto pb-3 text-sm">
             {navItems.map((item) => (
               <li key={item.href}>
                 <NavLink
                   href={item.href}
                   exact={item.href === "/customer"}
-                  className="block rounded-full px-3 py-1.5 text-stone-600 transition hover:bg-stone-100 hover:text-stone-900"
-                  activeClassName="block rounded-full px-3 py-1.5 bg-amber-100 text-amber-900 font-medium"
+                  className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-stone-500 transition hover:bg-stone-100 hover:text-stone-900"
+                  activeClassName="flex items-center gap-1.5 rounded-full px-3.5 py-2 bg-amber-100 text-amber-900 font-medium shadow-sm"
                 >
+                  <span className="text-xs">{item.icon}</span>
                   {item.label}
                 </NavLink>
               </li>
@@ -59,7 +60,7 @@ export default async function CustomerLayout({
           </ul>
         </nav>
       </header>
-      <main className="mx-auto max-w-3xl px-5 py-8">{children}</main>
+      <main className="mx-auto max-w-3xl px-5 py-8 animate-fade-up">{children}</main>
     </div>
   );
 }

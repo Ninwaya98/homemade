@@ -7,24 +7,28 @@ export default async function LandingPage() {
 
   return (
     <main className="min-h-screen">
-      {/* Hero */}
-      <section className="relative px-5 pt-14 pb-16 sm:pt-24 sm:pb-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium tracking-wide text-amber-700 uppercase">
+      {/* Hero — warm dark gradient */}
+      <section className="gradient-hero relative overflow-hidden px-5 pt-16 pb-20 sm:pt-28 sm:pb-32">
+        {/* Decorative circles */}
+        <div className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-amber-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-amber-400/10 blur-3xl" />
+
+        <div className="relative mx-auto max-w-2xl text-center">
+          <p className="animate-fade-up inline-block rounded-full bg-amber-500/20 px-4 py-1.5 text-sm font-medium tracking-wide text-amber-200">
             Authentic Kitchen
           </p>
-          <h1 className="mt-4 text-4xl font-semibold leading-tight text-stone-900 sm:text-6xl">
+          <h1 className="animate-fade-up delay-1 mt-6 text-4xl font-bold leading-tight text-white sm:text-6xl sm:leading-tight">
             Real food,
             <br />
-            made by real people.
+            <span className="text-amber-300">made by real people.</span>
           </h1>
-          <p className="mt-6 text-lg text-stone-600 sm:text-xl">
+          <p className="animate-fade-up delay-2 mt-6 text-lg text-amber-100/80 sm:text-xl">
             An alternative to fast food. Order homemade meals from
             approved cooks in your neighbourhood — or open your own
             kitchen and start cooking for them.
           </p>
 
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <div className="animate-fade-up delay-3 mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
             {profile ? (
               <Link
                 href={
@@ -34,7 +38,7 @@ export default async function LandingPage() {
                     ? "/admin"
                     : "/customer"
                 }
-                className="rounded-full bg-amber-700 px-6 py-3 text-base font-medium text-white shadow-sm transition hover:bg-amber-800"
+                className="rounded-full bg-white px-7 py-3.5 text-base font-semibold text-amber-900 shadow-lg shadow-amber-900/20 transition hover:bg-amber-50 hover:shadow-xl"
               >
                 Continue as {profile.full_name.split(" ")[0]}
               </Link>
@@ -42,13 +46,13 @@ export default async function LandingPage() {
               <>
                 <Link
                   href="/sign-up"
-                  className="rounded-full bg-amber-700 px-6 py-3 text-base font-medium text-white shadow-sm transition hover:bg-amber-800"
+                  className="rounded-full bg-white px-7 py-3.5 text-base font-semibold text-amber-900 shadow-lg shadow-amber-900/20 transition hover:bg-amber-50 hover:shadow-xl"
                 >
                   I&apos;m hungry
                 </Link>
                 <Link
                   href="/sign-up"
-                  className="rounded-full border-2 border-stone-900 px-6 py-3 text-base font-medium text-stone-900 transition hover:bg-stone-900 hover:text-white"
+                  className="rounded-full border-2 border-amber-300/50 px-7 py-3.5 text-base font-semibold text-white transition hover:border-amber-300 hover:bg-white/10"
                 >
                   I&apos;m a cook
                 </Link>
@@ -57,11 +61,11 @@ export default async function LandingPage() {
           </div>
 
           {!profile && (
-            <p className="mt-4 text-sm text-stone-500">
+            <p className="mt-5 text-sm text-amber-200/60">
               Already with us?{" "}
               <Link
                 href="/sign-in"
-                className="font-medium text-amber-700 hover:text-amber-800"
+                className="font-medium text-amber-200 underline underline-offset-2 hover:text-white"
               >
                 Sign in
               </Link>
@@ -71,12 +75,15 @@ export default async function LandingPage() {
       </section>
 
       {/* Three story cards */}
-      <section className="bg-white px-5 py-16">
+      <section className="bg-white px-5 py-20">
         <div className="mx-auto max-w-3xl">
-          <h2 className="text-center text-2xl font-semibold text-stone-900 sm:text-3xl">
+          <p className="text-center text-sm font-medium uppercase tracking-widest text-amber-700">
+            Simple as 1-2-3
+          </p>
+          <h2 className="mt-3 text-center text-2xl font-bold text-stone-900 sm:text-3xl">
             How it works
           </h2>
-          <div className="mt-10 grid gap-6 sm:grid-cols-3">
+          <div className="mt-12 grid gap-6 sm:grid-cols-3">
             <Step
               n="1"
               title="Find a cook"
@@ -97,34 +104,38 @@ export default async function LandingPage() {
       </section>
 
       {/* Cook recruitment strip */}
-      <section className="bg-stone-900 px-5 py-16 text-stone-100">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-2xl font-semibold sm:text-3xl">
+      <section className="relative overflow-hidden bg-stone-900 px-5 py-20 text-stone-100">
+        <div className="pointer-events-none absolute top-0 right-0 h-64 w-64 rounded-full bg-amber-500/5 blur-3xl" />
+        <div className="relative mx-auto max-w-2xl text-center">
+          <p className="text-sm font-medium uppercase tracking-widest text-amber-400">
+            For home cooks
+          </p>
+          <h2 className="mt-3 text-2xl font-bold sm:text-3xl">
             Cook from home. Earn from your kitchen.
           </h2>
-          <p className="mt-4 text-stone-300">
+          <p className="mt-5 text-stone-400">
             Set your own schedule, your own portions, your own prices.
             We handle payments and trust — you handle the cooking. New
             cooks start with a 6-portion daily cap and grow from there.
           </p>
           <Link
             href="/sign-up"
-            className="mt-8 inline-block rounded-full bg-amber-500 px-6 py-3 text-base font-medium text-stone-900 transition hover:bg-amber-400"
+            className="mt-8 inline-block rounded-full bg-amber-500 px-7 py-3.5 text-base font-semibold text-stone-900 shadow-lg shadow-amber-500/20 transition hover:bg-amber-400 hover:shadow-xl"
           >
             Open your kitchen
           </Link>
         </div>
       </section>
 
-      <footer className="bg-stone-50 px-5 py-10 text-center text-sm text-stone-500">
-        <p>
-          Authentic Kitchen is a marketplace, not a food producer. Each
-          cook is independently approved and responsible for their
-          dishes.
+      <footer className="border-t border-stone-200 bg-stone-50 px-5 py-10 text-center text-sm text-stone-500">
+        <p className="font-medium text-stone-600">Authentic Kitchen</p>
+        <p className="mt-2">
+          A marketplace, not a food producer. Each cook is independently
+          approved and responsible for their dishes.
         </p>
         <div className="mt-4 flex justify-center gap-4">
-          <Link href="/terms" className="hover:text-amber-700">Terms of Service</Link>
-          <Link href="/privacy" className="hover:text-amber-700">Privacy Policy</Link>
+          <Link href="/terms" className="transition hover:text-amber-700">Terms of Service</Link>
+          <Link href="/privacy" className="transition hover:text-amber-700">Privacy Policy</Link>
         </div>
       </footer>
     </main>
@@ -133,12 +144,12 @@ export default async function LandingPage() {
 
 function Step({ n, title, body }: { n: string; title: string; body: string }) {
   return (
-    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-6">
-      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-700 text-base font-semibold text-white">
+    <div className="group rounded-2xl border border-stone-200/80 bg-white p-6 shadow-sm transition hover:shadow-md hover:border-amber-200">
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-700 text-base font-bold text-white shadow-sm shadow-amber-700/30 transition group-hover:scale-110">
         {n}
       </div>
-      <h3 className="mt-4 text-lg font-semibold text-stone-900">{title}</h3>
-      <p className="mt-2 text-sm text-stone-600">{body}</p>
+      <h3 className="mt-5 text-lg font-semibold text-stone-900">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-stone-600">{body}</p>
     </div>
   );
 }

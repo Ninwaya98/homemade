@@ -3,6 +3,8 @@
 @theme inline {
   --color-background: #fafaf9;
   --color-foreground: #1c1917;
+  --color-warm-50: #fdf8f0;
+  --color-warm-100: #f5ead6;
   --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
 }
 
@@ -19,3 +21,71 @@ select,
 textarea {
   font: inherit;
 }
+
+/* Warm gradient backgrounds */
+.gradient-warm {
+  background: linear-gradient(135deg, #fdf8f0 0%, #fef3c7 50%, #fde68a 100%);
+}
+
+.gradient-hero {
+  background: linear-gradient(180deg, #451a03 0%, #78350f 40%, #92400e 70%, #b45309 100%);
+}
+
+.gradient-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(120,53,15,0.03) 100%);
+}
+
+/* Subtle glass effect for headers */
+.glass-header {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Smooth card hover */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgba(120, 53, 15, 0.1), 0 4px 10px -6px rgba(120, 53, 15, 0.08);
+}
+
+/* Better focus ring */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.3);
+}
+
+/* Animated gradient shimmer for loading states */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f5f5f4 25%, #e7e5e4 50%, #f5f5f4 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Subtle entrance animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.4s ease-out;
+}
+
+/* Staggered animation delays */
+.delay-1 { animation-delay: 0.1s; animation-fill-mode: both; }
+.delay-2 { animation-delay: 0.2s; animation-fill-mode: both; }
+.delay-3 { animation-delay: 0.3s; animation-fill-mode: both; }
