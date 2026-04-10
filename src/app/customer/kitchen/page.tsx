@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
 import { EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
@@ -16,7 +15,6 @@ export default async function KitchenBrowsePage({
 }: {
   searchParams: Promise<{ cuisine?: string; today?: string }>;
 }) {
-  await requireRole("customer");
   const supabase = await createClient();
   const sp = await searchParams;
 
@@ -91,7 +89,7 @@ export default async function KitchenBrowsePage({
           {filtered.map((cook) => (
             <article
               key={cook.id}
-              className="card-hover overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm"
+              className="card-hover overflow-hidden rounded-3xl glass-strong"
             >
               <Link
                 href={`/customer/cooks/${cook.id}`}
@@ -102,10 +100,10 @@ export default async function KitchenBrowsePage({
                   <img
                     src={cook.photo_url}
                     alt=""
-                    className="h-16 w-16 flex-none rounded-2xl object-cover shadow-sm ring-2 ring-amber-100"
+                    className="h-16 w-16 flex-none rounded-2xl object-cover shadow-sm ring-2 ring-violet-100"
                   />
                 ) : (
-                  <div className="flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-xl font-bold text-amber-700 shadow-sm">
+                  <div className="flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 to-violet-200 text-xl font-bold text-violet-600 shadow-sm">
                     {cook.profile?.full_name?.[0]?.toUpperCase() ?? "?"}
                   </div>
                 )}
@@ -124,7 +122,7 @@ export default async function KitchenBrowsePage({
                   <p className="text-sm text-stone-500">
                     {cook.profile?.location ?? "—"}
                     {cook.rating_count > 0 && (
-                      <span className="ml-1.5 inline-flex items-center gap-0.5 text-amber-600">
+                      <span className="ml-1.5 inline-flex items-center gap-0.5 text-violet-600">
                         <span className="text-xs">★</span>
                         {Number(cook.avg_rating).toFixed(1)}
                         <span className="text-stone-400">({cook.rating_count})</span>
@@ -153,7 +151,7 @@ export default async function KitchenBrowsePage({
                     <Link
                       key={dish.id}
                       href={`/customer/order/${dish.id}`}
-                      className="group flex items-center gap-3 rounded-xl border border-stone-200/80 bg-white p-3 shadow-sm transition hover:border-amber-300 hover:shadow-md"
+                      className="group flex items-center gap-3 rounded-xl glass p-3 transition hover:border-violet-300 hover:shadow-md"
                     >
                       {dish.photo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -162,8 +160,8 @@ export default async function KitchenBrowsePage({
                         <div className="flex h-14 w-14 flex-none items-center justify-center rounded-lg bg-stone-100 text-2xl">🍽</div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-stone-900 group-hover:text-amber-800">{dish.name}</p>
-                        <p className="text-sm font-medium text-amber-700">{formatPrice(dish.price_cents)}</p>
+                        <p className="truncate text-sm font-semibold text-stone-900 group-hover:text-violet-700">{dish.name}</p>
+                        <p className="text-sm font-medium text-violet-600">{formatPrice(dish.price_cents)}</p>
                         {dish.allergens.length > 0 && (
                           <p className="mt-0.5 truncate text-[10px] text-stone-400">
                             contains: {dish.allergens.map(allergenLabel).join(", ")}
@@ -212,8 +210,8 @@ function FilterPill({
       href={href}
       className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
         active
-          ? "border-amber-700 bg-amber-700 text-white shadow-sm shadow-amber-700/20"
-          : "border-stone-200 bg-white text-stone-600 shadow-sm hover:border-amber-300 hover:text-amber-800"
+          ? "border-violet-600 bg-violet-600 text-white shadow-sm shadow-violet-600/20"
+          : "border-stone-200 bg-white text-stone-600 shadow-sm hover:border-violet-300 hover:text-violet-700"
       }`}
     >
       {children}

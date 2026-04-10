@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
@@ -17,7 +16,6 @@ export default async function CookProfilePage({
 }: {
   params: Promise<{ cookId: string }>;
 }) {
-  await requireRole("customer");
   const { cookId } = await params;
   const supabase = await createClient();
 
@@ -80,7 +78,7 @@ export default async function CookProfilePage({
               className="h-24 w-24 rounded-full object-cover"
             />
           ) : (
-            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-amber-100 text-3xl font-semibold text-amber-700">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-violet-100 text-3xl font-semibold text-violet-600">
               {profile.full_name?.[0]?.toUpperCase() ?? "?"}
             </div>
           )}
@@ -159,7 +157,7 @@ export default async function CookProfilePage({
                       <p className="mt-1 text-sm text-stone-600">{dish.description}</p>
                     )}
                     {dish.allergens.length > 0 && (
-                      <p className="mt-2 rounded-md bg-amber-50 px-2 py-1 text-xs text-amber-900">
+                      <p className="mt-2 rounded-md bg-violet-50 px-2 py-1 text-xs text-violet-900">
                         Contains: {dish.allergens.map(allergenLabel).join(", ")}
                       </p>
                     )}
@@ -192,7 +190,7 @@ export default async function CookProfilePage({
                   <p className="text-sm font-medium text-stone-900">
                     {(r.profiles as { full_name?: string } | null)?.full_name ?? "Customer"}
                   </p>
-                  <span className="text-sm text-amber-600">
+                  <span className="text-sm text-violet-600">
                     {"⭐".repeat(r.rating)}
                   </span>
                 </div>

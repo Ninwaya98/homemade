@@ -50,12 +50,17 @@ export async function updateSession(request: NextRequest) {
   // Optimistic redirect: anyone hitting a protected area without a session
   // bounces to /sign-in. Real authorization still happens server-side in
   // each route handler / server component.
+  //
+  // Customer browse pages (/customer, /customer/kitchen, /customer/market,
+  // /customer/cooks/*, /customer/market/sellers/*) are public so guests can
+  // explore. Only order/checkout paths require a session.
   const path = request.nextUrl.pathname;
   const isProtected =
     path.startsWith("/cook") ||
-    path.startsWith("/customer") ||
     path.startsWith("/seller") ||
-    path.startsWith("/admin");
+    path.startsWith("/admin") ||
+    path.startsWith("/customer/order") ||
+    path.startsWith("/customer/market/order");
 
   if (isProtected && !user) {
     const url = request.nextUrl.clone();

@@ -93,14 +93,14 @@ export function ProductForm({
         <div className="mt-5 space-y-5">
           <div>
             <label className="block text-sm font-medium text-stone-700">
-              Category <span className="ml-1 text-amber-700">*</span>
+              Category <span className="ml-1 text-violet-600">*</span>
             </label>
             <select
               name="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               required
-              className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+              className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
             >
               <option value="">Select…</option>
               {PRODUCT_CATEGORIES.map((c) => (
@@ -137,7 +137,7 @@ export function ProductForm({
             <select
               name="condition"
               defaultValue={product?.condition ?? "handmade"}
-              className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+              className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
             >
               {PRODUCT_CONDITIONS.map((c) => (
                 <option key={c.id} value={c.id}>{c.label}</option>
@@ -192,7 +192,7 @@ export function ProductForm({
             name="photos"
             accept="image/jpeg,image/png,image/webp"
             multiple
-            className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-full file:border-0 file:bg-amber-700 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-amber-800"
+            className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-full file:border-0 file:bg-violet-600 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-violet-700"
           />
         </div>
       </Card>

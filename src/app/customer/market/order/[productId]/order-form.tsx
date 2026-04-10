@@ -75,13 +75,13 @@ export function ProductOrderForm({
                   i < stepIndex
                     ? "bg-emerald-500 text-white"
                     : i === stepIndex
-                    ? "bg-amber-700 text-white shadow-sm shadow-amber-700/30"
+                    ? "bg-violet-600 text-white shadow-sm shadow-violet-600/30"
                     : "bg-stone-200 text-stone-500"
                 }`}
               >
                 {i < stepIndex ? "✓" : i + 1}
               </div>
-              <span className={`text-xs font-medium ${i === stepIndex ? "text-amber-800" : "text-stone-400"}`}>
+              <span className={`text-xs font-medium ${i === stepIndex ? "text-violet-700" : "text-stone-400"}`}>
                 {s}
               </span>
             </div>
@@ -114,7 +114,7 @@ export function ProductOrderForm({
               )}
               <div className="min-w-0 flex-1">
                 <h1 className="text-xl font-bold text-stone-900">{product.name}</h1>
-                <p className="text-sm font-semibold text-amber-700">{formatPrice(product.price_cents)}</p>
+                <p className="text-sm font-semibold text-violet-600">{formatPrice(product.price_cents)}</p>
                 <p className="text-xs text-stone-500">
                   from {seller.shop_name} {seller.location && `· ${seller.location}`}
                 </p>
@@ -142,7 +142,7 @@ export function ProductOrderForm({
               <button
                 type="button"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-lg font-medium text-stone-700 transition hover:border-amber-400 hover:bg-amber-50 active:scale-95"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-lg font-medium text-stone-700 transition hover:border-violet-400 hover:bg-violet-50 active:scale-95"
               >
                 −
               </button>
@@ -150,11 +150,11 @@ export function ProductOrderForm({
               <button
                 type="button"
                 onClick={() => setQuantity(Math.min(maxQty, quantity + 1))}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-lg font-medium text-stone-700 transition hover:border-amber-400 hover:bg-amber-50 active:scale-95"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-lg font-medium text-stone-700 transition hover:border-violet-400 hover:bg-violet-50 active:scale-95"
               >
                 +
               </button>
-              <span className="ml-3 text-sm font-medium text-amber-700">{formatPrice(total)}</span>
+              <span className="ml-3 text-sm font-medium text-violet-600">{formatPrice(total)}</span>
             </div>
             <p className="mt-1 text-xs text-stone-400">{product.stock_quantity} in stock</p>
 
@@ -165,7 +165,7 @@ export function ProductOrderForm({
                   type="button"
                   onClick={() => setType("pickup")}
                   className={`rounded-full px-4 py-1.5 font-medium transition ${
-                    type === "pickup" ? "bg-amber-700 text-white shadow-sm" : "text-stone-600 hover:text-stone-900"
+                    type === "pickup" ? "bg-violet-600 text-white shadow-sm" : "text-stone-600 hover:text-stone-900"
                   }`}
                 >
                   Pickup
@@ -174,7 +174,7 @@ export function ProductOrderForm({
                   type="button"
                   onClick={() => setType("delivery")}
                   className={`rounded-full px-4 py-1.5 font-medium transition ${
-                    type === "delivery" ? "bg-amber-700 text-white shadow-sm" : "text-stone-600 hover:text-stone-900"
+                    type === "delivery" ? "bg-violet-600 text-white shadow-sm" : "text-stone-600 hover:text-stone-900"
                   }`}
                 >
                   Delivery
@@ -191,7 +191,7 @@ export function ProductOrderForm({
                   rows={2}
                   required
                   placeholder="Street, building, floor, apartment…"
-                  className="mt-1 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+                  className="mt-1 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
                 />
               </div>
             )}
@@ -212,21 +212,21 @@ export function ProductOrderForm({
       {/* Step 2 — Ingredients (food products only) */}
       {step === "ingredients" && (
         <>
-          <Card className="border-amber-200">
+          <Card className="border-violet-200">
             <h2 className="text-lg font-bold text-stone-900">Ingredients check</h2>
             <p className="mt-1 text-sm text-stone-500">
               This is a packaged food product. Please review the ingredients.
             </p>
-            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
-              <p className="text-sm font-semibold text-amber-900">Ingredients:</p>
-              <p className="mt-1 text-sm text-amber-900">{product.ingredients}</p>
+            <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50 p-4">
+              <p className="text-sm font-semibold text-violet-900">Ingredients:</p>
+              <p className="mt-1 text-sm text-violet-900">{product.ingredients}</p>
             </div>
             <label className="mt-4 flex cursor-pointer items-start gap-2.5 text-sm text-stone-700">
               <input
                 type="checkbox"
                 checked={ingredientAck}
                 onChange={(e) => setIngredientAck(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-stone-400 text-amber-700 focus:ring-amber-500"
+                className="mt-0.5 h-4 w-4 rounded border-stone-400 text-violet-600 focus:ring-violet-500"
               />
               <span>I have reviewed the ingredients and understand what this product contains.</span>
             </label>
@@ -281,7 +281,7 @@ export function ProductOrderForm({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any special requests…"
-              className="mt-1 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+              className="mt-1 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
             />
           </Card>
 

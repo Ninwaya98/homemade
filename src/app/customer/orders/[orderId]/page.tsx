@@ -119,7 +119,7 @@ export default async function CustomerOrderDetail({
                 <p className="text-xs text-stone-500">
                   {o.scheduled_for ? dayLabel(o.scheduled_for) : o.type}
                 </p>
-                <p className="text-sm font-medium text-amber-700">{formatPrice(o.total_cents)}</p>
+                <p className="text-sm font-medium text-violet-600">{formatPrice(o.total_cents)}</p>
               </div>
             </div>
           </div>
@@ -139,7 +139,7 @@ export default async function CustomerOrderDetail({
 
   return (
     <div className="space-y-6">
-      <Link href="/customer/orders" className="text-sm text-stone-400 transition hover:text-amber-700">
+      <Link href="/customer/orders" className="text-sm text-stone-400 transition hover:text-violet-600">
         &larr; All orders
       </Link>
 
@@ -164,12 +164,12 @@ export default async function CustomerOrderDetail({
               {o.scheduled_for ? dayLabel(o.scheduled_for) : ""} {o.type}
             </p>
             {o.estimated_ready_time && (
-              <p className="mt-1 text-sm font-medium text-amber-700">
+              <p className="mt-1 text-sm font-medium text-violet-600">
                 Estimated ready: {o.estimated_ready_time}
               </p>
             )}
             {!isMarket && dish?.allergens && dish.allergens.length > 0 && (
-              <p className="mt-2 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs font-medium text-amber-900">
+              <p className="mt-2 rounded-lg bg-violet-50 px-2.5 py-1.5 text-xs font-medium text-violet-900">
                 Contains: {dish.allergens.map(allergenLabel).join(", ")}
               </p>
             )}
@@ -239,9 +239,9 @@ export default async function CustomerOrderDetail({
         >
           {providerPhoto ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={providerPhoto} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-amber-100" />
+            <img src={providerPhoto} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-violet-100" />
           ) : (
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-100 to-amber-200 text-sm font-bold text-amber-700">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-violet-200 text-sm font-bold text-violet-600">
               {(providerName ?? "?")[0]?.toUpperCase()}
             </div>
           )}
@@ -322,7 +322,7 @@ function TimelineStep({
               : done
               ? "bg-emerald-100 text-emerald-600"
               : active
-              ? "bg-amber-100 text-amber-700"
+              ? "bg-violet-100 text-violet-600"
               : "bg-stone-100 text-stone-400"
           }`}
         >

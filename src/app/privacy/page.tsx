@@ -9,7 +9,7 @@ export default function PrivacyPage() {
     <main className="mx-auto max-w-2xl px-5 py-14">
       <Link
         href="/"
-        className="text-sm text-amber-700 hover:text-amber-800"
+        className="text-sm text-violet-600 hover:text-violet-700"
       >
         &larr; Back to home
       </Link>

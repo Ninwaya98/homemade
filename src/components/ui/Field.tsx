@@ -20,17 +20,17 @@ export function Field({
     <div>
       <label htmlFor={fieldId} className="block text-sm font-medium text-stone-700">
         {label}
-        {required && <span className="ml-1 text-amber-700">*</span>}
+        {required && <span className="ml-1 text-violet-600">*</span>}
       </label>
       <input
         id={fieldId}
         name={name}
         required={required}
         {...rest}
-        className={`mt-1 block w-full rounded-lg border px-3 py-2.5 text-base text-stone-900 shadow-sm outline-none focus:ring-2 focus:ring-amber-200 ${
+        className={`mt-1 block w-full rounded-lg border px-3 py-2.5 text-base text-stone-900 shadow-sm outline-none focus:ring-2 focus:ring-violet-200 ${
           error
             ? "border-red-400 focus:border-red-500 bg-red-50"
-            : "border-stone-300 focus:border-amber-600 bg-white"
+            : "border-stone-300 focus:border-violet-500 bg-white"
         }`}
       />
       {hint && !error && <p className="mt-1 text-xs text-stone-500">{hint}</p>}
@@ -60,7 +60,7 @@ export function TextareaField({
     <div>
       <label htmlFor={fieldId} className="block text-sm font-medium text-stone-700">
         {label}
-        {required && <span className="ml-1 text-amber-700">*</span>}
+        {required && <span className="ml-1 text-violet-600">*</span>}
       </label>
       <textarea
         id={fieldId}
@@ -68,10 +68,10 @@ export function TextareaField({
         rows={rows}
         required={required}
         {...rest}
-        className={`mt-1 block w-full rounded-lg border px-3 py-2.5 text-base text-stone-900 shadow-sm outline-none focus:ring-2 focus:ring-amber-200 ${
+        className={`mt-1 block w-full rounded-lg border px-3 py-2.5 text-base text-stone-900 shadow-sm outline-none focus:ring-2 focus:ring-violet-200 ${
           error
             ? "border-red-400 focus:border-red-500 bg-red-50"
-            : "border-stone-300 focus:border-amber-600 bg-white"
+            : "border-stone-300 focus:border-violet-500 bg-white"
         }`}
       />
       {hint && !error && <p className="mt-1 text-xs text-stone-500">{hint}</p>}

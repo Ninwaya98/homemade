@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function ForgotPasswordPage() {
   return (
-    <main className="min-h-screen bg-stone-50 px-5 py-10">
+    <main className="min-h-screen gradient-mesh px-5 py-10">
       <div className="mx-auto max-w-md">
         <Link
           href="/sign-in"

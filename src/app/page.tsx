@@ -87,7 +87,7 @@ export default async function LandingPage() {
             ) : (
               <>
                 <Link
-                  href="/sign-up"
+                  href="/customer"
                   className="gradient-purple rounded-2xl px-8 py-4 text-base font-bold text-white shadow-lg shadow-violet-500/25 transition hover:shadow-xl hover:scale-105"
                 >
                   Start browsing
@@ -108,7 +108,7 @@ export default async function LandingPage() {
       <section className="relative px-5 py-16">
         <div className="mx-auto grid max-w-4xl gap-6 sm:grid-cols-2">
           {/* Kitchen card */}
-          <Link href={profile ? "/customer/kitchen" : "/sign-up"} className="group">
+          <Link href="/customer/kitchen" className="group">
             <div className="card-hover glass-strong rounded-3xl p-8 text-center">
               <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-sky-100 to-blue-200 text-5xl shadow-lg shadow-blue-200/40 transition group-hover:scale-110 group-hover:shadow-xl">
                 🍳
@@ -126,7 +126,7 @@ export default async function LandingPage() {
           </Link>
 
           {/* Market card */}
-          <Link href={profile ? "/customer/market" : "/sign-up"} className="group">
+          <Link href="/customer/market" className="group">
             <div className="card-hover glass-strong rounded-3xl p-8 text-center">
               <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-violet-100 to-purple-200 text-5xl shadow-lg shadow-purple-200/40 transition group-hover:scale-110 group-hover:shadow-xl">
                 🎨

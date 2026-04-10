@@ -131,18 +131,18 @@ export default async function CookHome({
   return (
     <div className="space-y-6">
       {pendingOrders && pendingOrders.length > 0 && (
-        <Card className="border-amber-300 bg-amber-50">
-          <h2 className="text-base font-semibold text-amber-900">
+        <Card className="border-violet-300 bg-violet-50">
+          <h2 className="text-base font-semibold text-violet-900">
             {pendingOrders.length} new order{pendingOrders.length === 1 ? "" : "s"} need your attention
           </h2>
-          <ul className="mt-3 divide-y divide-amber-200">
+          <ul className="mt-3 divide-y divide-violet-200">
             {pendingOrders.map((o) => (
               <li key={o.id} className="flex items-center justify-between py-2.5">
                 <div>
-                  <p className="text-sm font-medium text-amber-900">
+                  <p className="text-sm font-medium text-violet-900">
                     {o.quantity}× {(o.dishes as { name?: string } | null)?.name ?? "—"}
                   </p>
-                  <p className="text-xs text-amber-800/80">
+                  <p className="text-xs text-violet-700/80">
                     for {o.scheduled_for ? dayLabel(o.scheduled_for) : "—"}
                   </p>
                 </div>

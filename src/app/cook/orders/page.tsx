@@ -86,7 +86,7 @@ function Section({
               href={`/cook/orders/${o.id}`}
               className="block"
             >
-              <Card className="hover:border-amber-300">
+              <Card className="hover:border-violet-300">
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">

@@ -39,7 +39,7 @@ export default async function SellerOrderDetail({
 
   return (
     <div className="space-y-6">
-      <Link href="/seller/orders" className="text-sm text-stone-400 transition hover:text-amber-700">
+      <Link href="/seller/orders" className="text-sm text-stone-400 transition hover:text-violet-600">
         &larr; All orders
       </Link>
 
@@ -60,7 +60,7 @@ export default async function SellerOrderDetail({
             </div>
             <p className="text-sm text-stone-500">{order.type}</p>
             {order.estimated_ready_time && (
-              <p className="mt-1 text-sm font-medium text-amber-700">
+              <p className="mt-1 text-sm font-medium text-violet-600">
                 Estimated ready: {order.estimated_ready_time}
               </p>
             )}

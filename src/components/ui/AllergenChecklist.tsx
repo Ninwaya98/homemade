@@ -40,7 +40,7 @@ export function AllergenChecklist({
   return (
     <fieldset className="rounded-xl border border-stone-200 bg-stone-50 p-4">
       <legend className="px-1 text-sm font-medium text-stone-800">
-        Allergens <span className="text-amber-700">*</span>
+        Allergens <span className="text-violet-600">*</span>
       </legend>
       <p className="mt-1 text-xs text-stone-600">
         Tick every allergen this dish contains. Customers see this on
@@ -58,7 +58,7 @@ export function AllergenChecklist({
               aria-pressed={checked}
               className={`rounded-lg border-2 px-3 py-2 text-left text-sm transition ${
                 checked
-                  ? "border-amber-700 bg-amber-50 text-amber-900"
+                  ? "border-violet-600 bg-violet-50 text-violet-900"
                   : "border-stone-200 bg-white text-stone-700 hover:border-stone-300"
               }`}
             >
@@ -76,7 +76,7 @@ export function AllergenChecklist({
             setConfirmedNone(e.target.checked);
             if (e.target.checked) setSelected(new Set());
           }}
-          className="mt-0.5 h-4 w-4 rounded border-stone-400 text-amber-700 focus:ring-amber-500"
+          className="mt-0.5 h-4 w-4 rounded border-stone-400 text-violet-600 focus:ring-violet-500"
         />
         <span>
           I confirm this dish contains <strong>none</strong> of the listed

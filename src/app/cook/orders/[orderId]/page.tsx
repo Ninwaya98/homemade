@@ -53,7 +53,7 @@ export default async function CookOrderDetail({
 
   return (
     <div className="space-y-6">
-      <Link href="/cook/orders" className="text-sm text-stone-400 transition hover:text-amber-700">
+      <Link href="/cook/orders" className="text-sm text-stone-400 transition hover:text-violet-600">
         &larr; All orders
       </Link>
 
@@ -76,12 +76,12 @@ export default async function CookOrderDetail({
               for {order.scheduled_for ? dayLabel(order.scheduled_for) : "—"} · {order.type}
             </p>
             {o.estimated_ready_time && (
-              <p className="mt-1 text-sm font-medium text-amber-700">
+              <p className="mt-1 text-sm font-medium text-violet-600">
                 Estimated ready: {o.estimated_ready_time}
               </p>
             )}
             {dish?.allergens && dish.allergens.length > 0 && (
-              <p className="mt-2 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs font-medium text-amber-900">
+              <p className="mt-2 rounded-lg bg-violet-50 px-2.5 py-1.5 text-xs font-medium text-violet-900">
                 Contains: {dish.allergens.map(allergenLabel).join(", ")}
               </p>
             )}

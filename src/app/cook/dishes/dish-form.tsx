@@ -79,7 +79,7 @@ export function DishForm({
               <select
                 name="cuisine_tag"
                 defaultValue={defaultValues?.cuisine_tag ?? ""}
-                className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 shadow-sm outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+                className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 shadow-sm outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
               >
                 <option value="">—</option>
                 {CUISINES.map((c) => (

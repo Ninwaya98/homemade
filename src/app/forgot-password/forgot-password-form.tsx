@@ -42,7 +42,7 @@ export function ForgotPasswordForm() {
           autoComplete="email"
           required
           defaultValue={state?.fields?.email}
-          className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 shadow-sm outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+          className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 shadow-sm outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
         />
       </div>
 
@@ -58,7 +58,7 @@ export function ForgotPasswordForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-full bg-amber-700 px-5 py-3 text-base font-medium text-white shadow-sm transition hover:bg-amber-800 disabled:opacity-60"
+        className="w-full rounded-full gradient-purple px-5 py-3 text-base font-medium text-white shadow-lg shadow-violet-500/25 transition hover:shadow-xl disabled:opacity-60"
       >
         {pending ? "Sending..." : "Send reset link"}
       </button>

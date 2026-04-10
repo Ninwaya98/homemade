@@ -89,7 +89,7 @@ export function OrderForm({
               )}
               <div className="min-w-0 flex-1">
                 <h1 className="text-xl font-bold text-stone-900">{dish.name}</h1>
-                <p className="text-sm font-semibold text-amber-700">
+                <p className="text-sm font-semibold text-violet-600">
                   {formatPrice(dish.price_cents)}
                   {dish.portion_size && (
                     <span className="font-normal text-stone-500"> · {dish.portion_size}</span>
@@ -102,7 +102,7 @@ export function OrderForm({
                   <p className="mt-2 text-sm leading-relaxed text-stone-600">{dish.description}</p>
                 )}
                 {dish.allergens.length > 0 && (
-                  <p className="mt-2 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs font-medium text-amber-900">
+                  <p className="mt-2 rounded-lg bg-violet-50 px-2.5 py-1.5 text-xs font-medium text-violet-900">
                     Contains: {dish.allergens.map(allergenLabel).join(", ")}
                   </p>
                 )}
@@ -130,9 +130,9 @@ export function OrderForm({
                       onClick={() => setDate(d.date)}
                       className={`rounded-xl border-2 px-3 py-2.5 text-left transition ${
                         selected
-                          ? "border-amber-700 bg-amber-50 shadow-sm shadow-amber-700/10"
+                          ? "border-violet-600 bg-violet-50 shadow-sm shadow-violet-600/10"
                           : "border-stone-200 bg-white"
-                      } ${disabled ? "opacity-40" : "hover:border-amber-400"}`}
+                      } ${disabled ? "opacity-40" : "hover:border-violet-400"}`}
                     >
                       <div className="text-sm font-semibold text-stone-900">{dayLabel(d.date)}</div>
                       <div className="mt-0.5 flex items-center gap-1">
@@ -162,7 +162,7 @@ export function OrderForm({
               <button
                 type="button"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-lg font-medium text-stone-700 transition hover:border-amber-400 hover:bg-amber-50 active:scale-95"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-lg font-medium text-stone-700 transition hover:border-violet-400 hover:bg-violet-50 active:scale-95"
               >
                 −
               </button>
@@ -172,11 +172,11 @@ export function OrderForm({
               <button
                 type="button"
                 onClick={() => setQuantity(Math.min(20, quantity + 1))}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-lg font-medium text-stone-700 transition hover:border-amber-400 hover:bg-amber-50 active:scale-95"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-300 bg-white text-lg font-medium text-stone-700 transition hover:border-violet-400 hover:bg-violet-50 active:scale-95"
               >
                 +
               </button>
-              <span className="ml-3 text-sm font-medium text-amber-700">
+              <span className="ml-3 text-sm font-medium text-violet-600">
                 {formatPrice(total)}
               </span>
             </div>
@@ -190,7 +190,7 @@ export function OrderForm({
                   onClick={() => setType("pickup")}
                   className={`rounded-full px-4 py-1.5 font-medium transition ${
                     type === "pickup"
-                      ? "bg-amber-700 text-white shadow-sm"
+                      ? "bg-violet-600 text-white shadow-sm"
                       : "text-stone-600 hover:text-stone-900"
                   }`}
                 >
@@ -201,7 +201,7 @@ export function OrderForm({
                   onClick={() => setType("delivery")}
                   className={`rounded-full px-4 py-1.5 font-medium transition ${
                     type === "delivery"
-                      ? "bg-amber-700 text-white shadow-sm"
+                      ? "bg-violet-600 text-white shadow-sm"
                       : "text-stone-600 hover:text-stone-900"
                   }`}
                 >
@@ -222,7 +222,7 @@ export function OrderForm({
                   rows={2}
                   required
                   placeholder="Street, building, floor, apartment…"
-                  className="mt-1 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+                  className="mt-1 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
                 />
               </div>
             )}
@@ -243,7 +243,7 @@ export function OrderForm({
       {/* Step 2 — Allergen reconfirmation */}
       {step === "allergen" && (
         <>
-          <Card className="border-amber-200">
+          <Card className="border-violet-200">
             <h2 className="text-lg font-bold text-stone-900">
               Quick allergen check
             </h2>
@@ -251,20 +251,20 @@ export function OrderForm({
               We show this twice on purpose. Please confirm you&apos;ve read it.
             </p>
 
-            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50 p-4">
               {dish.allergens.length > 0 ? (
                 <>
-                  <p className="text-sm font-semibold text-amber-900">
+                  <p className="text-sm font-semibold text-violet-900">
                     This dish contains:
                   </p>
-                  <ul className="mt-2 space-y-1 text-sm text-amber-900">
+                  <ul className="mt-2 space-y-1 text-sm text-violet-900">
                     {dish.allergens.map((a) => (
                       <li key={a}>• {allergenLabel(a)}</li>
                     ))}
                   </ul>
                 </>
               ) : (
-                <p className="text-sm text-amber-900">
+                <p className="text-sm text-violet-900">
                   The cook has confirmed this dish contains <strong>none</strong>{" "}
                   of the standard allergens. If you have a different concern,
                   ask them in your order notes.
@@ -277,7 +277,7 @@ export function OrderForm({
                 type="checkbox"
                 checked={ack}
                 onChange={(e) => setAck(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-stone-400 text-amber-700 focus:ring-amber-500"
+                className="mt-0.5 h-4 w-4 rounded border-stone-400 text-violet-600 focus:ring-violet-500"
               />
               <span>I understand the allergen information for this dish.</span>
             </label>
@@ -345,7 +345,7 @@ export function OrderForm({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Less spicy, gluten-free if possible…"
-              className="mt-1 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+              className="mt-1 block w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
             />
           </Card>
 
@@ -397,7 +397,7 @@ function StepIndicator({ current }: { current: number }) {
                 i < current
                   ? "bg-emerald-500 text-white"
                   : i === current
-                  ? "bg-amber-700 text-white shadow-sm shadow-amber-700/30"
+                  ? "bg-violet-600 text-white shadow-sm shadow-violet-600/30"
                   : "bg-stone-200 text-stone-500"
               }`}
             >
@@ -405,7 +405,7 @@ function StepIndicator({ current }: { current: number }) {
             </div>
             <span
               className={`text-xs font-medium ${
-                i === current ? "text-amber-800" : "text-stone-400"
+                i === current ? "text-violet-700" : "text-stone-400"
               }`}
             >
               {STEP_LABELS[s]}

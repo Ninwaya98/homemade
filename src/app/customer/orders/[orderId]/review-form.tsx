@@ -39,13 +39,13 @@ export function ReviewForm({
           Thanks for your review.
         </p>
         <div className="mt-2 text-sm">
-          <p className="text-amber-600">{"⭐".repeat(rating)}</p>
+          <p className="text-violet-600">{"⭐".repeat(rating)}</p>
           {text && <p className="mt-1 text-stone-700">{text}</p>}
         </div>
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-2 text-xs text-amber-700 hover:text-amber-800"
+          className="mt-2 text-xs text-violet-600 hover:text-violet-700"
         >
           Edit review
         </button>
@@ -60,13 +60,13 @@ export function ReviewForm({
           Your review
         </p>
         <div className="mt-2 text-sm">
-          <p className="text-amber-600">{"⭐".repeat(existing.rating)}</p>
+          <p className="text-violet-600">{"⭐".repeat(existing.rating)}</p>
           {existing.text && <p className="mt-1 text-stone-700">{existing.text}</p>}
         </div>
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="mt-2 text-xs text-amber-700 hover:text-amber-800"
+          className="mt-2 text-xs text-violet-600 hover:text-violet-700"
         >
           Edit review
         </button>
@@ -88,7 +88,7 @@ export function ReviewForm({
             type="button"
             onClick={() => setRating(n)}
             aria-label={`${n} star${n === 1 ? "" : "s"}`}
-            className={n <= rating ? "text-amber-500" : "text-stone-300 hover:text-amber-300"}
+            className={n <= rating ? "text-violet-500" : "text-stone-300 hover:text-violet-300"}
           >
             ★
           </button>
@@ -100,7 +100,7 @@ export function ReviewForm({
         onChange={(e) => setText(e.target.value)}
         rows={4}
         placeholder="What did you love? What could be even better?"
-        className="mt-4 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+        className="mt-4 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
       />
 
       <div className="mt-4 flex justify-end">

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice, productCategoryLabel } from "@/lib/constants";
@@ -16,7 +15,6 @@ export default async function SellerDetailPage({
 }: {
   params: Promise<{ sellerId: string }>;
 }) {
-  await requireRole("customer");
   const { sellerId } = await params;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
@@ -52,7 +50,7 @@ export default async function SellerDetailPage({
 
   return (
     <div className="space-y-6">
-      <Link href="/customer/market" className="text-sm text-stone-400 transition hover:text-amber-700">
+      <Link href="/customer/market" className="text-sm text-stone-400 transition hover:text-violet-600">
         &larr; Back to market
       </Link>
 
@@ -79,7 +77,7 @@ export default async function SellerDetailPage({
             <div className="mt-1.5 flex items-center gap-2">
               <Badge tone="neutral">{productCategoryLabel(seller.category)}</Badge>
               {seller.rating_count > 0 && (
-                <span className="text-sm text-amber-600">
+                <span className="text-sm text-violet-600">
                   ★ {Number(seller.avg_rating).toFixed(1)} ({seller.rating_count})
                 </span>
               )}
@@ -106,7 +104,7 @@ export default async function SellerDetailPage({
               <Link
                 key={p.id}
                 href={`/customer/market/order/${p.id}`}
-                className="group card-hover overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm"
+                className="group card-hover overflow-hidden rounded-3xl glass-strong"
               >
                 {p.photo_urls.length > 0 ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -119,8 +117,8 @@ export default async function SellerDetailPage({
                   <div className="flex h-40 w-full items-center justify-center bg-stone-100 text-4xl">🛍</div>
                 )}
                 <div className="p-4">
-                  <p className="font-semibold text-stone-900 group-hover:text-amber-800">{p.name}</p>
-                  <p className="text-sm font-medium text-amber-700">{formatPrice(p.price_cents)}</p>
+                  <p className="font-semibold text-stone-900 group-hover:text-violet-700">{p.name}</p>
+                  <p className="text-sm font-medium text-violet-600">{formatPrice(p.price_cents)}</p>
                   <p className="mt-1 text-xs text-stone-500">
                     {p.stock_quantity > 0 ? `${p.stock_quantity} in stock` : "Out of stock"}
                     {p.subcategory && ` · ${p.subcategory}`}
@@ -148,7 +146,7 @@ export default async function SellerDetailPage({
                   <p className="text-sm font-medium text-stone-900">
                     {r.profiles?.full_name ?? "Customer"}
                   </p>
-                  <p className="text-sm text-amber-600">{"★".repeat(r.rating)}</p>
+                  <p className="text-sm text-violet-600">{"★".repeat(r.rating)}</p>
                 </div>
                 {r.text && <p className="mt-2 text-sm text-stone-600">{r.text}</p>}
                 <p className="mt-1 text-[10px] text-stone-400">

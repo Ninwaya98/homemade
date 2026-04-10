@@ -29,29 +29,30 @@ export default async function SellerLayout({
   const showNav = sellerProfile?.status === "approved";
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="glass-header sticky top-0 z-30 border-b border-stone-200/60">
+    <div className="min-h-screen gradient-mesh">
+      <header className="glass-header sticky top-0 z-30">
         <div className="mx-auto max-w-3xl px-5 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/seller" className="text-lg font-bold text-stone-900">
-              <span className="text-amber-700">H</span>omeMade Market
+            <Link href="/seller" className="text-lg font-black tracking-tight">
+              <span className="gradient-text-animate">HomeMade</span>
+              <span className="ml-1 text-slate-600">Market</span>
             </Link>
             <div className="flex items-center gap-3">
-              <Link href="/account" className="text-sm text-stone-500 transition hover:text-amber-700">
+              <Link href="/account" className="text-sm text-slate-500 transition hover:text-violet-600">
                 Account
               </Link>
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="text-sm text-stone-500 transition hover:text-stone-900"
+                  className="text-sm text-slate-500 transition hover:text-slate-900"
                 >
                   Sign out
                 </button>
               </form>
             </div>
           </div>
-          <p className="mt-1 text-sm text-stone-500">
-            Hi <span className="font-medium text-stone-700">{profile.full_name.split(" ")[0]}</span>
+          <p className="mt-1 text-sm text-slate-500">
+            Hi <span className="font-medium text-slate-700">{profile.full_name.split(" ")[0]}</span>
             {sellerProfile?.shop_name && (
               <> — {sellerProfile.shop_name}</>
             )}
@@ -65,8 +66,8 @@ export default async function SellerLayout({
                   <NavLink
                     href={item.href}
                     exact={item.href === "/seller"}
-                    className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-stone-500 transition hover:bg-stone-100 hover:text-stone-900"
-                    activeClassName="flex items-center gap-1.5 rounded-full px-3.5 py-2 bg-amber-100 text-amber-900 font-medium shadow-sm"
+                    className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-slate-500 transition hover:bg-violet-50 hover:text-violet-700"
+                    activeClassName="flex items-center gap-1.5 rounded-full px-3.5 py-2 bg-violet-100 text-violet-800 font-medium shadow-sm"
                   >
                     <span className="text-xs">{item.icon}</span>
                     {item.label}

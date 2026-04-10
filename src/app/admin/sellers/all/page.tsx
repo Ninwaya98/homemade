@@ -116,8 +116,8 @@ function FilterPill({ href, active, children }: { href: string; active: boolean;
       href={href}
       className={`rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition ${
         active
-          ? "border-amber-700 bg-amber-700 text-white"
-          : "border-stone-200 bg-white text-stone-600 hover:border-amber-300"
+          ? "border-violet-600 bg-violet-600 text-white"
+          : "border-stone-200 bg-white text-stone-600 hover:border-violet-300"
       }`}
     >
       {children}

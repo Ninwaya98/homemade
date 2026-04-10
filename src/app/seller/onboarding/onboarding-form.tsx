@@ -54,13 +54,13 @@ export function SellerOnboardingForm({
           />
           <div>
             <label className="block text-sm font-medium text-stone-700">
-              Primary category <span className="ml-1 text-amber-700">*</span>
+              Primary category <span className="ml-1 text-violet-600">*</span>
             </label>
             <select
               name="category"
               defaultValue={defaultCategory}
               required
-              className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+              className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base text-stone-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
             >
               <option value="">Select a category…</option>
               {PRODUCT_CATEGORIES.map((c) => (
@@ -127,7 +127,7 @@ export function SellerOnboardingForm({
         </p>
       )}
 
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">
+      <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 text-xs text-violet-900">
         <strong>What happens next:</strong> we&apos;ll review your shop and
         approve it within 1–2 days. Once live, you can add products and
         start selling.

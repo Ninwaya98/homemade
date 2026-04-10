@@ -72,7 +72,7 @@ export default async function SellerProductsPage({
                         {p.status === "out_of_stock" ? "out of stock" : p.status}
                       </Badge>
                     </div>
-                    <p className="text-sm font-medium text-amber-700">
+                    <p className="text-sm font-medium text-violet-600">
                       {formatPrice(p.price_cents)}
                     </p>
                     <p className="text-xs text-stone-500">

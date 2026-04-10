@@ -48,7 +48,7 @@ export function OnboardingForm({
           />
           <div>
             <label className="block text-sm font-medium text-stone-700">
-              Cuisine tags <span className="ml-1 text-amber-700">*</span>
+              Cuisine tags <span className="ml-1 text-violet-600">*</span>
             </label>
             <p className="mt-1 text-xs text-stone-500">
               Pick the cuisines you cook. Tap a suggestion or type your own.
@@ -101,7 +101,7 @@ export function OnboardingForm({
             name="certificate"
             accept="image/jpeg,image/png,image/webp,application/pdf"
             required={!hasCertificate}
-            className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-full file:border-0 file:bg-amber-700 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-amber-800"
+            className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-full file:border-0 file:bg-violet-600 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-violet-700"
           />
           {hasCertificate && (
             <p className="mt-2 text-xs text-stone-500">
@@ -145,7 +145,7 @@ export function OnboardingForm({
         </p>
       )}
 
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">
+      <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 text-xs text-violet-900">
         <strong>What happens next:</strong> we&apos;ll review your
         certificate and approve your kitchen within 1–2 days. You&apos;ll
         get an email when it&apos;s live. Until then your dishes are

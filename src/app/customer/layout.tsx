@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { signOut } from "@/app/actions/auth";
-import { requireRole } from "@/lib/auth";
+import { getCurrentProfile } from "@/lib/auth";
 import { NavLink } from "@/components/ui/NavLink";
 
 export default async function CustomerLayout({
@@ -9,39 +9,65 @@ export default async function CustomerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const profile = await requireRole("customer");
+  const profile = await getCurrentProfile();
+  const isCustomer = profile?.role === "customer";
 
   const navItems = [
     { href: "/customer", label: "Home", icon: "◉" },
     { href: "/customer/kitchen", label: "Kitchen", icon: "🍽" },
     { href: "/customer/market", label: "Market", icon: "🛍" },
-    { href: "/customer/orders", label: "Orders", icon: "▤" },
+    ...(isCustomer
+      ? [{ href: "/customer/orders", label: "Orders", icon: "▤" }]
+      : []),
   ];
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      <header className="glass-header sticky top-0 z-30 border-b border-stone-200/60">
+    <div className="min-h-screen gradient-mesh">
+      <header className="glass-header sticky top-0 z-30">
         <div className="mx-auto max-w-3xl px-5 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/customer" className="text-lg font-bold text-stone-900">
-              <span className="text-amber-700">H</span>omeMade
+            <Link href="/customer" className="text-lg font-black tracking-tight">
+              <span className="gradient-text-animate">HomeMade</span>
             </Link>
             <div className="flex items-center gap-3">
-              <Link href="/account" className="text-sm text-stone-500 transition hover:text-amber-700">
-                Account
-              </Link>
-              <form action={signOut}>
-                <button
-                  type="submit"
-                  className="text-sm text-stone-500 transition hover:text-stone-900"
-                >
-                  Sign out
-                </button>
-              </form>
+              {isCustomer ? (
+                <>
+                  <Link href="/account" className="text-sm text-slate-500 transition hover:text-violet-600">
+                    Account
+                  </Link>
+                  <form action={signOut}>
+                    <button
+                      type="submit"
+                      className="text-sm text-slate-500 transition hover:text-slate-900"
+                    >
+                      Sign out
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/sign-in"
+                    className="text-sm text-slate-500 transition hover:text-violet-600"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/sign-up"
+                    className="gradient-purple rounded-full px-4 py-1.5 text-sm font-semibold text-white shadow-sm shadow-violet-500/20 transition hover:shadow-lg"
+                  >
+                    Sign up
+                  </Link>
+                </>
+              )}
             </div>
           </div>
-          <p className="mt-1 text-sm text-stone-500">
-            Hi <span className="font-medium text-stone-700">{profile.full_name.split(" ")[0]}</span> — what are you looking for?
+          <p className="mt-1 text-sm text-slate-500">
+            {isCustomer ? (
+              <>Hi <span className="font-medium text-slate-700">{profile.full_name.split(" ")[0]}</span> — what are you looking for?</>
+            ) : (
+              "Explore home-cooked food & handmade goods"
+            )}
           </p>
         </div>
         <nav className="mx-auto max-w-3xl px-5">
@@ -51,8 +77,8 @@ export default async function CustomerLayout({
                 <NavLink
                   href={item.href}
                   exact={item.href === "/customer"}
-                  className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-stone-500 transition hover:bg-stone-100 hover:text-stone-900"
-                  activeClassName="flex items-center gap-1.5 rounded-full px-3.5 py-2 bg-amber-100 text-amber-900 font-medium shadow-sm"
+                  className="flex items-center gap-1.5 rounded-full px-3.5 py-2 text-slate-500 transition hover:bg-violet-50 hover:text-violet-700"
+                  activeClassName="flex items-center gap-1.5 rounded-full px-3.5 py-2 bg-violet-100 text-violet-800 font-medium shadow-sm"
                 >
                   <span className="text-xs">{item.icon}</span>
                   {item.label}

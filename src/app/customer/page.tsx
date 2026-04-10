@@ -1,13 +1,10 @@
 import Link from "next/link";
 
-import { requireRole } from "@/lib/auth";
-
 export const metadata = {
   title: "HomeMade — Real food & handmade goods",
 };
 
 export default async function CustomerHomePage() {
-  await requireRole("customer");
 
   return (
     <div className="space-y-6">
@@ -24,14 +21,14 @@ export default async function CustomerHomePage() {
         {/* Kitchen door */}
         <Link
           href="/customer/kitchen"
-          className="group card-hover overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm"
+          className="group card-hover overflow-hidden rounded-3xl glass-strong"
         >
-          <div className="gradient-hero px-6 pt-8 pb-6">
+          <div className="bg-gradient-to-br from-sky-100 to-blue-200 px-6 pt-8 pb-6">
             <span className="text-4xl">🍽</span>
-            <h2 className="mt-3 text-xl font-bold text-white">
+            <h2 className="mt-3 text-xl font-bold text-sky-900">
               HomeMade Kitchen
             </h2>
-            <p className="mt-1 text-sm text-amber-200/80">
+            <p className="mt-1 text-sm text-sky-700/80">
               Home-cooked food from approved cooks near you
             </p>
           </div>
@@ -40,7 +37,7 @@ export default async function CustomerHomePage() {
               Fresh homemade meals, daily menus, pre-order or on-demand.
               Every dish lists allergens up front.
             </p>
-            <p className="mt-3 text-sm font-semibold text-amber-700 group-hover:text-amber-800">
+            <p className="mt-3 text-sm font-semibold text-violet-600 group-hover:text-violet-700">
               Browse cooks &rarr;
             </p>
           </div>
@@ -49,14 +46,14 @@ export default async function CustomerHomePage() {
         {/* Market door */}
         <Link
           href="/customer/market"
-          className="group card-hover overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm"
+          className="group card-hover overflow-hidden rounded-3xl glass-strong"
         >
-          <div className="bg-gradient-to-br from-stone-800 to-stone-900 px-6 pt-8 pb-6">
+          <div className="bg-gradient-to-br from-violet-100 to-purple-200 px-6 pt-8 pb-6">
             <span className="text-4xl">🛍</span>
-            <h2 className="mt-3 text-xl font-bold text-white">
+            <h2 className="mt-3 text-xl font-bold text-violet-900">
               HomeMade Market
             </h2>
-            <p className="mt-1 text-sm text-stone-300">
+            <p className="mt-1 text-sm text-violet-700/80">
               Handmade goods from local artisans and makers
             </p>
           </div>
@@ -65,7 +62,7 @@ export default async function CustomerHomePage() {
               Crafts, clothing, home decor, and packaged food products —
               all handmade by people in your area.
             </p>
-            <p className="mt-3 text-sm font-semibold text-amber-700 group-hover:text-amber-800">
+            <p className="mt-3 text-sm font-semibold text-violet-600 group-hover:text-violet-700">
               Browse sellers &rarr;
             </p>
           </div>

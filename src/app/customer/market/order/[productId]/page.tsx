@@ -44,7 +44,7 @@ export default async function OrderProductPage({
     <div className="space-y-6">
       <Link
         href={`/customer/market/sellers/${seller.id}`}
-        className="text-sm text-stone-400 transition hover:text-amber-700"
+        className="text-sm text-stone-400 transition hover:text-violet-600"
       >
         &larr; Back to {seller.shop_name}
       </Link>

@@ -63,7 +63,7 @@ export function ScheduleForm({
                   name={`open_${date}`}
                   checked={day.is_open}
                   onChange={(e) => update(date, { is_open: e.target.checked })}
-                  className="h-5 w-5 rounded border-stone-400 text-amber-700 focus:ring-amber-500"
+                  className="h-5 w-5 rounded border-stone-400 text-violet-600 focus:ring-violet-500"
                 />
                 <span className="text-sm font-medium text-stone-700">Open</span>
               </label>
@@ -81,7 +81,7 @@ export function ScheduleForm({
                       onClick={() => update(date, { mode: "preorder" })}
                       className={`rounded-full px-3 py-1 ${
                         day.mode === "preorder"
-                          ? "bg-amber-700 text-white"
+                          ? "bg-violet-600 text-white"
                           : "text-stone-700"
                       }`}
                     >
@@ -92,7 +92,7 @@ export function ScheduleForm({
                       onClick={() => update(date, { mode: "on_demand" })}
                       className={`rounded-full px-3 py-1 ${
                         day.mode === "on_demand"
-                          ? "bg-amber-700 text-white"
+                          ? "bg-violet-600 text-white"
                           : "text-stone-700"
                       }`}
                     >
@@ -114,7 +114,7 @@ export function ScheduleForm({
                     onChange={(e) =>
                       update(date, { max_portions: Number(e.target.value) })
                     }
-                    className="mt-1 block w-24 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-base text-stone-900 outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+                    className="mt-1 block w-24 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-base text-stone-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
                   />
                 </div>
               </div>
@@ -140,7 +140,7 @@ export function ScheduleForm({
         </Button>
       </div>
 
-      <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+      <p className="rounded-md border border-violet-200 bg-violet-50 px-3 py-2 text-xs text-violet-900">
         <strong>Pre-order</strong> means orders for that day close 24 hours
         before. <strong>On-demand</strong> means customers can order until
         you sell out.

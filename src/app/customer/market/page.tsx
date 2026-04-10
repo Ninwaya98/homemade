@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
 import { EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
@@ -16,7 +15,6 @@ export default async function MarketBrowsePage({
 }: {
   searchParams: Promise<{ category?: string }>;
 }) {
-  await requireRole("customer");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
   const sp = await searchParams;
@@ -87,7 +85,7 @@ export default async function MarketBrowsePage({
           {filtered.map((seller: any) => (
             <article
               key={seller.id}
-              className="card-hover overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm"
+              className="card-hover overflow-hidden rounded-3xl glass-strong"
             >
               {/* Seller header */}
               <Link
@@ -113,7 +111,7 @@ export default async function MarketBrowsePage({
                   <p className="text-sm text-stone-500">
                     {seller.profiles?.location ?? "—"}
                     {seller.rating_count > 0 && (
-                      <span className="ml-1.5 inline-flex items-center gap-0.5 text-amber-600">
+                      <span className="ml-1.5 inline-flex items-center gap-0.5 text-violet-600">
                         <span className="text-xs">★</span>
                         {Number(seller.avg_rating).toFixed(1)}
                         <span className="text-stone-400">({seller.rating_count})</span>
@@ -141,7 +139,7 @@ export default async function MarketBrowsePage({
                     <Link
                       key={product.id}
                       href={`/customer/market/order/${product.id}`}
-                      className="group flex items-center gap-3 rounded-xl border border-stone-200/80 bg-white p-3 shadow-sm transition hover:border-amber-300 hover:shadow-md"
+                      className="group flex items-center gap-3 rounded-xl glass p-3 transition hover:border-violet-300 hover:shadow-md"
                     >
                       {product.photo_urls.length > 0 ? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -154,10 +152,10 @@ export default async function MarketBrowsePage({
                         <div className="flex h-14 w-14 flex-none items-center justify-center rounded-lg bg-stone-100 text-2xl">🛍</div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-stone-900 group-hover:text-amber-800">
+                        <p className="truncate text-sm font-semibold text-stone-900 group-hover:text-violet-700">
                           {product.name}
                         </p>
-                        <p className="text-sm font-medium text-amber-700">
+                        <p className="text-sm font-medium text-violet-600">
                           {formatPrice(product.price_cents)}
                         </p>
                         {product.subcategory && (
@@ -208,8 +206,8 @@ function FilterPill({
       href={href}
       className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
         active
-          ? "border-amber-700 bg-amber-700 text-white shadow-sm shadow-amber-700/20"
-          : "border-stone-200 bg-white text-stone-600 shadow-sm hover:border-amber-300 hover:text-amber-800"
+          ? "border-violet-600 bg-violet-600 text-white shadow-sm shadow-violet-600/20"
+          : "border-stone-200 bg-white text-stone-600 shadow-sm hover:border-violet-300 hover:text-violet-700"
       }`}
     >
       {children}

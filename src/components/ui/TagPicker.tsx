@@ -47,14 +47,14 @@ export function TagPicker({
         {tags.map((t) => (
           <span
             key={t}
-            className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-sm text-amber-900"
+            className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-sm text-violet-900"
           >
             {t}
             <button
               type="button"
               onClick={() => remove(t)}
               aria-label={`Remove ${t}`}
-              className="text-amber-700 hover:text-amber-900"
+              className="text-violet-600 hover:text-violet-800"
             >
               ×
             </button>
@@ -78,7 +78,7 @@ export function TagPicker({
               type="button"
               key={s}
               onClick={() => add(s)}
-              className="rounded-full border border-stone-300 px-2.5 py-0.5 text-xs text-stone-600 hover:border-amber-600 hover:text-amber-700"
+              className="rounded-full border border-stone-300 px-2.5 py-0.5 text-xs text-stone-600 hover:border-violet-500 hover:text-violet-600"
             >
               + {s}
             </button>

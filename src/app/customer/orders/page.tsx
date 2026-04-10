@@ -140,8 +140,8 @@ function FilterPill({
       href={href}
       className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${
         active
-          ? "border-amber-700 bg-amber-700 text-white shadow-sm shadow-amber-700/20"
-          : "border-stone-200 bg-white text-stone-600 shadow-sm hover:border-amber-300 hover:text-amber-800"
+          ? "border-violet-600 bg-violet-600 text-white shadow-sm shadow-violet-600/20"
+          : "border-stone-200 bg-white text-stone-600 shadow-sm hover:border-violet-300 hover:text-violet-700"
       }`}
     >
       {children}

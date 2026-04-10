@@ -8,12 +8,12 @@ export const metadata = {
 
 export default function SignUpPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-stone-50 px-5 py-10">
+    <main className="flex min-h-screen items-center justify-center gradient-mesh px-5 py-10">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl border border-stone-200/80 bg-white p-8 shadow-sm">
+        <div className="rounded-3xl glass-strong p-8">
           <Link
             href="/"
-            className="text-sm text-stone-400 transition hover:text-amber-700"
+            className="text-sm text-stone-400 transition hover:text-violet-600"
           >
             &larr; Back
           </Link>
@@ -31,7 +31,7 @@ export default function SignUpPage() {
           Already have an account?{" "}
           <Link
             href="/sign-in"
-            className="font-semibold text-amber-700 hover:text-amber-800"
+            className="font-semibold text-violet-600 hover:text-violet-700"
           >
             Sign in
           </Link>

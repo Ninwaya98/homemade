@@ -25,18 +25,18 @@ export function OrderActions({
     return (
       <div className="space-y-3">
         {showTimeInput && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-            <label className="block text-sm font-medium text-amber-900">
+          <div className="rounded-xl border border-violet-200 bg-violet-50 p-4">
+            <label className="block text-sm font-medium text-violet-900">
               Estimated ready time (optional)
             </label>
-            <p className="mt-0.5 text-xs text-amber-800/70">
+            <p className="mt-0.5 text-xs text-violet-700/70">
               Let the customer know when their order will be ready
             </p>
             <input
               type="time"
               value={readyTime}
               onChange={(e) => setReadyTime(e.target.value)}
-              className="mt-2 rounded-lg border border-amber-300 bg-white px-3 py-2 text-base outline-none focus:border-amber-600 focus:ring-2 focus:ring-amber-200"
+              className="mt-2 rounded-lg border border-violet-300 bg-white px-3 py-2 text-base outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
             />
             <div className="mt-3 flex gap-2">
               <Button
