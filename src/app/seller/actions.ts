@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import type { ProductCategory } from "@/lib/types";
+import { isTransitionAllowed, buildStatusExtras } from "@/lib/order-utils";
 
 const ALLOWED_IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
 
@@ -299,28 +300,11 @@ export async function setSellerOrderStatus(
     .single();
   if (!order || order.seller_id !== profile.id) return;
 
-  const allowed: Record<string, string[]> = {
-    pending: ["confirmed", "cancelled"],
-    confirmed: ["ready", "cancelled"],
-    ready: ["completed"],
-    completed: [],
-    cancelled: [],
-  };
-  if (!allowed[order.status]?.includes(status)) return;
+  if (!isTransitionAllowed(order.status, status)) return;
 
-  // Update status
   await supabase.from("orders").update({ status }).eq("id", orderId);
 
-  // Record timestamps
-  const now = new Date().toISOString();
-  const extras: Record<string, string> = {};
-  if (status === "confirmed") {
-    extras.confirmed_at = now;
-    if (estimatedReadyTime) extras.estimated_ready_time = estimatedReadyTime;
-  }
-  if (status === "ready") extras.ready_at = now;
-  if (status === "completed") extras.completed_at = now;
-  if (status === "cancelled") extras.cancelled_at = now;
+  const extras = buildStatusExtras(status, estimatedReadyTime);
   if (Object.keys(extras).length > 0) {
     await supabase.from("orders").update(extras).eq("id", orderId);
   }

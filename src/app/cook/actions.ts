@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { ALLERGENS, DEFAULT_DAILY_PORTION_CAP } from "@/lib/constants";
+import { isTransitionAllowed, buildStatusExtras } from "@/lib/order-utils";
 import type {
   AvailabilityMode,
   DishStatus,
@@ -389,29 +390,11 @@ export async function setOrderStatus(
   if (!order || order.cook_id !== profile.id) {
     return;
   }
-  const allowed: Record<string, string[]> = {
-    pending: ["confirmed", "cancelled"],
-    confirmed: ["ready", "cancelled"],
-    ready: ["completed"],
-    completed: [],
-    cancelled: [],
-  };
-  if (!allowed[order.status]?.includes(status)) {
-    return;
-  }
+  if (!isTransitionAllowed(order.status, status)) return;
+
   await supabase.from("orders").update({ status }).eq("id", orderId);
 
-  // Record status timestamps + estimated ready time (columns from migration 006).
-  // Uses rpc-style raw update since these columns aren't in generated types yet.
-  const now = new Date().toISOString();
-  const extras: Record<string, string> = {};
-  if (status === "confirmed") {
-    extras.confirmed_at = now;
-    if (estimatedReadyTime) extras.estimated_ready_time = estimatedReadyTime;
-  }
-  if (status === "ready") extras.ready_at = now;
-  if (status === "completed") extras.completed_at = now;
-  if (status === "cancelled") extras.cancelled_at = now;
+  const extras = buildStatusExtras(status, estimatedReadyTime);
   if (Object.keys(extras).length > 0) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase.from("orders") as any).update(extras).eq("id", orderId);

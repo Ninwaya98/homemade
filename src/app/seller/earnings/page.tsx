@@ -14,7 +14,7 @@ export default async function SellerEarningsPage() {
 
   const { data: completedOrders } = await supabase
     .from("orders")
-    .select("cook_payout_cents, created_at, quantity, products(name)")
+    .select("id, cook_payout_cents, created_at, quantity, products(name)")
     .eq("seller_id", profile.id)
     .eq("vertical", "market")
     .eq("status", "completed")
@@ -63,8 +63,8 @@ export default async function SellerEarningsPage() {
         <h2 className="text-lg font-semibold text-stone-900">Recent activity</h2>
         {orders.length > 0 ? (
           <ul className="mt-4 divide-y divide-stone-100">
-            {orders.slice(0, 20).map((o: { created_at: string; cook_payout_cents: number; quantity: number; products: { name: string } | null }, i: number) => (
-              <li key={i} className="flex items-center justify-between py-3">
+            {orders.slice(0, 20).map((o: { id: string; created_at: string; cook_payout_cents: number; quantity: number; products: { name: string } | null }) => (
+              <li key={o.id} className="flex items-center justify-between py-3">
                 <div>
                   <p className="text-sm font-medium text-stone-900">
                     {o.quantity}× {o.products?.name ?? "—"}

@@ -40,8 +40,10 @@ export async function GET(request: NextRequest) {
         .select("role")
         .eq("id", user.id)
         .single();
-      if (profile?.role === "cook") destination = "/cook";
-      else if (profile?.role === "admin") destination = "/admin";
+      const role = profile?.role as string | undefined;
+      if (role === "cook") destination = "/cook";
+      else if (role === "seller") destination = "/seller";
+      else if (role === "admin") destination = "/admin";
       else destination = "/customer";
     }
   }

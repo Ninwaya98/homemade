@@ -25,9 +25,7 @@ export function AllergenChecklist({
   const [selected, setSelected] = useState<Set<string>>(
     new Set(defaultAllergens),
   );
-  const [confirmedNone, setConfirmedNone] = useState(
-    defaultAllergens.length === 0 ? false : false,
-  );
+  const [confirmedNone, setConfirmedNone] = useState(false);
 
   const toggle = (id: AllergenId) => {
     const next = new Set(selected);

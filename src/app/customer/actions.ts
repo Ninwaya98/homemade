@@ -122,9 +122,10 @@ export async function leaveReview(formData: FormData) {
 
   if (!orderId || !rating) return;
 
-  const { data: order } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: order } = await (supabase as any)
     .from("orders")
-    .select("status, customer_id, cook_id")
+    .select("status, customer_id, cook_id, seller_id, vertical")
     .eq("id", orderId)
     .single();
   if (!order || order.customer_id !== profile.id || order.status !== "completed") {
