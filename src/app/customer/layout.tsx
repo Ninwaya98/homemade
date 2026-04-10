@@ -12,7 +12,9 @@ export default async function CustomerLayout({
   const profile = await requireRole("customer");
 
   const navItems = [
-    { href: "/customer", label: "Browse", icon: "◉" },
+    { href: "/customer", label: "Home", icon: "◉" },
+    { href: "/customer/kitchen", label: "Kitchen", icon: "🍽" },
+    { href: "/customer/market", label: "Market", icon: "🛍" },
     { href: "/customer/orders", label: "Orders", icon: "▤" },
   ];
 
@@ -22,7 +24,7 @@ export default async function CustomerLayout({
         <div className="mx-auto max-w-3xl px-5 py-4">
           <div className="flex items-center justify-between">
             <Link href="/customer" className="text-lg font-bold text-stone-900">
-              <span className="text-amber-700">A</span>uthentic Kitchen
+              <span className="text-amber-700">H</span>omeMade
             </Link>
             <div className="flex items-center gap-3">
               <Link href="/account" className="text-sm text-stone-500 transition hover:text-amber-700">
@@ -39,7 +41,7 @@ export default async function CustomerLayout({
             </div>
           </div>
           <p className="mt-1 text-sm text-stone-500">
-            Hi <span className="font-medium text-stone-700">{profile.full_name.split(" ")[0]}</span> — what are you hungry for?
+            Hi <span className="font-medium text-stone-700">{profile.full_name.split(" ")[0]}</span> — what are you looking for?
           </p>
         </div>
         <nav className="mx-auto max-w-3xl px-5">

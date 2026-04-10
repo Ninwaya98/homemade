@@ -6,7 +6,7 @@ import { requireRole } from "@/lib/auth";
 import { OrderForm } from "./order-form";
 
 export const metadata = {
-  title: "Order — Authentic Kitchen",
+  title: "Order — HomeMade",
 };
 
 export default async function OrderDishPage({

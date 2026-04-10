@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/Badge";
 import { CookApprovalRow } from "./cook-approval-row";
 
 export const metadata = {
-  title: "Cook approvals — Authentic Kitchen Admin",
+  title: "Cook approvals — HomeMade Admin",
 };
 
 export default async function AdminApprovalsPage() {

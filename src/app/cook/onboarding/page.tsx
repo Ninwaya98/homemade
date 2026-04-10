@@ -5,7 +5,7 @@ import { requireRole } from "@/lib/auth";
 import { OnboardingForm } from "./onboarding-form";
 
 export const metadata = {
-  title: "Set up your kitchen — Authentic Kitchen",
+  title: "Set up your kitchen — HomeMade",
 };
 
 export default async function OnboardingPage() {

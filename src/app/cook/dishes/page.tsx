@@ -9,7 +9,7 @@ import { formatPrice, allergenLabel } from "@/lib/constants";
 import { DishStatusToggle } from "./dish-status-toggle";
 
 export const metadata = {
-  title: "Dishes — Authentic Kitchen",
+  title: "Dishes — HomeMade",
 };
 
 export default async function DishesPage({

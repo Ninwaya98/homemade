@@ -15,17 +15,16 @@ export default async function LandingPage() {
 
         <div className="relative mx-auto max-w-2xl text-center">
           <p className="animate-fade-up inline-block rounded-full bg-amber-500/20 px-4 py-1.5 text-sm font-medium tracking-wide text-amber-200">
-            Authentic Kitchen
+            HomeMade
           </p>
           <h1 className="animate-fade-up delay-1 mt-6 text-4xl font-bold leading-tight text-white sm:text-6xl sm:leading-tight">
-            Real food,
+            Real food. Real crafts.
             <br />
-            <span className="text-amber-300">made by real people.</span>
+            <span className="text-amber-300">Made by real people.</span>
           </h1>
           <p className="animate-fade-up delay-2 mt-6 text-lg text-amber-100/80 sm:text-xl">
-            An alternative to fast food. Order homemade meals from
-            approved cooks in your neighbourhood — or open your own
-            kitchen and start cooking for them.
+            Order homemade meals from approved cooks or handmade goods
+            from local artisans — all in your neighbourhood.
           </p>
 
           <div className="animate-fade-up delay-3 mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -46,13 +45,13 @@ export default async function LandingPage() {
                   href="/sign-up"
                   className="rounded-full bg-white px-7 py-3.5 text-base font-semibold text-amber-900 shadow-lg shadow-amber-900/20 transition hover:bg-amber-50 hover:shadow-xl"
                 >
-                  I&apos;m hungry
+                  Start browsing
                 </Link>
                 <Link
                   href="/sign-up"
                   className="rounded-full border-2 border-amber-300/50 px-7 py-3.5 text-base font-semibold text-white transition hover:border-amber-300 hover:bg-white/10"
                 >
-                  I&apos;m a cook
+                  I&apos;m a cook or seller
                 </Link>
               </>
             )}
@@ -104,32 +103,53 @@ export default async function LandingPage() {
       {/* Cook recruitment strip */}
       <section className="relative overflow-hidden bg-stone-900 px-5 py-20 text-stone-100">
         <div className="pointer-events-none absolute top-0 right-0 h-64 w-64 rounded-full bg-amber-500/5 blur-3xl" />
-        <div className="relative mx-auto max-w-2xl text-center">
-          <p className="text-sm font-medium uppercase tracking-widest text-amber-400">
-            For home cooks
-          </p>
-          <h2 className="mt-3 text-2xl font-bold sm:text-3xl">
-            Cook from home. Earn from your kitchen.
-          </h2>
-          <p className="mt-5 text-stone-400">
-            Set your own schedule, your own portions, your own prices.
-            We handle payments and trust — you handle the cooking. New
-            cooks start with a 6-portion daily cap and grow from there.
-          </p>
-          <Link
-            href="/sign-up"
-            className="mt-8 inline-block rounded-full bg-amber-500 px-7 py-3.5 text-base font-semibold text-stone-900 shadow-lg shadow-amber-500/20 transition hover:bg-amber-400 hover:shadow-xl"
-          >
-            Open your kitchen
-          </Link>
+        <div className="relative mx-auto max-w-3xl">
+          <div className="grid gap-8 sm:grid-cols-2">
+            <div className="text-center sm:text-left">
+              <p className="text-sm font-medium uppercase tracking-widest text-amber-400">
+                For home cooks
+              </p>
+              <h2 className="mt-3 text-xl font-bold sm:text-2xl">
+                Cook from home. Earn from your kitchen.
+              </h2>
+              <p className="mt-3 text-sm text-stone-400">
+                Set your own schedule, portions, and prices. New cooks
+                start with a 6-portion daily cap and grow from there.
+              </p>
+              <Link
+                href="/sign-up"
+                className="mt-5 inline-block rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-stone-900 shadow-lg shadow-amber-500/20 transition hover:bg-amber-400"
+              >
+                Open your kitchen
+              </Link>
+            </div>
+            <div className="text-center sm:text-left">
+              <p className="text-sm font-medium uppercase tracking-widest text-amber-400">
+                For artisans & makers
+              </p>
+              <h2 className="mt-3 text-xl font-bold sm:text-2xl">
+                Sell what you make. Reach local buyers.
+              </h2>
+              <p className="mt-3 text-sm text-stone-400">
+                List your handmade crafts, clothing, decor, or packaged
+                food products. Set your prices, manage your stock.
+              </p>
+              <Link
+                href="/sign-up"
+                className="mt-5 inline-block rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-stone-900 shadow-lg shadow-amber-500/20 transition hover:bg-amber-400"
+              >
+                Open your shop
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
       <footer className="border-t border-stone-200 bg-stone-50 px-5 py-10 text-center text-sm text-stone-500">
-        <p className="font-medium text-stone-600">Authentic Kitchen</p>
+        <p className="font-medium text-stone-600">HomeMade</p>
         <p className="mt-2">
-          A marketplace, not a food producer. Each cook is independently
-          approved and responsible for their dishes.
+          A marketplace, not a producer. Each cook and seller is independently
+          approved and responsible for their products.
         </p>
         <div className="mt-4 flex justify-center gap-4">
           <Link href="/terms" className="transition hover:text-amber-700">Terms of Service</Link>

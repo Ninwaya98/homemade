@@ -5,7 +5,7 @@ import { requireRole } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { dayLabel, formatPrice } from "@/lib/constants";
 
-export const metadata = { title: "Earnings — Authentic Kitchen" };
+export const metadata = { title: "Earnings — HomeMade" };
 
 export default async function EarningsPage() {
   const profile = await requireRole("cook");

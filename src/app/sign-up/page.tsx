@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SignUpForm } from "./sign-up-form";
 
 export const metadata = {
-  title: "Sign up — Authentic Kitchen",
+  title: "Sign up — HomeMade",
 };
 
 export default function SignUpPage() {
@@ -18,7 +18,7 @@ export default function SignUpPage() {
             &larr; Back
           </Link>
           <h1 className="mt-6 text-3xl font-bold text-stone-900">
-            Join Authentic Kitchen
+            Join HomeMade
           </h1>
           <p className="mt-2 text-stone-500">
             Real food, made by real people in real kitchens.

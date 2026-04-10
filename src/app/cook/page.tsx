@@ -8,7 +8,7 @@ import { LinkButton } from "@/components/ui/Button";
 import { dayLabel, formatPrice, todayIso } from "@/lib/constants";
 
 export const metadata = {
-  title: "My kitchen — Authentic Kitchen",
+  title: "My kitchen — HomeMade",
 };
 
 export default async function CookHome({

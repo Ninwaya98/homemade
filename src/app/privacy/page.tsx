@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Privacy Policy — Authentic Kitchen",
+  title: "Privacy Policy — HomeMade",
 };
 
 export default function PrivacyPage() {

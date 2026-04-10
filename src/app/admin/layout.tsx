@@ -12,8 +12,10 @@ export default async function AdminLayout({
   await requireRole("admin");
 
   const navItems = [
-    { href: "/admin", label: "Approvals" },
+    { href: "/admin", label: "Cook approvals" },
+    { href: "/admin/sellers", label: "Seller approvals" },
     { href: "/admin/cooks", label: "All cooks" },
+    { href: "/admin/sellers/all", label: "All sellers" },
   ];
 
   return (
@@ -25,7 +27,7 @@ export default async function AdminLayout({
               href="/admin"
               className="text-lg font-semibold text-stone-900"
             >
-              Authentic Kitchen — Admin
+              HomeMade — Admin
             </Link>
             <nav className="flex gap-4 text-sm">
               {navItems.map((item) => (

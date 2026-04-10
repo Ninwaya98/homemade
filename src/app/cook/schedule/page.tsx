@@ -7,7 +7,7 @@ import { ScheduleForm } from "./schedule-form";
 import { nextNDays } from "@/lib/constants";
 
 export const metadata = {
-  title: "Schedule — Authentic Kitchen",
+  title: "Schedule — HomeMade",
 };
 
 export default async function SchedulePage({

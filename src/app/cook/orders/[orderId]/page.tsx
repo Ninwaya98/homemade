@@ -12,7 +12,7 @@ import {
 } from "@/lib/constants";
 import { OrderActions } from "./order-actions";
 
-export const metadata = { title: "Order — Authentic Kitchen" };
+export const metadata = { title: "Order — HomeMade" };
 
 export default async function CookOrderDetail({
   params,

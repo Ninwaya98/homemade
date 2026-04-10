@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Terms of Service — Authentic Kitchen",
+  title: "Terms of Service — HomeMade",
 };
 
 export default function TermsPage() {
@@ -23,7 +23,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-semibold text-stone-900">1. About the Platform</h2>
           <p>
-            Authentic Kitchen (&quot;we&quot;, &quot;us&quot;, &quot;the platform&quot;) is a
+            HomeMade (&quot;we&quot;, &quot;us&quot;, &quot;the platform&quot;) is a
             marketplace that connects home cooks (&quot;cooks&quot;) with customers
             (&quot;buyers&quot;). We are not a food producer, restaurant, or delivery
             service. Each cook operates independently and is solely responsible

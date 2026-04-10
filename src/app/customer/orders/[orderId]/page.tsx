@@ -10,7 +10,7 @@ import { allergenLabel, dayLabel, formatPrice } from "@/lib/constants";
 import { CancelOrderButton } from "./cancel-button";
 import { ReviewForm } from "./review-form";
 
-export const metadata = { title: "Order — Authentic Kitchen" };
+export const metadata = { title: "Order — HomeMade" };
 
 export default async function CustomerOrderDetail({
   params,
@@ -24,37 +24,60 @@ export default async function CustomerOrderDetail({
   const { placed } = await searchParams;
   const supabase = await createClient();
 
-  const { data: order } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: order } = await (supabase as any)
     .from("orders")
-    .select(
-      `
+    .select(`
       *,
       dishes(id, name, description, allergens, photo_url),
-      cook_profiles!orders_cook_id_fkey(id, photo_url, profiles!cook_profiles_id_fkey!inner(full_name, phone, location))
-      `,
-    )
+      cook_profiles!orders_cook_id_fkey(id, photo_url, profiles!cook_profiles_id_fkey(full_name, phone, location)),
+      products(id, name, description, photo_urls, ingredients, category),
+      seller_profiles!orders_seller_id_fkey(id, shop_name, photo_url, profiles!seller_profiles_id_fkey(full_name, phone, location))
+    `)
     .eq("id", orderId)
     .eq("customer_id", profile.id)
     .maybeSingle();
 
   if (!order) notFound();
 
-  // Cast to include columns from migration 006 (not yet in generated types)
-  const o = order as typeof order & {
+  // Cast — order is untyped due to multi-vertical joins
+  const o = order as Record<string, unknown> & {
+    id: string; status: string; quantity: number; total_cents: number;
+    commission_cents: number; cook_payout_cents: number; type: string;
+    scheduled_for: string | null; notes: string | null; created_at: string;
+    vertical: string;
     delivery_address?: string | null;
-    confirmed_at?: string | null;
-    ready_at?: string | null;
-    completed_at?: string | null;
-    cancelled_at?: string | null;
+    confirmed_at?: string | null; ready_at?: string | null;
+    completed_at?: string | null; cancelled_at?: string | null;
     estimated_ready_time?: string | null;
   };
 
+  const isMarket = o.vertical === "market";
+
   const dish = order.dishes as { id?: string; name?: string; description?: string | null; allergens?: string[]; photo_url?: string | null } | null;
+  const product = order.products as { id?: string; name?: string; description?: string | null; photo_urls?: string[]; ingredients?: string | null; category?: string } | null;
   const cook = order.cook_profiles as {
     id: string;
     photo_url: string | null;
     profiles: { full_name?: string; phone?: string | null; location?: string | null };
-  };
+  } | null;
+  const seller = order.seller_profiles as {
+    id: string;
+    shop_name: string;
+    photo_url: string | null;
+    profiles: { full_name?: string; phone?: string | null; location?: string | null };
+  } | null;
+
+  // Unified values
+  const itemName = isMarket ? product?.name : dish?.name;
+  const itemId = isMarket ? product?.id : dish?.id;
+  const itemPhotoUrl = isMarket ? (product?.photo_urls ?? [])[0] : dish?.photo_url;
+  const providerName = isMarket ? seller?.shop_name : cook?.profiles?.full_name;
+  const providerId = isMarket ? seller?.id : cook?.id;
+  const providerPhoto = isMarket ? seller?.photo_url : cook?.photo_url;
+  const providerLocation = isMarket ? seller?.profiles?.location : cook?.profiles?.location;
+  const providerPhone = isMarket ? seller?.profiles?.phone : cook?.profiles?.phone;
+  const providerLink = isMarket ? `/customer/market/sellers/${providerId}` : `/customer/cooks/${providerId}`;
 
   // If completed, has the customer left a review yet?
   let existingReview = null;
@@ -78,25 +101,25 @@ export default async function CustomerOrderDetail({
           </div>
           <h1 className="mt-4 text-2xl font-bold text-emerald-900">Order placed!</h1>
           <p className="mt-2 text-sm text-emerald-800/70">
-            We&apos;ve let {cook.profiles.full_name} know. They&apos;ll confirm it shortly.
+            We&apos;ve let {providerName} know. They&apos;ll confirm it shortly.
           </p>
 
           <div className="mx-auto mt-6 max-w-xs rounded-xl border border-stone-200 bg-white p-4 text-left shadow-sm">
             <div className="flex items-center gap-3">
-              {dish?.photo_url ? (
+              {itemPhotoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={dish.photo_url} alt="" className="h-14 w-14 rounded-lg object-cover" />
+                <img src={itemPhotoUrl} alt="" className="h-14 w-14 rounded-lg object-cover" />
               ) : (
-                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-stone-100 text-xl">🍽</div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-stone-100 text-xl">{isMarket ? "🛍" : "🍽"}</div>
               )}
               <div>
                 <p className="text-sm font-semibold text-stone-900">
-                  {order.quantity}× {dish?.name ?? "—"}
+                  {o.quantity}× {itemName ?? "—"}
                 </p>
                 <p className="text-xs text-stone-500">
-                  {order.scheduled_for ? dayLabel(order.scheduled_for) : "—"} · {order.type}
+                  {o.scheduled_for ? dayLabel(o.scheduled_for) : o.type}
                 </p>
-                <p className="text-sm font-medium text-amber-700">{formatPrice(order.total_cents)}</p>
+                <p className="text-sm font-medium text-amber-700">{formatPrice(o.total_cents)}</p>
               </div>
             </div>
           </div>
@@ -123,28 +146,29 @@ export default async function CustomerOrderDetail({
       {/* Order header */}
       <Card>
         <div className="flex items-start gap-4">
-          {dish?.photo_url ? (
+          {itemPhotoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={dish.photo_url} alt="" className="h-20 w-20 flex-none rounded-xl object-cover shadow-sm" />
+            <img src={itemPhotoUrl} alt="" className="h-20 w-20 flex-none rounded-xl object-cover shadow-sm" />
           ) : (
-            <div className="flex h-20 w-20 flex-none items-center justify-center rounded-xl bg-stone-100 text-2xl">🍽</div>
+            <div className="flex h-20 w-20 flex-none items-center justify-center rounded-xl bg-stone-100 text-2xl">{isMarket ? "🛍" : "🍽"}</div>
           )}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold text-stone-900">
-                {order.quantity}× {dish?.name ?? "—"}
+                {o.quantity}× {itemName ?? "—"}
               </h1>
-              <Badge tone={statusTone(order.status)}>{order.status}</Badge>
+              <Badge tone={statusTone(o.status)}>{o.status}</Badge>
+              <Badge tone={isMarket ? "blue" : "amber"}>{isMarket ? "Market" : "Kitchen"}</Badge>
             </div>
             <p className="text-sm text-stone-500">
-              {order.scheduled_for ? dayLabel(order.scheduled_for) : "—"} · {order.type}
+              {o.scheduled_for ? dayLabel(o.scheduled_for) : ""} {o.type}
             </p>
             {o.estimated_ready_time && (
               <p className="mt-1 text-sm font-medium text-amber-700">
                 Estimated ready: {o.estimated_ready_time}
               </p>
             )}
-            {dish?.allergens && dish.allergens.length > 0 && (
+            {!isMarket && dish?.allergens && dish.allergens.length > 0 && (
               <p className="mt-2 rounded-lg bg-amber-50 px-2.5 py-1.5 text-xs font-medium text-amber-900">
                 Contains: {dish.allergens.map(allergenLabel).join(", ")}
               </p>
@@ -159,30 +183,30 @@ export default async function CustomerOrderDetail({
         <div className="mt-4">
           <TimelineStep
             label="Order placed"
-            description="Your order has been sent to the cook"
-            time={order.created_at}
+            description={`Your order has been sent to ${isMarket ? "the seller" : "the cook"}`}
+            time={o.created_at}
             done
           />
           <TimelineStep
             label="Confirmed"
-            description={order.status === "pending" ? "Waiting for cook to accept" : "Cook has accepted your order"}
+            description={o.status === "pending" ? `Waiting for ${isMarket ? "seller" : "cook"} to accept` : `${isMarket ? "Seller" : "Cook"} has accepted your order`}
             time={o.confirmed_at}
-            done={["confirmed", "ready", "completed"].includes(order.status)}
-            active={order.status === "pending"}
+            done={["confirmed", "ready", "completed"].includes(o.status)}
+            active={o.status === "pending"}
           />
           <TimelineStep
             label="Ready"
-            description={order.type === "pickup" ? "Ready for pickup" : "Ready for delivery"}
+            description={o.type === "pickup" ? "Ready for pickup" : "Ready for delivery"}
             time={o.ready_at}
-            done={["ready", "completed"].includes(order.status)}
-            active={order.status === "confirmed"}
+            done={["ready", "completed"].includes(o.status)}
+            active={o.status === "confirmed"}
           />
           <TimelineStep
             label="Completed"
-            description={order.type === "pickup" ? "Collected" : "Delivered"}
+            description={o.type === "pickup" ? "Collected" : "Delivered"}
             time={o.completed_at}
-            done={order.status === "completed"}
-            active={order.status === "ready"}
+            done={o.status === "completed"}
+            active={o.status === "ready"}
             last
           />
           {order.status === "cancelled" && (
@@ -206,29 +230,27 @@ export default async function CustomerOrderDetail({
         </Card>
       )}
 
-      {/* Cook info */}
+      {/* Provider info */}
       <Card>
-        <h2 className="text-sm font-bold text-stone-900">Cook</h2>
+        <h2 className="text-sm font-bold text-stone-900">{isMarket ? "Seller" : "Cook"}</h2>
         <Link
-          href={`/customer/cooks/${cook.id}`}
+          href={providerLink}
           className="mt-3 flex items-center gap-3 transition hover:opacity-90"
         >
-          {cook.photo_url ? (
+          {providerPhoto ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={cook.photo_url} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-amber-100" />
+            <img src={providerPhoto} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-amber-100" />
           ) : (
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-amber-100 to-amber-200 text-sm font-bold text-amber-700">
-              {cook.profiles.full_name?.[0]?.toUpperCase() ?? "?"}
+              {(providerName ?? "?")[0]?.toUpperCase()}
             </div>
           )}
           <div>
-            <p className="text-sm font-semibold text-stone-900">
-              {cook.profiles.full_name}
-            </p>
+            <p className="text-sm font-semibold text-stone-900">{providerName}</p>
             <p className="text-xs text-stone-500">
-              {cook.profiles.location ?? "—"}
-              {order.status !== "pending" && order.status !== "cancelled" && cook.profiles.phone && (
-                <> · {cook.profiles.phone}</>
+              {providerLocation ?? "—"}
+              {o.status !== "pending" && o.status !== "cancelled" && providerPhone && (
+                <> · {providerPhone}</>
               )}
             </p>
           </div>
@@ -239,25 +261,25 @@ export default async function CustomerOrderDetail({
       <Card>
         <h2 className="text-sm font-bold text-stone-900">Payment</h2>
         <div className="mt-3 space-y-1.5 text-sm">
-          <Row label="Total paid" value={formatPrice(order.total_cents)} bold />
+          <Row label="Total paid" value={formatPrice(o.total_cents)} bold />
           <p className="text-[11px] text-stone-400">
-            Platform fee {formatPrice(order.commission_cents)}, cook receives{" "}
-            {formatPrice(order.cook_payout_cents)}.
+            Platform fee {formatPrice(o.commission_cents)}, {isMarket ? "seller" : "cook"} receives{" "}
+            {formatPrice(o.cook_payout_cents)}.
           </p>
         </div>
       </Card>
 
       {/* Actions */}
-      {order.status === "pending" && (
-        <CancelOrderButton orderId={order.id} />
+      {o.status === "pending" && (
+        <CancelOrderButton orderId={o.id} />
       )}
 
-      {order.status === "completed" && (
+      {o.status === "completed" && (
         <>
-          <ReviewForm orderId={order.id} existing={existingReview} />
-          {dish?.id && (
+          <ReviewForm orderId={o.id} existing={existingReview} />
+          {itemId && (
             <LinkButton
-              href={`/customer/order/${dish.id}`}
+              href={isMarket ? `/customer/market/order/${itemId}` : `/customer/order/${itemId}`}
               variant="secondary"
               size="md"
               fullWidth

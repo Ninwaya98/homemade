@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { DeleteAccountForm } from "./delete-account-form";
 
 export const metadata = {
-  title: "Account Settings — Authentic Kitchen",
+  title: "Account Settings — HomeMade",
 };
 
 export default async function AccountPage() {

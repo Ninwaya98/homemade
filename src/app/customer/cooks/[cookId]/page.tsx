@@ -9,7 +9,7 @@ import { LinkButton } from "@/components/ui/Button";
 import { allergenLabel, formatPrice, dayLabel } from "@/lib/constants";
 
 export const metadata = {
-  title: "Cook profile — Authentic Kitchen",
+  title: "Cook profile — HomeMade",
 };
 
 export default async function CookProfilePage({

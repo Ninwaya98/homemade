@@ -33,7 +33,7 @@ export default async function CookLayout({
         <div className="mx-auto max-w-3xl px-5 py-4">
           <div className="flex items-center justify-between">
             <Link href="/cook" className="text-lg font-bold text-stone-900">
-              <span className="text-amber-700">A</span>uthentic Kitchen
+              <span className="text-amber-700">H</span>omeMade Kitchen
             </Link>
             <div className="flex items-center gap-3">
               <Link href="/account" className="text-sm text-stone-500 transition hover:text-amber-700">

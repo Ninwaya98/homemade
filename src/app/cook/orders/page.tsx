@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { dayLabel, formatPrice } from "@/lib/constants";
 
 export const metadata = {
-  title: "Orders — Authentic Kitchen",
+  title: "Orders — HomeMade",
 };
 
 export default async function CookOrdersPage() {

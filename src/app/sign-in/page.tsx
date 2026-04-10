@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SignInForm } from "./sign-in-form";
 
 export const metadata = {
-  title: "Sign in — Authentic Kitchen",
+  title: "Sign in — HomeMade",
 };
 
 export default async function SignInPage({

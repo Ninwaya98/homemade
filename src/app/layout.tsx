@@ -9,9 +9,9 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Authentic Kitchen — Real food, made by real people",
+  title: "HomeMade — Real food & handmade goods, made by real people",
   description:
-    "A marketplace connecting home cooks with neighbours who want authentic, homemade food. An alternative to fast food.",
+    "A marketplace connecting home cooks and artisan sellers with neighbours who want authentic, homemade food and handmade goods.",
 };
 
 export const viewport: Viewport = {

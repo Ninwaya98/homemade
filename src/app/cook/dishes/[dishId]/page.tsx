@@ -5,7 +5,7 @@ import { requireRole } from "@/lib/auth";
 import { DishForm } from "../dish-form";
 
 export const metadata = {
-  title: "Edit dish — Authentic Kitchen",
+  title: "Edit dish — HomeMade",
 };
 
 export default async function EditDishPage({

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ForgotPasswordForm } from "./forgot-password-form";
 
 export const metadata = {
-  title: "Reset password — Authentic Kitchen",
+  title: "Reset password — HomeMade",
 };
 
 export default function ForgotPasswordPage() {

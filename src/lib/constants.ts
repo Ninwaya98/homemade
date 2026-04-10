@@ -1,5 +1,5 @@
 // =====================================================================
-// Authentic Kitchen — shared constants
+// HomeMade — shared constants
 // =====================================================================
 
 // The 7 allergens from the build brief. Mandatory checklist on every dish.

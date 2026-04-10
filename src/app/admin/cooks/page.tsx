@@ -5,7 +5,7 @@ import { requireRole } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 
-export const metadata = { title: "All cooks — Authentic Kitchen Admin" };
+export const metadata = { title: "All cooks — HomeMade Admin" };
 
 export default async function AdminCooksPage({
   searchParams,
