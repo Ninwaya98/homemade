@@ -4,15 +4,20 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireAuth, requireSellerProfile } from "@/lib/auth";
 import type { ProductCategory } from "@/lib/types";
 import { isTransitionAllowed, buildStatusExtras } from "@/lib/order-utils";
 
 const ALLOWED_IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
 function safeExt(filename: string, fallback: string): string {
   const raw = filename.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "";
   return ALLOWED_IMAGE_EXTS.has(raw) ? raw : fallback;
+}
+
+function validateFileType(file: File, allowedTypes: Set<string>): boolean {
+  return allowedTypes.has(file.type);
 }
 
 // =====================================================================
@@ -25,7 +30,7 @@ export async function submitSellerOnboarding(
   _state: OnboardingState,
   formData: FormData,
 ): Promise<OnboardingState> {
-  const profile = await requireRole("seller");
+  const profile = await requireAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -64,6 +69,9 @@ export async function submitSellerOnboarding(
     if (photoFile.size > 5 * 1024 * 1024) {
       return { error: "Photo is too large (max 5 MB)." };
     }
+    if (!validateFileType(photoFile, ALLOWED_IMAGE_TYPES)) {
+      return { error: "Photo must be a JPG, PNG, WebP, or GIF image." };
+    }
     const ext = safeExt(photoFile.name, "jpg");
     const path = `${profile.id}/shop_${Date.now()}.${ext}`;
     const { error } = await supabase.storage
@@ -101,7 +109,7 @@ export async function createProduct(
   _state: ProductFormState,
   formData: FormData,
 ): Promise<ProductFormState> {
-  const profile = await requireRole("seller");
+  const { profile } = await requireSellerProfile();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -133,13 +141,18 @@ export async function createProduct(
   if (!category) return { error: "Select a category." };
   if (stockQuantity < 1) return { error: "Stock quantity must be at least 1." };
 
-  // Upload photos (multiple)
-  const photoFiles = formData.getAll("photos") as File[];
+  // Upload photos (multiple, max 5)
+  const photoFiles = (formData.getAll("photos") as File[]).filter((f) => f && f.size > 0);
+  if (photoFiles.length > 5) {
+    return { error: "You can upload up to 5 photos." };
+  }
   const photoUrls: string[] = [];
   for (const file of photoFiles) {
-    if (!file || file.size === 0) continue;
     if (file.size > 5 * 1024 * 1024) {
       return { error: `Photo "${file.name}" is too large (max 5 MB).` };
+    }
+    if (!validateFileType(file, ALLOWED_IMAGE_TYPES)) {
+      return { error: `"${file.name}" must be a JPG, PNG, WebP, or GIF image.` };
     }
     const ext = safeExt(file.name, "jpg");
     const path = `${profile.id}/product_${Date.now()}_${Math.random().toString(36).slice(2, 6)}.${ext}`;
@@ -176,7 +189,7 @@ export async function updateProduct(
   _state: ProductFormState,
   formData: FormData,
 ): Promise<ProductFormState> {
-  const profile = await requireRole("seller");
+  const { profile } = await requireSellerProfile();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -200,13 +213,18 @@ export async function updateProduct(
   const retainedRaw = String(formData.get("retained_photo_urls") ?? "");
   const retainedUrls = retainedRaw.split(",").filter(Boolean);
 
-  // New uploads
-  const photoFiles = formData.getAll("photos") as File[];
+  // New uploads (max 5 total including retained)
+  const photoFiles = (formData.getAll("photos") as File[]).filter((f) => f && f.size > 0);
+  if (retainedUrls.length + photoFiles.length > 5) {
+    return { error: "You can have up to 5 photos total." };
+  }
   const newUrls: string[] = [];
   for (const file of photoFiles) {
-    if (!file || file.size === 0) continue;
     if (file.size > 5 * 1024 * 1024) {
       return { error: `Photo "${file.name}" is too large (max 5 MB).` };
+    }
+    if (!validateFileType(file, ALLOWED_IMAGE_TYPES)) {
+      return { error: `"${file.name}" must be a JPG, PNG, WebP, or GIF image.` };
     }
     const ext = safeExt(file.name, "jpg");
     const path = `${profile.id}/product_${Date.now()}_${Math.random().toString(36).slice(2, 6)}.${ext}`;
@@ -242,7 +260,7 @@ export async function updateProduct(
 }
 
 export async function setProductStatus(productId: string, status: "active" | "paused" | "out_of_stock") {
-  const profile = await requireRole("seller");
+  const { profile } = await requireSellerProfile();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
   await supabase
@@ -254,7 +272,7 @@ export async function setProductStatus(productId: string, status: "active" | "pa
 }
 
 export async function deleteProduct(productId: string) {
-  const profile = await requireRole("seller");
+  const { profile } = await requireSellerProfile();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -288,7 +306,7 @@ export async function setSellerOrderStatus(
   status: "confirmed" | "ready" | "completed" | "cancelled",
   estimatedReadyTime?: string,
 ) {
-  const profile = await requireRole("seller");
+  const { profile } = await requireSellerProfile();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 

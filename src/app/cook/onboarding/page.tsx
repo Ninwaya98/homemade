@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { OnboardingForm } from "./onboarding-form";
 
 export const metadata = {
@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 export default async function OnboardingPage() {
-  const profile = await requireRole("cook");
+  const profile = await requireAuth();
   const supabase = await createClient();
 
   const { data: cookProfile } = await supabase

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { Card } from "@/components/ui/Card";
 import { LinkButton } from "@/components/ui/Button";
 import { productCategoryLabel } from "@/lib/constants";
@@ -13,7 +13,7 @@ export default async function SellerHome({
 }: {
   searchParams: Promise<{ onboarded?: string }>;
 }) {
-  const profile = await getCurrentProfile();
+  const profile = await requireAuth();
   const supabase = await createClient();
   const { onboarded } = await searchParams;
 
@@ -21,7 +21,7 @@ export default async function SellerHome({
   const { data: sellerProfile } = await (supabase as any)
     .from("seller_profiles")
     .select("*")
-    .eq("id", profile!.id)
+    .eq("id", profile.id)
     .maybeSingle();
 
   // No seller profile yet → onboarding CTA.
@@ -99,13 +99,13 @@ export default async function SellerHome({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { count: totalProducts } = await (supabase as any).from("products")
     .select("*", { count: "exact", head: true })
-    .eq("seller_id", profile!.id)
+    .eq("seller_id", profile.id)
     .eq("status", "active");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: pendingOrders } = await (supabase as any).from("orders")
     .select("id, quantity, status, products(name)")
-    .eq("seller_id", profile!.id)
+    .eq("seller_id", profile.id)
     .eq("vertical", "market")
     .eq("status", "pending")
     .order("created_at", { ascending: false })

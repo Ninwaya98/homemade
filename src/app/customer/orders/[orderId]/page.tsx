@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
@@ -19,7 +19,7 @@ export default async function CustomerOrderDetail({
   params: Promise<{ orderId: string }>;
   searchParams: Promise<{ placed?: string }>;
 }) {
-  const profile = await requireRole("customer");
+  const profile = await requireAuth();
   const { orderId } = await params;
   const { placed } = await searchParams;
   const supabase = await createClient();

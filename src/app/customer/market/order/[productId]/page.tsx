@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { ProductOrderForm } from "./order-form";
 
 export const metadata = {
@@ -14,7 +14,7 @@ export default async function OrderProductPage({
 }: {
   params: Promise<{ productId: string }>;
 }) {
-  await requireRole("customer");
+  await requireAuth();
   const { productId } = await params;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;

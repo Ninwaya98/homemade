@@ -60,6 +60,7 @@ export async function updateSession(request: NextRequest) {
     path.startsWith("/seller") ||
     path.startsWith("/admin") ||
     path.startsWith("/customer/order") ||
+    path.startsWith("/customer/orders") ||
     path.startsWith("/customer/market/order");
 
   if (isProtected && !user) {

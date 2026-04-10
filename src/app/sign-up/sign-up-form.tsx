@@ -1,52 +1,16 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 
 import { signUp, type AuthFormState } from "@/app/actions/auth";
-// UserRole from generated types doesn't include 'seller' yet — use string union
-type UserRole = "cook" | "customer" | "seller";
 
 const initialState: AuthFormState = undefined;
 
 export function SignUpForm() {
   const [state, action, pending] = useActionState(signUp, initialState);
-  const [role, setRole] = useState<UserRole>(
-    (state?.fields?.role as UserRole | undefined) ?? "customer",
-  );
 
   return (
     <form action={action} className="mt-8 space-y-5">
-      {/* Role selector — large tap targets, mobile first */}
-      <fieldset>
-        <legend className="text-sm font-medium text-stone-700">
-          I am a…
-        </legend>
-        <div className="mt-2 grid grid-cols-3 gap-3">
-          <RoleOption
-            value="customer"
-            label="Hungry"
-            hint="I want to order food & goods"
-            checked={role === "customer"}
-            onChange={setRole}
-          />
-          <RoleOption
-            value="cook"
-            label="Cook"
-            hint="I sell homemade dishes"
-            checked={role === "cook"}
-            onChange={setRole}
-          />
-          <RoleOption
-            value="seller"
-            label="Seller"
-            hint="I sell handmade goods"
-            checked={role === "seller"}
-            onChange={setRole}
-          />
-        </div>
-        <input type="hidden" name="role" value={role} />
-      </fieldset>
-
       <Field
         name="full_name"
         label="Full name"
@@ -88,52 +52,7 @@ export function SignUpForm() {
       >
         {pending ? "Creating account…" : "Create account"}
       </button>
-
-      {role === "cook" && (
-        <p className="rounded-md border border-violet-200 bg-violet-50 px-3 py-2 text-xs text-violet-900">
-          New cooks need admin approval (and a food handler certificate)
-          before their dishes go live. We&apos;ll guide you after signup.
-        </p>
-      )}
-      {role === "seller" && (
-        <p className="rounded-md border border-violet-200 bg-violet-50 px-3 py-2 text-xs text-violet-900">
-          New sellers need admin approval before their products go live.
-          Set up your shop after signup and we&apos;ll review it.
-        </p>
-      )}
     </form>
-  );
-}
-
-function RoleOption({
-  value,
-  label,
-  hint,
-  checked,
-  onChange,
-}: {
-  value: UserRole;
-  label: string;
-  hint: string;
-  checked: boolean;
-  onChange: (role: UserRole) => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChange(value)}
-      className={`rounded-xl border-2 px-4 py-3 text-left transition ${
-        checked
-          ? "border-violet-600 bg-violet-50"
-          : "border-stone-200 bg-white hover:border-stone-300"
-      }`}
-      aria-pressed={checked}
-    >
-      <span className="block text-base font-semibold text-stone-900">
-        {label}
-      </span>
-      <span className="mt-0.5 block text-xs text-stone-600">{hint}</span>
-    </button>
   );
 }
 

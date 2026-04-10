@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { splitOrderTotal } from "@/lib/constants";
 
 export type OrderFormState = { error?: string } | undefined;
@@ -14,7 +14,7 @@ export async function placeOrder(
   _state: OrderFormState,
   formData: FormData,
 ): Promise<OrderFormState> {
-  const profile = await requireRole("customer");
+  const profile = await requireAuth();
   const supabase = await createClient();
 
   const dishId = String(formData.get("dish_id") ?? "");
@@ -80,7 +80,7 @@ export async function placeOrder(
 
 // Customer cancels a still-pending order.
 export async function cancelOrder(orderId: string) {
-  const profile = await requireRole("customer");
+  const profile = await requireAuth();
   const supabase = await createClient();
   const { data: order } = await supabase
     .from("orders")
@@ -113,7 +113,7 @@ export async function cancelOrder(orderId: string) {
 
 // Customer leaves a review on a completed order.
 export async function leaveReview(formData: FormData) {
-  const profile = await requireRole("customer");
+  const profile = await requireAuth();
   const supabase = await createClient();
 
   const orderId = String(formData.get("order_id") ?? "");
@@ -191,7 +191,7 @@ export async function placeProductOrder(
   _state: ProductOrderFormState,
   formData: FormData,
 ): Promise<ProductOrderFormState> {
-  const profile = await requireRole("customer");
+  const profile = await requireAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -241,7 +241,7 @@ export async function placeProductOrder(
 }
 
 export async function cancelProductOrder(orderId: string) {
-  const profile = await requireRole("customer");
+  const profile = await requireAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 

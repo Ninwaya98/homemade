@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireAuth, requireCookProfile } from "@/lib/auth";
 import { ALLERGENS, DEFAULT_DAILY_PORTION_CAP } from "@/lib/constants";
 import { isTransitionAllowed, buildStatusExtras } from "@/lib/order-utils";
 import type {
@@ -12,12 +12,18 @@ import type {
   DishStatus,
 } from "@/lib/types";
 
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const ALLOWED_CERT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
 const ALLOWED_IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
 const ALLOWED_CERT_EXTS = new Set(["pdf", "jpg", "jpeg", "png", "webp"]);
 
 function safeExt(filename: string, allowed: Set<string>, fallback: string): string {
   const raw = filename.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "";
   return allowed.has(raw) ? raw : fallback;
+}
+
+function validateFileType(file: File, allowedTypes: Set<string>): boolean {
+  return allowedTypes.has(file.type);
 }
 
 // =====================================================================
@@ -32,7 +38,7 @@ export async function submitOnboarding(
   _state: OnboardingState,
   formData: FormData,
 ): Promise<OnboardingState> {
-  const profile = await requireRole("cook");
+  const profile = await requireAuth();
   const supabase = await createClient();
 
   const bio = String(formData.get("bio") ?? "").trim();
@@ -67,12 +73,18 @@ export async function submitOnboarding(
   if (certFile.size > 10 * 1024 * 1024) {
     return { error: "Certificate is too large (max 10 MB)." };
   }
+  if (!validateFileType(certFile, ALLOWED_CERT_TYPES)) {
+    return { error: "Certificate must be a PDF, JPG, PNG, or WebP file." };
+  }
 
   const photoFile = formData.get("photo") as File | null;
 
-  // Validate photo size early, before uploading anything
+  // Validate photo size and type early, before uploading anything
   if (photoFile && photoFile.size > 0 && photoFile.size > 5 * 1024 * 1024) {
     return { error: "Photo is too large (max 5 MB)." };
+  }
+  if (photoFile && photoFile.size > 0 && !validateFileType(photoFile, ALLOWED_IMAGE_TYPES)) {
+    return { error: "Photo must be a JPG, PNG, WebP, or GIF image." };
   }
 
   // 1) Update the profile row with phone + location
@@ -162,7 +174,7 @@ export async function createDish(
   _state: DishFormState,
   formData: FormData,
 ): Promise<DishFormState> {
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
   // Cook must be approved before they can create dishes.
@@ -200,6 +212,9 @@ export async function createDish(
     if (photoFile.size > 5 * 1024 * 1024) {
       return { error: "Photo is too large (max 5 MB)." };
     }
+    if (!validateFileType(photoFile, ALLOWED_IMAGE_TYPES)) {
+      return { error: "Photo must be a JPG, PNG, WebP, or GIF image." };
+    }
     const ext = safeExt(photoFile.name, ALLOWED_IMAGE_EXTS, "jpg");
     const path = `${profile.id}/dish_${Date.now()}.${ext}`;
     const { error } = await supabase.storage
@@ -234,7 +249,7 @@ export async function updateDish(
   _state: DishFormState,
   formData: FormData,
 ): Promise<DishFormState> {
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
   const name = String(formData.get("name") ?? "").trim();
@@ -291,7 +306,7 @@ export async function updateDish(
 }
 
 export async function setDishStatus(dishId: string, status: DishStatus) {
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const supabase = await createClient();
   await supabase
     .from("dishes")
@@ -302,7 +317,7 @@ export async function setDishStatus(dishId: string, status: DishStatus) {
 }
 
 export async function deleteDish(dishId: string) {
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
   // Don't delete if there are active orders — pause the dish instead
@@ -334,7 +349,7 @@ export async function deleteDish(dishId: string) {
 // =====================================================================
 
 export async function saveAvailability(formData: FormData) {
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
   const datesRaw = String(formData.get("dates") ?? "");
@@ -378,7 +393,7 @@ export async function setOrderStatus(
   status: "confirmed" | "ready" | "completed" | "cancelled",
   estimatedReadyTime?: string,
 ) {
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
   // Allowed transitions enforced here (RLS allows the update, we shape the FSM).

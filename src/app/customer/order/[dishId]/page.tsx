@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { OrderForm } from "./order-form";
 
 export const metadata = {
@@ -14,7 +14,7 @@ export default async function OrderDishPage({
 }: {
   params: Promise<{ dishId: string }>;
 }) {
-  await requireRole("customer");
+  await requireAuth();
   const { dishId } = await params;
   const supabase = await createClient();
 

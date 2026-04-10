@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireSellerProfile } from "@/lib/auth";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/constants";
@@ -15,7 +15,7 @@ export default async function SellerOrderDetail({
 }: {
   params: Promise<{ orderId: string }>;
 }) {
-  const profile = await requireRole("seller");
+  const { profile } = await requireSellerProfile();
   const { orderId } = await params;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;

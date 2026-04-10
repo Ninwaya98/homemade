@@ -10,13 +10,13 @@ export default async function CustomerLayout({
   children: React.ReactNode;
 }) {
   const profile = await getCurrentProfile();
-  const isCustomer = profile?.role === "customer";
+  const isLoggedIn = !!profile;
 
   const navItems = [
     { href: "/customer", label: "Home", icon: "◉" },
     { href: "/customer/kitchen", label: "Kitchen", icon: "🍽" },
     { href: "/customer/market", label: "Market", icon: "🛍" },
-    ...(isCustomer
+    ...(isLoggedIn
       ? [{ href: "/customer/orders", label: "Orders", icon: "▤" }]
       : []),
   ];
@@ -30,7 +30,7 @@ export default async function CustomerLayout({
               <span className="gradient-text-animate">HomeMade</span>
             </Link>
             <div className="flex items-center gap-3">
-              {isCustomer ? (
+              {isLoggedIn ? (
                 <>
                   <Link href="/account" className="text-sm text-slate-500 transition hover:text-violet-600">
                     Account
@@ -63,7 +63,7 @@ export default async function CustomerLayout({
             </div>
           </div>
           <p className="mt-1 text-sm text-slate-500">
-            {isCustomer ? (
+            {isLoggedIn ? (
               <>Hi <span className="font-medium text-slate-700">{profile.full_name.split(" ")[0]}</span> — what are you looking for?</>
             ) : (
               "Explore home-cooked food & handmade goods"

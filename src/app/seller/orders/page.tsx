@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireSellerProfile } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/constants";
@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default async function SellerOrdersPage() {
-  const profile = await requireRole("seller");
+  const { profile } = await requireSellerProfile();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 

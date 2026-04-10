@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentProfile } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
@@ -16,14 +16,14 @@ export default async function CookHome({
 }: {
   searchParams: Promise<{ onboarded?: string }>;
 }) {
-  const profile = await getCurrentProfile();
+  const profile = await requireAuth();
   const supabase = await createClient();
   const { onboarded } = await searchParams;
 
   const { data: cookProfile } = await supabase
     .from("cook_profiles")
     .select("*")
-    .eq("id", profile!.id)
+    .eq("id", profile.id)
     .maybeSingle();
 
   // No cook profile yet → onboarding CTA.
@@ -101,7 +101,7 @@ export default async function CookHome({
   const { data: todayAvailability } = await supabase
     .from("availability")
     .select("*")
-    .eq("cook_id", profile!.id)
+    .eq("cook_id", profile.id)
     .eq("date", today)
     .maybeSingle();
 
@@ -109,7 +109,7 @@ export default async function CookHome({
   const { data: pendingOrders } = await supabase
     .from("orders")
     .select("id, quantity, status, scheduled_for, dishes(name)")
-    .eq("cook_id", profile!.id)
+    .eq("cook_id", profile.id)
     .eq("status", "pending")
     .order("scheduled_for", { ascending: true });
 
@@ -117,7 +117,7 @@ export default async function CookHome({
   const { data: todayOrders } = await supabase
     .from("orders")
     .select("id, quantity, status, dishes(name)")
-    .eq("cook_id", profile!.id)
+    .eq("cook_id", profile.id)
     .eq("scheduled_for", today)
     .in("status", ["confirmed", "ready"])
     .order("created_at", { ascending: true });
@@ -125,7 +125,7 @@ export default async function CookHome({
   const { count: totalDishes } = await supabase
     .from("dishes")
     .select("*", { count: "exact", head: true })
-    .eq("cook_id", profile!.id)
+    .eq("cook_id", profile.id)
     .eq("status", "active");
 
   return (

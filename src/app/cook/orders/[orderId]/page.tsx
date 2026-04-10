@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireCookProfile } from "@/lib/auth";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import {
@@ -19,7 +19,7 @@ export default async function CookOrderDetail({
 }: {
   params: Promise<{ orderId: string }>;
 }) {
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const { orderId } = await params;
   const supabase = await createClient();
 

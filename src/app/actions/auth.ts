@@ -4,18 +4,13 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import type { UserRole } from "@/lib/types";
 
 export type AuthFormState =
   | {
       error?: string;
-      fields?: { email?: string; full_name?: string; role?: UserRole };
+      fields?: { email?: string; full_name?: string };
     }
   | undefined;
-
-function isUserRole(value: string | null): value is UserRole {
-  return value === "cook" || value === "customer" || value === "seller";
-}
 
 export async function signUp(
   _state: AuthFormState,
@@ -24,19 +19,17 @@ export async function signUp(
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const fullName = String(formData.get("full_name") ?? "").trim();
-  const rawRole = formData.get("role");
-  const role = typeof rawRole === "string" && isUserRole(rawRole) ? rawRole : "customer";
 
   if (!email || !password || !fullName) {
     return {
       error: "Please fill in your name, email, and password.",
-      fields: { email, full_name: fullName, role },
+      fields: { email, full_name: fullName },
     };
   }
   if (password.length < 8) {
     return {
       error: "Password must be at least 8 characters.",
-      fields: { email, full_name: fullName, role },
+      fields: { email, full_name: fullName },
     };
   }
 
@@ -45,23 +38,22 @@ export async function signUp(
     email,
     password,
     options: {
-      data: { full_name: fullName, role },
+      data: { full_name: fullName },
     },
   });
 
   if (error) {
     return {
       error: error.message,
-      fields: { email, full_name: fullName, role },
+      fields: { email, full_name: fullName },
     };
   }
 
-  // The handle_new_user() trigger inserts the profile row server-side.
-  // Cooks land on their (still pending-approval) dashboard; customers
-  // land on the browse feed.
+  // The handle_new_user() trigger inserts the profile row server-side
+  // with role defaulting to 'customer'. Everyone starts as a customer
+  // and can apply to cook or sell from their account page.
   revalidatePath("/", "layout");
-  const dest: Record<string, string> = { cook: "/cook", seller: "/seller", customer: "/customer" };
-  redirect(dest[role] ?? "/customer");
+  redirect("/customer");
 }
 
 export async function signIn(
@@ -70,7 +62,9 @@ export async function signIn(
 ): Promise<AuthFormState> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
-  const next = String(formData.get("next") ?? "");
+  const rawNext = String(formData.get("next") ?? "");
+  // Prevent open-redirect: only allow relative paths starting with /
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
 
   if (!email || !password) {
     return { error: "Email and password are required.", fields: { email } };
@@ -83,12 +77,12 @@ export async function signIn(
     return { error: error.message, fields: { email } };
   }
 
-  // Look up the user's role to decide where to send them.
+  // Determine where to send the user based on their capabilities.
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let destination = next || "/";
+  let destination = next || "/customer";
   if (!next && user) {
     const { data: profile } = await supabase
       .from("profiles")
@@ -96,10 +90,31 @@ export async function signIn(
       .eq("id", user.id)
       .single();
     const role = profile?.role as string | undefined;
-    if (role === "cook") destination = "/cook";
-    else if (role === "seller") destination = "/seller";
-    else if (role === "admin") destination = "/admin";
-    else destination = "/customer";
+
+    if (role === "admin") {
+      destination = "/admin";
+    } else {
+      // Check cook capability
+      const { data: cookProfile } = await supabase
+        .from("cook_profiles")
+        .select("status")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (cookProfile) {
+        destination = "/cook";
+      } else {
+        // Check seller capability
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: sellerProfile } = await (supabase as any)
+          .from("seller_profiles")
+          .select("status")
+          .eq("id", user.id)
+          .maybeSingle();
+        if (sellerProfile) {
+          destination = "/seller";
+        }
+      }
+    }
   }
 
   revalidatePath("/", "layout");

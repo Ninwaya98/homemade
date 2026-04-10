@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireCookProfile } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
@@ -17,7 +17,7 @@ export default async function DishesPage({
 }: {
   searchParams: Promise<{ created?: string; updated?: string }>;
 }) {
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
   const { data: cookProfile } = await supabase

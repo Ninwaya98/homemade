@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireCookProfile } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { dayLabel, formatPrice } from "@/lib/constants";
@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default async function CookOrdersPage() {
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
   const { data: orders } = await supabase

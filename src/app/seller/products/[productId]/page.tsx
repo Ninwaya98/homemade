@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireSellerProfile } from "@/lib/auth";
 import { ProductForm } from "../product-form";
 
 export const metadata = {
@@ -13,7 +13,7 @@ export default async function EditProductPage({
 }: {
   params: Promise<{ productId: string }>;
 }) {
-  const profile = await requireRole("seller");
+  const { profile } = await requireSellerProfile();
   const { productId } = await params;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;

@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
  * Supabase email-confirmation callback. When a user clicks the magic
  * link in their confirmation email, Supabase sends them here with a
  * `code` query param. We exchange that code for a session, then send
- * them to the right dashboard for their role.
+ * them to the right dashboard based on their capabilities.
  *
  * Also handles "next" query param so other flows (e.g. password reset)
  * can route to a specific page after auth.
@@ -14,7 +14,9 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const next = url.searchParams.get("next");
+  const rawNext = url.searchParams.get("next");
+  // Prevent open-redirect: only allow relative paths starting with /
+  const next = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
 
   if (!code) {
     return NextResponse.redirect(new URL("/sign-in?error=missing_code", url));
@@ -28,8 +30,8 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Resolve the user's role to pick a destination.
-  let destination = next ?? "/";
+  // Resolve destination based on capabilities, not role.
+  let destination = next ?? "/customer";
   if (!next) {
     const {
       data: { user },
@@ -41,10 +43,31 @@ export async function GET(request: NextRequest) {
         .eq("id", user.id)
         .single();
       const role = profile?.role as string | undefined;
-      if (role === "cook") destination = "/cook";
-      else if (role === "seller") destination = "/seller";
-      else if (role === "admin") destination = "/admin";
-      else destination = "/customer";
+
+      if (role === "admin") {
+        destination = "/admin";
+      } else {
+        // Check cook capability
+        const { data: cookProfile } = await supabase
+          .from("cook_profiles")
+          .select("status")
+          .eq("id", user.id)
+          .maybeSingle();
+        if (cookProfile) {
+          destination = "/cook";
+        } else {
+          // Check seller capability
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: sellerProfile } = await (supabase as any)
+            .from("seller_profiles")
+            .select("status")
+            .eq("id", user.id)
+            .maybeSingle();
+          if (sellerProfile) {
+            destination = "/seller";
+          }
+        }
+      }
     }
   }
 

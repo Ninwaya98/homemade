@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { signOut } from "@/app/actions/auth";
-import { requireRole } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { NavLink } from "@/components/ui/NavLink";
 
@@ -10,7 +10,7 @@ export default async function CookLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const profile = await requireRole("cook");
+  const profile = await requireAuth();
   const supabase = await createClient();
   const { data: cookProfile } = await supabase
     .from("cook_profiles")

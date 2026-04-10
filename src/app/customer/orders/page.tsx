@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { dayLabel, formatPrice } from "@/lib/constants";
@@ -13,7 +13,7 @@ export default async function CustomerOrdersPage({
 }: {
   searchParams: Promise<{ filter?: string }>;
 }) {
-  const profile = await requireRole("customer");
+  const profile = await requireAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
   const sp = await searchParams;

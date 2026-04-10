@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireCookProfile } from "@/lib/auth";
 import { DishForm } from "../dish-form";
 
 export const metadata = {
@@ -14,7 +14,7 @@ export default async function EditDishPage({
   params: Promise<{ dishId: string }>;
 }) {
   const { dishId } = await params;
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
   const { data: dish } = await supabase

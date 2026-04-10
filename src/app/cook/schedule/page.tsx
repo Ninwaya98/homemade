@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
-import { requireRole } from "@/lib/auth";
+import { requireCookProfile } from "@/lib/auth";
 import { Card } from "@/components/ui/Card";
 import { ScheduleForm } from "./schedule-form";
 import { nextNDays } from "@/lib/constants";
@@ -15,7 +15,7 @@ export default async function SchedulePage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const profile = await requireRole("cook");
+  const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
   const { data: cp } = await supabase

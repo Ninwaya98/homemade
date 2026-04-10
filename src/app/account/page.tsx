@@ -1,5 +1,10 @@
-import { getCurrentProfile } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import Link from "next/link";
+
+import { requireAuth } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
+import { Badge } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
+import { LinkButton } from "@/components/ui/Button";
 import { DeleteAccountForm } from "./delete-account-form";
 
 export const metadata = {
@@ -7,21 +12,122 @@ export const metadata = {
 };
 
 export default async function AccountPage() {
-  const profile = await getCurrentProfile();
-  if (!profile) redirect("/sign-in");
+  const profile = await requireAuth();
+  const supabase = await createClient();
+
+  // Check cook capability
+  const { data: cookProfile } = await supabase
+    .from("cook_profiles")
+    .select("status")
+    .eq("id", profile.id)
+    .maybeSingle();
+
+  // Check seller capability
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: sellerProfile } = await (supabase as any)
+    .from("seller_profiles")
+    .select("status, shop_name")
+    .eq("id", profile.id)
+    .maybeSingle();
 
   return (
     <main className="mx-auto max-w-2xl px-5 py-14">
-      <h1 className="text-2xl font-semibold text-stone-900">Account Settings</h1>
-      <p className="mt-2 text-sm text-stone-600">
+      <h1 className="text-2xl font-semibold text-slate-900">Account</h1>
+      <p className="mt-2 text-sm text-slate-600">
         Signed in as <strong>{profile.full_name}</strong>
       </p>
 
-      <hr className="my-8 border-stone-200" />
+      {/* ── Capabilities ───────────────────────────────────── */}
+      <section className="mt-8 space-y-4">
+        <h2 className="text-lg font-semibold text-slate-900">Your roles</h2>
 
+        {/* Cook capability */}
+        {cookProfile ? (
+          <Card>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-slate-900">HomeMade Kitchen</p>
+                <p className="text-sm text-slate-500">You applied to cook</p>
+              </div>
+              <Badge tone={cookProfile.status === "approved" ? "green" : cookProfile.status === "suspended" ? "red" : "amber"}>
+                {cookProfile.status}
+              </Badge>
+            </div>
+            <div className="mt-3">
+              <LinkButton href="/cook" size="sm" variant="secondary">
+                Go to kitchen dashboard
+              </LinkButton>
+            </div>
+          </Card>
+        ) : (
+          <Card>
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-blue-200 text-2xl">
+                👨‍🍳
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-slate-900">Open a Kitchen</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Cook from home and sell your meals. You&apos;ll need a food handler certificate.
+                </p>
+                <div className="mt-3">
+                  <LinkButton href="/cook/onboarding" size="sm">
+                    Apply to cook
+                  </LinkButton>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Seller capability */}
+        {sellerProfile ? (
+          <Card>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-slate-900">
+                  HomeMade Market{sellerProfile.shop_name ? ` — ${sellerProfile.shop_name}` : ""}
+                </p>
+                <p className="text-sm text-slate-500">You applied to sell</p>
+              </div>
+              <Badge tone={sellerProfile.status === "approved" ? "green" : sellerProfile.status === "suspended" ? "red" : "amber"}>
+                {sellerProfile.status}
+              </Badge>
+            </div>
+            <div className="mt-3">
+              <LinkButton href="/seller" size="sm" variant="secondary">
+                Go to shop dashboard
+              </LinkButton>
+            </div>
+          </Card>
+        ) : (
+          <Card>
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 to-purple-200 text-2xl">
+                🛍️
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-slate-900">Open a Shop</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Sell your handmade goods — crafts, clothing, decor, and more.
+                </p>
+                <div className="mt-3">
+                  <LinkButton href="/seller/onboarding" size="sm">
+                    Apply to sell
+                  </LinkButton>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+      </section>
+
+      <hr className="my-8 border-violet-200/40" />
+
+      {/* ── Danger zone ────────────────────────────────────── */}
       <section>
         <h2 className="text-lg font-semibold text-red-900">Delete Account</h2>
-        <p className="mt-2 text-sm text-stone-600">
+        <p className="mt-2 text-sm text-slate-600">
           This will permanently delete your account and all associated data
           (profile, dishes, schedule, reviews). This action cannot be undone.
           If you have active orders, you must wait until they are completed or

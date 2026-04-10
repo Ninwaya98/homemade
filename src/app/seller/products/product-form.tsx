@@ -151,6 +151,7 @@ export function ProductForm({
               name="ingredients"
               defaultValue={product?.ingredients ?? ""}
               rows={3}
+              required
               placeholder="List ingredients for packaged food products"
               hint="Required for food products so customers know what's in it"
             />
