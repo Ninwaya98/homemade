@@ -39,6 +39,47 @@ export type AvailabilityMode = PublicEnums["availability_mode"];
 export type OrderType = PublicEnums["order_type"];
 export type OrderStatus = PublicEnums["order_status"];
 
+// Seller types (tables from migration 007 — until types are regenerated, define manually)
+export type SellerStatus = "pending" | "approved" | "suspended";
+export type ProductStatus = "active" | "paused" | "out_of_stock";
+export type ProductCategory = "crafts_art" | "clothing_accessories" | "home_decor" | "food_products";
+export type OrderVertical = "kitchen" | "market";
+
+export type SellerProfile = {
+  id: string;
+  shop_name: string;
+  shop_description: string | null;
+  category: ProductCategory;
+  photo_url: string | null;
+  status: SellerStatus;
+  avg_rating: number;
+  rating_count: number;
+  approved_at: string | null;
+  approved_by: string | null;
+  last_active_at: string;
+  created_at: string;
+};
+
+export type Product = {
+  id: string;
+  seller_id: string;
+  name: string;
+  description: string | null;
+  category: ProductCategory;
+  subcategory: string | null;
+  price_cents: number;
+  stock_quantity: number;
+  materials: string | null;
+  dimensions: string | null;
+  condition: string;
+  photo_urls: string[];
+  ingredients: string | null;
+  status: ProductStatus;
+  created_at: string;
+  updated_at: string;
+};
+
 // Joined / projected views used by feature pages
 export type CookProfileWithProfile = CookProfile & { profiles: Profile };
 export type DishWithCook = Dish & { cook_profiles: CookProfileWithProfile };
+export type SellerProfileWithProfile = SellerProfile & { profiles: Profile };

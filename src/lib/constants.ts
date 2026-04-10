@@ -49,6 +49,26 @@ export const DIETARY_FILTERS = [
   { id: "gluten_free", label: "Gluten-free" },
 ] as const;
 
+// Product categories for the HomeMade Market vertical.
+export const PRODUCT_CATEGORIES = [
+  { id: "crafts_art",             label: "Crafts & Art" },
+  { id: "clothing_accessories",   label: "Clothing & Accessories" },
+  { id: "home_decor",             label: "Home & Decor" },
+  { id: "food_products",          label: "Food Products" },
+] as const;
+
+export type ProductCategoryId = (typeof PRODUCT_CATEGORIES)[number]["id"];
+
+export function productCategoryLabel(id: string): string {
+  return PRODUCT_CATEGORIES.find((c) => c.id === id)?.label ?? id;
+}
+
+// Product conditions.
+export const PRODUCT_CONDITIONS = [
+  { id: "handmade", label: "Handmade" },
+  { id: "new",      label: "New" },
+] as const;
+
 // Platform commission. Brief says 15-18% — start at 16% as a sane default.
 export const PLATFORM_COMMISSION_RATE = 0.16;
 

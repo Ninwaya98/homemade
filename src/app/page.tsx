@@ -32,11 +32,9 @@ export default async function LandingPage() {
             {profile ? (
               <Link
                 href={
-                  profile.role === "cook"
-                    ? "/cook"
-                    : profile.role === "admin"
-                    ? "/admin"
-                    : "/customer"
+                  { cook: "/cook", seller: "/seller", admin: "/admin", customer: "/customer" }[
+                    profile.role as string
+                  ] ?? "/customer"
                 }
                 className="rounded-full bg-white px-7 py-3.5 text-base font-semibold text-amber-900 shadow-lg shadow-amber-900/20 transition hover:bg-amber-50 hover:shadow-xl"
               >

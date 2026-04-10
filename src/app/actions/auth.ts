@@ -14,7 +14,7 @@ export type AuthFormState =
   | undefined;
 
 function isUserRole(value: string | null): value is UserRole {
-  return value === "cook" || value === "customer";
+  return value === "cook" || value === "customer" || value === "seller";
 }
 
 export async function signUp(
@@ -60,7 +60,8 @@ export async function signUp(
   // Cooks land on their (still pending-approval) dashboard; customers
   // land on the browse feed.
   revalidatePath("/", "layout");
-  redirect(role === "cook" ? "/cook" : "/customer");
+  const dest: Record<string, string> = { cook: "/cook", seller: "/seller", customer: "/customer" };
+  redirect(dest[role] ?? "/customer");
 }
 
 export async function signIn(
@@ -94,8 +95,10 @@ export async function signIn(
       .select("role")
       .eq("id", user.id)
       .single();
-    if (profile?.role === "cook") destination = "/cook";
-    else if (profile?.role === "admin") destination = "/admin";
+    const role = profile?.role as string | undefined;
+    if (role === "cook") destination = "/cook";
+    else if (role === "seller") destination = "/seller";
+    else if (role === "admin") destination = "/admin";
     else destination = "/customer";
   }
 

@@ -30,14 +30,15 @@ export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
  * specific role. Redirects to /sign-in if unauthenticated, or to the
  * user's own home if they have the wrong role.
  */
-export async function requireRole(role: UserRole): Promise<Profile> {
+export async function requireRole(role: UserRole | "seller"): Promise<Profile> {
   const profile = await getCurrentProfile();
 
   if (!profile) {
     redirect("/sign-in");
   }
   if (profile.role !== role) {
-    redirect(profile.role === "cook" ? "/cook" : profile.role === "admin" ? "/admin" : "/customer");
+    const home: Record<string, string> = { cook: "/cook", seller: "/seller", admin: "/admin", customer: "/customer" };
+    redirect(home[profile.role as string] ?? "/customer");
   }
   return profile;
 }

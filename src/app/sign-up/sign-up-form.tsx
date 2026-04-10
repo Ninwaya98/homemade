@@ -3,7 +3,8 @@
 import { useActionState, useState } from "react";
 
 import { signUp, type AuthFormState } from "@/app/actions/auth";
-import type { UserRole } from "@/lib/types";
+// UserRole from generated types doesn't include 'seller' yet — use string union
+type UserRole = "cook" | "customer" | "seller";
 
 const initialState: AuthFormState = undefined;
 
@@ -20,19 +21,26 @@ export function SignUpForm() {
         <legend className="text-sm font-medium text-stone-700">
           I am a…
         </legend>
-        <div className="mt-2 grid grid-cols-2 gap-3">
+        <div className="mt-2 grid grid-cols-3 gap-3">
           <RoleOption
             value="customer"
             label="Hungry"
-            hint="I want to order homemade food"
+            hint="I want to order food & goods"
             checked={role === "customer"}
             onChange={setRole}
           />
           <RoleOption
             value="cook"
             label="Cook"
-            hint="I want to sell dishes from my kitchen"
+            hint="I sell homemade dishes"
             checked={role === "cook"}
+            onChange={setRole}
+          />
+          <RoleOption
+            value="seller"
+            label="Seller"
+            hint="I sell handmade goods"
+            checked={role === "seller"}
             onChange={setRole}
           />
         </div>
@@ -85,6 +93,12 @@ export function SignUpForm() {
         <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
           New cooks need admin approval (and a food handler certificate)
           before their dishes go live. We&apos;ll guide you after signup.
+        </p>
+      )}
+      {role === "seller" && (
+        <p className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          New sellers need admin approval before their products go live.
+          Set up your shop after signup and we&apos;ll review it.
         </p>
       )}
     </form>
