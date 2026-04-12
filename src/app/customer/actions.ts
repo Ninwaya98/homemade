@@ -5,10 +5,14 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth";
-import { splitOrderTotal } from "@/lib/constants";
+import { splitOrderTotal, portionSizePortions } from "@/lib/constants";
+import type { BasketItem } from "@/lib/types";
 
 export type OrderFormState = { error?: string } | undefined;
 export type ProductOrderFormState = { error?: string } | undefined;
+export type CheckoutState =
+  | { error?: string; ok?: boolean; orderCount?: number; errors?: string[] }
+  | undefined;
 
 export async function placeOrder(
   _state: OrderFormState,
@@ -78,13 +82,13 @@ export async function placeOrder(
   redirect(`/customer/orders/${orderId}?placed=1`);
 }
 
-// Customer cancels a still-pending order.
+// Customer cancels a still-pending order (portion-size aware).
 export async function cancelOrder(orderId: string) {
   const profile = await requireAuth();
   const supabase = await createClient();
-  const { data: order } = await supabase
-    .from("orders")
-    .select("status, customer_id, cook_id, dish_id, scheduled_for, quantity")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: order } = await (supabase.from("orders") as any)
+    .select("status, customer_id, cook_id, dish_id, scheduled_for, quantity, portion_size")
     .eq("id", orderId)
     .single();
   if (!order || order.customer_id !== profile.id) return;
@@ -92,7 +96,9 @@ export async function cancelOrder(orderId: string) {
 
   await supabase.from("orders").update({ status: "cancelled" }).eq("id", orderId);
 
-  // Refund the portions back to the day.
+  // Refund the portions back to the day (portion-size aware).
+  const portionsPerUnit = portionSizePortions(order.portion_size ?? "");
+  const totalPortions = order.quantity * portionsPerUnit;
   const { data: avail } = await supabase
     .from("availability")
     .select("portions_taken")
@@ -102,13 +108,83 @@ export async function cancelOrder(orderId: string) {
   if (avail) {
     await supabase
       .from("availability")
-      .update({ portions_taken: Math.max(0, avail.portions_taken - order.quantity) })
+      .update({ portions_taken: Math.max(0, avail.portions_taken - totalPortions) })
       .eq("cook_id", order.cook_id)
       .eq("date", order.scheduled_for!);
   }
 
   revalidatePath("/customer/orders");
   revalidatePath(`/customer/orders/${orderId}`);
+}
+
+// Checkout entire basket — places one order per basket item via the RPC.
+export async function checkoutBasket(
+  _state: CheckoutState,
+  formData: FormData,
+): Promise<CheckoutState> {
+  const profile = await requireAuth();
+  const supabase = await createClient();
+
+  const itemsJson = String(formData.get("basket_items") ?? "[]");
+  const type = String(formData.get("type") ?? "pickup") as "pickup" | "delivery";
+  const notes = String(formData.get("notes") ?? "").trim() || null;
+  const deliveryAddress = String(formData.get("delivery_address") ?? "").trim() || null;
+
+  let items: BasketItem[];
+  try {
+    items = JSON.parse(itemsJson);
+  } catch {
+    return { error: "Invalid basket data." };
+  }
+  if (!Array.isArray(items) || items.length === 0) {
+    return { error: "Basket is empty." };
+  }
+
+  const orderIds: string[] = [];
+  const errors: string[] = [];
+
+  for (const item of items) {
+    const totalCents = item.priceCents * item.quantity;
+    const { commission, payout } = splitOrderTotal(totalCents);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: orderId, error } = await (supabase as any).rpc("place_order", {
+      p_dish_id: item.dishId,
+      p_quantity: item.quantity,
+      p_type: type,
+      p_scheduled_for: item.scheduledFor,
+      p_total_cents: totalCents,
+      p_commission_cents: commission,
+      p_cook_payout_cents: payout,
+      p_notes: notes ?? undefined,
+      p_portion_size: item.portionSize ?? undefined,
+    });
+
+    if (error) {
+      errors.push(`${item.dishName}: ${error.message.replace(/^.*: /, "")}`);
+    } else {
+      orderIds.push(orderId);
+      if (deliveryAddress && type === "delivery") {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase.from("orders") as any)
+          .update({ delivery_address: deliveryAddress })
+          .eq("id", orderId);
+      }
+    }
+  }
+
+  if (errors.length > 0 && orderIds.length === 0) {
+    return { error: errors.join("\n") };
+  }
+
+  revalidatePath("/customer/orders");
+
+  // Return success — client clears basket and redirects
+  return {
+    ok: true,
+    orderCount: orderIds.length,
+    errors: errors.length > 0 ? errors : undefined,
+  };
 }
 
 // Customer leaves a review on a completed order.

@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireCookProfile } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { dayLabel, formatPrice } from "@/lib/constants";
+import { dayLabel, formatPrice, portionSizeLabel } from "@/lib/constants";
 
 export const metadata = {
   title: "Orders — HomeMade",
@@ -14,11 +14,11 @@ export default async function CookOrdersPage() {
   const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
-  const { data: orders } = await supabase
-    .from("orders")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: orders } = await (supabase.from("orders") as any)
     .select(
       `
-      id, status, quantity, total_cents, cook_payout_cents, type, scheduled_for, notes, created_at,
+      id, status, quantity, total_cents, cook_payout_cents, type, scheduled_for, notes, created_at, portion_size,
       dishes(name),
       profiles!orders_customer_id_fkey(full_name, phone)
       `,
@@ -92,6 +92,11 @@ function Section({
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-stone-900">
                         {o.quantity}× {o.dishes?.name ?? "—"}
+                        {o.portion_size && (
+                          <span className="ml-1 text-xs font-normal text-violet-600">
+                            ({portionSizeLabel(o.portion_size)})
+                          </span>
+                        )}
                       </p>
                       <Badge tone={statusTone(o.status)}>{o.status}</Badge>
                     </div>

@@ -5,7 +5,7 @@ import { requireCookProfile } from "@/lib/auth";
 import { DishForm } from "../dish-form";
 
 export const metadata = {
-  title: "Edit dish — HomeMade",
+  title: "Edit dish -- HomeMade",
 };
 
 export default async function EditDishPage({
@@ -17,8 +17,8 @@ export default async function EditDishPage({
   const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
-  const { data: dish } = await supabase
-    .from("dishes")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: dish } = await (supabase.from("dishes") as any)
     .select("*")
     .eq("id", dishId)
     .eq("cook_id", profile.id)
@@ -37,11 +37,11 @@ export default async function EditDishPage({
         defaultValues={{
           name: dish.name,
           description: dish.description ?? "",
-          price: dish.price_cents / 100,
-          portion_size: dish.portion_size ?? "",
           cuisine_tag: dish.cuisine_tag ?? "",
           allergens: dish.allergens ?? [],
           photo_url: dish.photo_url ?? null,
+          portion_sizes: dish.portion_sizes ?? null,
+          legacy_price: dish.portion_sizes ? null : dish.price_cents / 100,
         }}
       />
     </div>

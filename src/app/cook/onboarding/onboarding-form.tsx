@@ -28,6 +28,15 @@ export function OnboardingForm({
 }) {
   const [state, action, pending] = useActionState(submitOnboarding, initial);
 
+  // On error, use the returned field values so nothing is lost.
+  // On first render (no state), use the server-provided defaults.
+  const bio = state?.fields?.bio ?? defaultBio;
+  const cuisineTags = state?.fields?.cuisine_tags
+    ? state.fields.cuisine_tags.split(",").map((s) => s.trim()).filter(Boolean)
+    : defaultCuisineTags;
+  const phone = state?.fields?.phone ?? defaultPhone;
+  const location = state?.fields?.location ?? defaultLocation;
+
   return (
     <form action={action} className="space-y-6">
       <Card>
@@ -40,9 +49,10 @@ export function OnboardingForm({
           <TextareaField
             label="Your story"
             name="bio"
-            defaultValue={defaultBio}
+            defaultValue={bio}
+            key={`bio-${bio}`}
             rows={5}
-            placeholder="I grew up cooking with my grandmother in Baghdad…"
+            placeholder="I grew up cooking with my grandmother in Baghdad..."
             required
             hint="At least 20 characters. Customers love a real story."
           />
@@ -56,7 +66,8 @@ export function OnboardingForm({
             <div className="mt-2">
               <TagPicker
                 name="cuisine_tags"
-                defaultTags={defaultCuisineTags}
+                defaultTags={cuisineTags}
+                key={`tags-${cuisineTags.join(",")}`}
                 suggestions={CUISINES}
                 placeholder="e.g. Iraqi, Levantine"
               />
@@ -72,15 +83,17 @@ export function OnboardingForm({
             label="Phone"
             name="phone"
             type="tel"
-            defaultValue={defaultPhone}
-            placeholder="+964 …"
+            defaultValue={phone}
+            key={`phone-${phone}`}
+            placeholder="+964 ..."
             required
           />
           <Field
             label="Location"
             name="location"
             type="text"
-            defaultValue={defaultLocation}
+            defaultValue={location}
+            key={`location-${location}`}
             placeholder="Karrada, Baghdad"
             required
           />
@@ -93,7 +106,7 @@ export function OnboardingForm({
         </h2>
         <p className="mt-1 text-sm text-stone-600">
           A photo or PDF of your food handler certificate. Only our admin
-          team can see this — customers never see it.
+          team can see this -- customers never see it.
         </p>
         <div className="mt-5">
           <input
@@ -147,14 +160,14 @@ export function OnboardingForm({
 
       <div className="rounded-xl border border-violet-200 bg-violet-50 p-4 text-xs text-violet-900">
         <strong>What happens next:</strong> we&apos;ll review your
-        certificate and approve your kitchen within 1–2 days. You&apos;ll
+        certificate and approve your kitchen within 1-2 days. You&apos;ll
         get an email when it&apos;s live. Until then your dishes are
         hidden from customers.
       </div>
 
       <div className="flex justify-end">
         <Button type="submit" size="lg" disabled={pending}>
-          {pending ? "Submitting…" : "Submit for review"}
+          {pending ? "Submitting..." : "Submit for review"}
         </Button>
       </div>
     </form>

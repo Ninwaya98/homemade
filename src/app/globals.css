@@ -145,6 +145,13 @@ textarea {
 .delay-4 { animation-delay: 0.4s; animation-fill-mode: both; }
 .delay-5 { animation-delay: 0.5s; animation-fill-mode: both; }
 
+/* Hide scrollbar for horizontal scroll sections */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
 /* ── Animated gradient text ──────────────────────────────── */
 
 @keyframes gradientShift {

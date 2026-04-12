@@ -59,8 +59,10 @@ export async function submitSellerOnboarding(
     return { error: "Add a location so we can match you with nearby customers." };
   }
 
-  // Update profile with phone + location
-  await supabase.from("profiles").update({ phone, location }).eq("id", profile.id);
+  // Update profile with phone + location (via RPC to bypass RLS recursion)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: rpcError } = await (supabase as any).rpc("update_own_profile", { p_phone: phone, p_location: location });
+  if (rpcError) return { error: `Could not save profile: ${rpcError.message}` };
 
   // Optional photo upload
   const photoFile = formData.get("photo") as File | null;

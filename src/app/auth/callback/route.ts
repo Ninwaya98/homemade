@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Resolve destination based on capabilities, not role.
+  // Everyone lands on /customer (browse-first). Admins go to /admin.
   let destination = next ?? "/customer";
   if (!next) {
     const {
@@ -42,31 +42,8 @@ export async function GET(request: NextRequest) {
         .select("role")
         .eq("id", user.id)
         .single();
-      const role = profile?.role as string | undefined;
-
-      if (role === "admin") {
+      if (profile?.role === "admin") {
         destination = "/admin";
-      } else {
-        // Check cook capability
-        const { data: cookProfile } = await supabase
-          .from("cook_profiles")
-          .select("status")
-          .eq("id", user.id)
-          .maybeSingle();
-        if (cookProfile) {
-          destination = "/cook";
-        } else {
-          // Check seller capability
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { data: sellerProfile } = await (supabase as any)
-            .from("seller_profiles")
-            .select("status")
-            .eq("id", user.id)
-            .maybeSingle();
-          if (sellerProfile) {
-            destination = "/seller";
-          }
-        }
       }
     }
   }

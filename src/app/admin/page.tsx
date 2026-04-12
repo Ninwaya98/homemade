@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { requireRole } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { CookApprovalRow } from "./cook-approval-row";
@@ -8,6 +9,7 @@ export const metadata = {
 };
 
 export default async function AdminApprovalsPage() {
+  await requireRole("admin");
   const supabase = await createClient();
 
   const { data: pending } = await supabase

@@ -9,6 +9,7 @@ import {
   allergenLabel,
   dayLabel,
   formatPrice,
+  portionSizeLabel,
 } from "@/lib/constants";
 import { OrderActions } from "./order-actions";
 
@@ -38,7 +39,7 @@ export default async function CookOrderDetail({
 
   if (!order) notFound();
 
-  // Cast to include columns from migration 006 (not yet in generated types)
+  // Cast to include columns from migrations 006 + 008 (not yet in generated types)
   const o = order as typeof order & {
     delivery_address?: string | null;
     confirmed_at?: string | null;
@@ -46,6 +47,7 @@ export default async function CookOrderDetail({
     completed_at?: string | null;
     cancelled_at?: string | null;
     estimated_ready_time?: string | null;
+    portion_size?: string | null;
   };
 
   const dish = order.dishes as { name?: string; description?: string | null; allergens?: string[]; photo_url?: string | null } | null;
@@ -69,6 +71,11 @@ export default async function CookOrderDetail({
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold text-stone-900">
                 {order.quantity}× {dish?.name ?? "—"}
+                {o.portion_size && (
+                  <span className="ml-1 text-base font-normal text-violet-600">
+                    ({portionSizeLabel(o.portion_size)})
+                  </span>
+                )}
               </h1>
               <Badge tone={statusTone(order.status)}>{order.status}</Badge>
             </div>

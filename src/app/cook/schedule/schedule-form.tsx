@@ -2,67 +2,55 @@
 
 import { useState } from "react";
 
-import { saveAvailability } from "@/app/cook/actions";
+import { saveWeeklySchedule } from "@/app/cook/actions";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { dayLabel, DEFAULT_DAILY_PORTION_CAP } from "@/lib/constants";
+import { DEFAULT_DAILY_PORTION_CAP } from "@/lib/constants";
+import type { WeeklySchedule, WeeklyDayConfig } from "@/lib/types";
 
-type DayState = {
-  is_open: boolean;
-  mode: "preorder" | "on_demand";
-  max_portions: number;
-  portions_taken: number;
-};
+const DOW_ORDER = [1, 2, 3, 4, 5, 6, 0]; // Mon-Sun display order
 
 export function ScheduleForm({
-  dates,
-  existing,
+  schedule,
+  dayNames,
 }: {
-  dates: string[];
-  existing: Record<string, DayState>;
+  schedule: WeeklySchedule;
+  dayNames: string[];
 }) {
-  const [days, setDays] = useState<Record<string, DayState>>(() => {
-    const out: Record<string, DayState> = {};
-    for (const date of dates) {
-      out[date] =
-        existing[date] ?? {
-          is_open: false,
-          mode: "preorder",
-          max_portions: DEFAULT_DAILY_PORTION_CAP,
-          portions_taken: 0,
-        };
+  const [days, setDays] = useState<Record<string, WeeklyDayConfig>>(() => {
+    const out: Record<string, WeeklyDayConfig> = {};
+    for (const dow of DOW_ORDER) {
+      const key = String(dow);
+      out[key] = schedule[key as keyof WeeklySchedule] ?? {
+        is_open: false,
+        mode: "preorder",
+        max_portions: DEFAULT_DAILY_PORTION_CAP,
+      };
     }
     return out;
   });
 
-  const update = (date: string, patch: Partial<DayState>) =>
-    setDays((prev) => ({ ...prev, [date]: { ...prev[date], ...patch } }));
+  function update(key: string, patch: Partial<WeeklyDayConfig>) {
+    setDays((prev) => ({ ...prev, [key]: { ...prev[key], ...patch } }));
+  }
 
   return (
-    <form action={saveAvailability} className="space-y-4">
-      <input type="hidden" name="dates" value={dates.join(",")} />
-      {dates.map((date) => {
-        const day = days[date];
+    <form action={saveWeeklySchedule} className="space-y-4">
+      {DOW_ORDER.map((dow) => {
+        const key = String(dow);
+        const day = days[key];
         return (
-          <Card key={date}>
+          <Card key={key}>
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 className="text-base font-semibold text-stone-900">
-                  {dayLabel(date)}
-                </h3>
-                {day.portions_taken > 0 && (
-                  <p className="mt-1 text-xs text-stone-500">
-                    {day.portions_taken} portion{day.portions_taken === 1 ? "" : "s"} already booked
-                  </p>
-                )}
-              </div>
+              <h3 className="text-base font-semibold text-stone-900">
+                {dayNames[dow]}
+              </h3>
               <label className="inline-flex cursor-pointer items-center gap-2">
                 <input
                   type="checkbox"
-                  name={`open_${date}`}
+                  name={`open_${key}`}
                   checked={day.is_open}
-                  onChange={(e) => update(date, { is_open: e.target.checked })}
+                  onChange={(e) => update(key, { is_open: e.target.checked })}
                   className="h-5 w-5 rounded border-stone-400 text-violet-600 focus:ring-violet-500"
                 />
                 <span className="text-sm font-medium text-stone-700">Open</span>
@@ -78,7 +66,7 @@ export function ScheduleForm({
                   <div className="mt-1 inline-flex rounded-full border border-stone-300 bg-white p-0.5 text-sm">
                     <button
                       type="button"
-                      onClick={() => update(date, { mode: "preorder" })}
+                      onClick={() => update(key, { mode: "preorder" })}
                       className={`rounded-full px-3 py-1 ${
                         day.mode === "preorder"
                           ? "bg-violet-600 text-white"
@@ -89,7 +77,7 @@ export function ScheduleForm({
                     </button>
                     <button
                       type="button"
-                      onClick={() => update(date, { mode: "on_demand" })}
+                      onClick={() => update(key, { mode: "on_demand" })}
                       className={`rounded-full px-3 py-1 ${
                         day.mode === "on_demand"
                           ? "bg-violet-600 text-white"
@@ -99,7 +87,7 @@ export function ScheduleForm({
                       On-demand
                     </button>
                   </div>
-                  <input type="hidden" name={`mode_${date}`} value={day.mode} />
+                  <input type="hidden" name={`mode_${key}`} value={day.mode} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-stone-600">
@@ -107,12 +95,12 @@ export function ScheduleForm({
                   </label>
                   <input
                     type="number"
-                    name={`portions_${date}`}
+                    name={`portions_${key}`}
                     value={day.max_portions}
-                    min={Math.max(1, day.portions_taken)}
+                    min={1}
                     max={50}
                     onChange={(e) =>
-                      update(date, { max_portions: Number(e.target.value) })
+                      update(key, { max_portions: Number(e.target.value) })
                     }
                     className="mt-1 block w-24 rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-base text-stone-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-200"
                   />
@@ -122,12 +110,8 @@ export function ScheduleForm({
 
             {!day.is_open && (
               <>
-                <input type="hidden" name={`mode_${date}`} value={day.mode} />
-                <input
-                  type="hidden"
-                  name={`portions_${date}`}
-                  value={day.max_portions}
-                />
+                <input type="hidden" name={`mode_${key}`} value={day.mode} />
+                <input type="hidden" name={`portions_${key}`} value={day.max_portions} />
               </>
             )}
           </Card>
@@ -143,7 +127,7 @@ export function ScheduleForm({
       <p className="rounded-md border border-violet-200 bg-violet-50 px-3 py-2 text-xs text-violet-900">
         <strong>Pre-order</strong> means orders for that day close 24 hours
         before. <strong>On-demand</strong> means customers can order until
-        you sell out.
+        you sell out. This schedule repeats every week automatically.
       </p>
     </form>
   );

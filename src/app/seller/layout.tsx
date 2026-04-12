@@ -1,9 +1,9 @@
 import Link from "next/link";
 
-import { signOut } from "@/app/actions/auth";
 import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { NavLink } from "@/components/ui/NavLink";
+import { ProfileDropdown } from "@/components/ui/ProfileDropdown";
 
 export default async function SellerLayout({
   children,
@@ -17,6 +17,13 @@ export default async function SellerLayout({
   const { data: sellerProfile } = await (supabase as any)
     .from("seller_profiles")
     .select("status, shop_name")
+    .eq("id", profile.id)
+    .maybeSingle();
+
+  // Check if user also has a cook shop
+  const { data: cookProfile } = await supabase
+    .from("cook_profiles")
+    .select("status")
     .eq("id", profile.id)
     .maybeSingle();
 
@@ -38,17 +45,17 @@ export default async function SellerLayout({
               <span className="ml-1 text-slate-600">Market</span>
             </Link>
             <div className="flex items-center gap-3">
-              <Link href="/account" className="text-sm text-slate-500 transition hover:text-violet-600">
-                Account
+              <Link
+                href="/customer"
+                className="text-sm text-slate-500 transition hover:text-violet-600"
+              >
+                Browse
               </Link>
-              <form action={signOut}>
-                <button
-                  type="submit"
-                  className="text-sm text-slate-500 transition hover:text-slate-900"
-                >
-                  Sign out
-                </button>
-              </form>
+              <ProfileDropdown
+                name={profile.full_name}
+                hasCookShop={!!cookProfile}
+                hasSellerShop={true}
+              />
             </div>
           </div>
           <p className="mt-1 text-sm text-slate-500">

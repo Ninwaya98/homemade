@@ -4,11 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import { requireCookProfile } from "@/lib/auth";
 import { Card } from "@/components/ui/Card";
 import { ScheduleForm } from "./schedule-form";
-import { nextNDays } from "@/lib/constants";
+import type { WeeklySchedule } from "@/lib/types";
 
 export const metadata = {
-  title: "Schedule — HomeMade",
+  title: "Schedule -- HomeMade",
 };
+
+const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export default async function SchedulePage({
   searchParams,
@@ -18,31 +20,25 @@ export default async function SchedulePage({
   const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
-  const { data: cp } = await supabase
-    .from("cook_profiles")
-    .select("status")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: cp } = await (supabase.from("cook_profiles") as any)
+    .select("status, weekly_schedule")
     .eq("id", profile.id)
     .single();
   if (!cp || cp.status !== "approved") redirect("/cook");
 
-  const dates = nextNDays(7);
-  const { data: existing } = await supabase
-    .from("availability")
-    .select("*")
-    .eq("cook_id", profile.id)
-    .in("date", dates);
-
+  const schedule: WeeklySchedule = cp.weekly_schedule ?? {};
   const sp = await searchParams;
 
   return (
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-semibold text-stone-900">
-          This week&apos;s schedule
+          Weekly schedule
         </h1>
         <p className="mt-1 text-sm text-stone-600">
-          Tap the days you&apos;re open. Set how many portions and whether
-          orders close 24 hours ahead (Pre-order) or in real time (On-demand).
+          Set your recurring weekly availability. This repeats every week
+          automatically -- no need to update it each week.
         </p>
       </header>
 
@@ -53,27 +49,8 @@ export default async function SchedulePage({
       )}
 
       <ScheduleForm
-        dates={dates}
-        existing={(existing ?? []).reduce(
-          (acc, row) => {
-            acc[row.date] = {
-              is_open: row.is_open,
-              mode: row.mode,
-              max_portions: row.max_portions,
-              portions_taken: row.portions_taken,
-            };
-            return acc;
-          },
-          {} as Record<
-            string,
-            {
-              is_open: boolean;
-              mode: "preorder" | "on_demand";
-              max_portions: number;
-              portions_taken: number;
-            }
-          >,
-        )}
+        schedule={schedule}
+        dayNames={DAY_NAMES}
       />
     </div>
   );

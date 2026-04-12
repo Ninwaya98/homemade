@@ -6,6 +6,7 @@ import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
 import { dayLabel, formatPrice, todayIso } from "@/lib/constants";
+import { AvailabilityToggle } from "./availability-toggle";
 
 export const metadata = {
   title: "My kitchen — HomeMade",
@@ -20,8 +21,8 @@ export default async function CookHome({
   const supabase = await createClient();
   const { onboarded } = await searchParams;
 
-  const { data: cookProfile } = await supabase
-    .from("cook_profiles")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: cookProfile } = await (supabase.from("cook_profiles") as any)
     .select("*")
     .eq("id", profile.id)
     .maybeSingle();
@@ -158,6 +159,19 @@ export default async function CookHome({
           </ul>
         </Card>
       )}
+
+      {/* Availability toggle */}
+      <Card>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-semibold text-stone-900">Your status</h2>
+            <p className="mt-0.5 text-xs text-stone-500">
+              Toggle off to temporarily hide from customers
+            </p>
+          </div>
+          <AvailabilityToggle isAvailable={cookProfile.is_available ?? true} />
+        </div>
+      </Card>
 
       <Card>
         <h1 className="text-2xl font-semibold text-stone-900">

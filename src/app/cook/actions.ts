@@ -5,11 +5,13 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { requireAuth, requireCookProfile } from "@/lib/auth";
-import { ALLERGENS, DEFAULT_DAILY_PORTION_CAP } from "@/lib/constants";
+import { ALLERGENS, DEFAULT_DAILY_PORTION_CAP, PORTION_SIZES, portionSizePortions } from "@/lib/constants";
 import { isTransitionAllowed, buildStatusExtras } from "@/lib/order-utils";
 import type {
   AvailabilityMode,
   DishStatus,
+  DishPortionSizes,
+  PortionSizeConfig,
 } from "@/lib/types";
 
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
@@ -31,7 +33,16 @@ function validateFileType(file: File, allowedTypes: Set<string>): boolean {
 // =====================================================================
 
 export type OnboardingState =
-  | { error?: string; ok?: boolean }
+  | {
+      error?: string;
+      ok?: boolean;
+      fields?: {
+        bio?: string;
+        cuisine_tags?: string;
+        phone?: string;
+        location?: string;
+      };
+    }
   | undefined;
 
 export async function submitOnboarding(
@@ -50,49 +61,53 @@ export async function submitOnboarding(
     .map((s) => s.trim())
     .filter(Boolean);
 
+  // Preserve field values on error so the form doesn't clear
+  const fields = { bio, cuisine_tags: cuisineRaw, phone, location };
+
   if (bio.length < 20) {
-    return { error: "Tell customers a bit more about your cooking — at least 20 characters." };
+    return { error: "Tell customers a bit more about your cooking — at least 20 characters.", fields };
   }
   if (cuisineTags.length === 0) {
-    return { error: "Pick at least one cuisine tag." };
+    return { error: "Pick at least one cuisine tag.", fields };
   }
   if (!phone) {
-    return { error: "We need a phone number so customers can reach you about pickups." };
+    return { error: "We need a phone number so customers can reach you about pickups.", fields };
   }
   if (!/^[+\d\s\-()]{7,20}$/.test(phone)) {
-    return { error: "Please enter a valid phone number." };
+    return { error: "Please enter a valid phone number.", fields };
   }
   if (!location) {
-    return { error: "Add a location (city or neighbourhood) so we can match you with nearby customers." };
+    return { error: "Add a location (city or neighbourhood) so we can match you with nearby customers.", fields };
   }
 
   const certFile = formData.get("certificate") as File | null;
   if (!certFile || certFile.size === 0) {
-    return { error: "Upload your food handler certificate to continue." };
+    return { error: "Upload your food handler certificate to continue.", fields };
   }
   if (certFile.size > 10 * 1024 * 1024) {
-    return { error: "Certificate is too large (max 10 MB)." };
+    return { error: "Certificate is too large (max 10 MB).", fields };
   }
   if (!validateFileType(certFile, ALLOWED_CERT_TYPES)) {
-    return { error: "Certificate must be a PDF, JPG, PNG, or WebP file." };
+    return { error: "Certificate must be a PDF, JPG, PNG, or WebP file.", fields };
   }
 
   const photoFile = formData.get("photo") as File | null;
 
   // Validate photo size and type early, before uploading anything
   if (photoFile && photoFile.size > 0 && photoFile.size > 5 * 1024 * 1024) {
-    return { error: "Photo is too large (max 5 MB)." };
+    return { error: "Photo is too large (max 5 MB).", fields };
   }
   if (photoFile && photoFile.size > 0 && !validateFileType(photoFile, ALLOWED_IMAGE_TYPES)) {
-    return { error: "Photo must be a JPG, PNG, WebP, or GIF image." };
+    return { error: "Photo must be a JPG, PNG, WebP, or GIF image.", fields };
   }
 
-  // 1) Update the profile row with phone + location
+  // 1) Update the profile row with phone + location (via RPC to bypass RLS recursion)
   {
-    const { error } = await supabase
-      .from("profiles")
-      .update({ phone, location })
-      .eq("id", profile.id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any).rpc("update_own_profile", {
+      p_phone: phone,
+      p_location: location,
+    });
     if (error) return { error: `Could not save profile: ${error.message}` };
   }
 
@@ -170,6 +185,37 @@ function parseAllergens(formData: FormData): {
   return { allergens: filtered, ok: filtered.length > 0 || confirmedNone };
 }
 
+function parsePortionSizes(formData: FormData): {
+  portionSizes: DishPortionSizes | null;
+  minPrice: number;
+  error?: string;
+} {
+  const result: DishPortionSizes = {};
+  let minPrice = Infinity;
+
+  for (const size of PORTION_SIZES) {
+    const raw = String(formData.get(`price_${size.id}`) ?? "").trim();
+    if (!raw) continue;
+    const dollars = Number(raw);
+    if (!Number.isFinite(dollars) || dollars <= 0) {
+      return { portionSizes: null, minPrice: 0, error: `${size.label} price must be greater than zero.` };
+    }
+    const cents = Math.round(dollars * 100);
+    result[size.id as keyof DishPortionSizes] = {
+      price_cents: cents,
+      label: size.label,
+      portions: size.portions,
+    } satisfies PortionSizeConfig;
+    if (cents < minPrice) minPrice = cents;
+  }
+
+  if (Object.keys(result).length === 0) {
+    return { portionSizes: null, minPrice: 0, error: "Set a price for at least one portion size." };
+  }
+
+  return { portionSizes: result, minPrice };
+}
+
 export async function createDish(
   _state: DishFormState,
   formData: FormData,
@@ -189,14 +235,12 @@ export async function createDish(
 
   const name = String(formData.get("name") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const priceDollars = Number(formData.get("price") ?? 0);
-  const portionSize = String(formData.get("portion_size") ?? "").trim();
   const cuisineTag = String(formData.get("cuisine_tag") ?? "").trim() || null;
 
   if (!name) return { error: "Dish name is required." };
-  if (!Number.isFinite(priceDollars) || priceDollars <= 0) {
-    return { error: "Price must be greater than zero." };
-  }
+
+  const { portionSizes, minPrice, error: psError } = parsePortionSizes(formData);
+  if (psError) return { error: psError };
 
   const { allergens, ok } = parseAllergens(formData);
   if (!ok) {
@@ -227,12 +271,14 @@ export async function createDish(
     photoPublicUrl = supabase.storage.from("dish-photos").getPublicUrl(path).data.publicUrl;
   }
 
-  const { error } = await supabase.from("dishes").insert({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.from("dishes") as any).insert({
     cook_id: profile.id,
     name,
     description: description || null,
-    price_cents: Math.round(priceDollars * 100),
-    portion_size: portionSize || null,
+    price_cents: minPrice,
+    portion_sizes: portionSizes,
+    portion_size: null,
     cuisine_tag: cuisineTag,
     allergens,
     photo_url: photoPublicUrl,
@@ -254,14 +300,12 @@ export async function updateDish(
 
   const name = String(formData.get("name") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
-  const priceDollars = Number(formData.get("price") ?? 0);
-  const portionSize = String(formData.get("portion_size") ?? "").trim();
   const cuisineTag = String(formData.get("cuisine_tag") ?? "").trim() || null;
 
   if (!name) return { error: "Dish name is required." };
-  if (!Number.isFinite(priceDollars) || priceDollars <= 0) {
-    return { error: "Price must be greater than zero." };
-  }
+
+  const { portionSizes, minPrice, error: psError } = parsePortionSizes(formData);
+  if (psError) return { error: psError };
 
   const { allergens, ok } = parseAllergens(formData);
   if (!ok) {
@@ -270,11 +314,12 @@ export async function updateDish(
     };
   }
 
-  const updates: import("@/lib/types").DishUpdate = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const updates: any = {
     name,
     description: description || null,
-    price_cents: Math.round(priceDollars * 100),
-    portion_size: portionSize || null,
+    price_cents: minPrice,
+    portion_sizes: portionSizes,
     cuisine_tag: cuisineTag,
     allergens,
   };
@@ -293,11 +338,11 @@ export async function updateDish(
     updates.photo_url = supabase.storage.from("dish-photos").getPublicUrl(path).data.publicUrl;
   }
 
-  const { error } = await supabase
-    .from("dishes")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.from("dishes") as any)
     .update(updates)
     .eq("id", dishId)
-    .eq("cook_id", profile.id); // belt + braces (RLS already enforces)
+    .eq("cook_id", profile.id);
   if (error) return { error: `Could not save dish: ${error.message}` };
 
   revalidatePath("/cook/dishes");
@@ -348,40 +393,66 @@ export async function deleteDish(dishId: string) {
 // Availability (weekly schedule)
 // =====================================================================
 
-export async function saveAvailability(formData: FormData) {
+// Save weekly schedule template (Mon-Sun recurring).
+export async function saveWeeklySchedule(formData: FormData) {
   const { profile } = await requireCookProfile();
   const supabase = await createClient();
 
-  const datesRaw = String(formData.get("dates") ?? "");
-  const dates = datesRaw.split(",").filter(Boolean);
-
-  const rows = dates.map((date) => {
-    const isOpen = formData.get(`open_${date}`) === "on";
-    const mode = String(formData.get(`mode_${date}`) ?? "preorder") as AvailabilityMode;
+  // Build the weekly_schedule JSONB from form data (keys 0-6 = Sun-Sat)
+  const schedule: Record<string, { is_open: boolean; mode: string; max_portions: number }> = {};
+  for (let dow = 0; dow <= 6; dow++) {
+    const key = String(dow);
+    const isOpen = formData.get(`open_${key}`) === "on";
+    const mode = String(formData.get(`mode_${key}`) ?? "preorder");
     const maxPortions = Math.max(
       1,
-      Math.min(50, Number(formData.get(`portions_${date}`) ?? DEFAULT_DAILY_PORTION_CAP)),
+      Math.min(50, Number(formData.get(`portions_${key}`) ?? DEFAULT_DAILY_PORTION_CAP)),
     );
-    return {
-      cook_id: profile.id,
-      date,
-      mode,
-      max_portions: maxPortions,
-      is_open: isOpen,
-    };
-  });
+    schedule[key] = { is_open: isOpen, mode, max_portions: maxPortions };
+  }
 
-  await supabase.from("availability").upsert(rows, { onConflict: "cook_id,date" });
-
-  // Bump last_active_at so the admin health tracker doesn't flag them.
-  await supabase
-    .from("cook_profiles")
-    .update({ last_active_at: new Date().toISOString() })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.from("cook_profiles") as any)
+    .update({
+      weekly_schedule: schedule,
+      last_active_at: new Date().toISOString(),
+    })
     .eq("id", profile.id);
+
+  if (error) {
+    // Can't return from a form action that redirects, so just log
+    console.error("Failed to save weekly schedule:", error.message);
+  }
 
   revalidatePath("/cook/schedule");
   revalidatePath("/cook");
   redirect("/cook/schedule?saved=1");
+}
+
+// Toggle cook availability on/off (quick "not available" mode).
+export async function toggleAvailability() {
+  const { profile } = await requireCookProfile();
+  const supabase = await createClient();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: cp, error: fetchError } = await (supabase.from("cook_profiles") as any)
+    .select("is_available")
+    .eq("id", profile.id)
+    .single();
+
+  if (fetchError || !cp) return;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase.from("cook_profiles") as any)
+    .update({ is_available: !(cp.is_available ?? true) })
+    .eq("id", profile.id);
+
+  if (error) {
+    console.error("Failed to toggle availability:", error.message);
+  }
+
+  revalidatePath("/cook");
+  revalidatePath("/cook/schedule");
 }
 
 // =====================================================================
@@ -397,9 +468,9 @@ export async function setOrderStatus(
   const supabase = await createClient();
 
   // Allowed transitions enforced here (RLS allows the update, we shape the FSM).
-  const { data: order } = await supabase
-    .from("orders")
-    .select("status, cook_id, quantity, scheduled_for")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: order } = await (supabase.from("orders") as any)
+    .select("status, cook_id, quantity, scheduled_for, portion_size")
     .eq("id", orderId)
     .single();
   if (!order || order.cook_id !== profile.id) {
@@ -415,8 +486,10 @@ export async function setOrderStatus(
     await (supabase.from("orders") as any).update(extras).eq("id", orderId);
   }
 
-  // Refund portions when cook cancels an order
+  // Refund portions when cook cancels an order (portion-size aware)
   if (status === "cancelled" && order.scheduled_for) {
+    const portionsPerUnit = portionSizePortions(order.portion_size ?? "");
+    const totalPortions = order.quantity * portionsPerUnit;
     const { data: avail } = await supabase
       .from("availability")
       .select("portions_taken")
@@ -427,7 +500,7 @@ export async function setOrderStatus(
       await supabase
         .from("availability")
         .update({
-          portions_taken: Math.max(0, avail.portions_taken - order.quantity),
+          portions_taken: Math.max(0, avail.portions_taken - totalPortions),
         })
         .eq("cook_id", profile.id)
         .eq("date", order.scheduled_for);

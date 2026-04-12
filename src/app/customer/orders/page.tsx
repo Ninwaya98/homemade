@@ -4,25 +4,26 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
-import { dayLabel, formatPrice } from "@/lib/constants";
+import { dayLabel, formatPrice, portionSizeLabel } from "@/lib/constants";
 
 export const metadata = { title: "My orders — HomeMade" };
 
 export default async function CustomerOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ filter?: string }>;
+  searchParams: Promise<{ filter?: string; placed?: string }>;
 }) {
   const profile = await requireAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
   const sp = await searchParams;
   const filter = sp.filter ?? "all";
+  const placed = sp.placed;
 
-  let query = supabase
-    .from("orders")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query = (supabase.from("orders") as any)
     .select(`
-      id, status, quantity, total_cents, type, scheduled_for, created_at, vertical,
+      id, status, quantity, total_cents, type, scheduled_for, created_at, vertical, portion_size,
       dishes(name, photo_url),
       cook_profiles!orders_cook_id_fkey(profiles!cook_profiles_id_fkey(full_name)),
       products(name, photo_urls),
@@ -39,6 +40,21 @@ export default async function CustomerOrdersPage({
 
   return (
     <div className="space-y-6">
+      {placed && (
+        <Card className="border-emerald-200 bg-emerald-50">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm text-white">
+              ✓
+            </div>
+            <p className="text-sm font-semibold text-emerald-900">
+              {Number(placed) > 1
+                ? `${placed} orders placed successfully!`
+                : "Order placed successfully!"}
+            </p>
+          </div>
+        </Card>
+      )}
+
       <header>
         <h1 className="text-2xl font-bold text-stone-900">My orders</h1>
       </header>
@@ -85,6 +101,11 @@ export default async function CustomerOrdersPage({
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-semibold text-stone-900">
                           {o.quantity}× {itemName ?? "—"}
+                          {(o as any).portion_size && (
+                            <span className="ml-1 text-xs font-normal text-violet-600">
+                              ({portionSizeLabel((o as any).portion_size)})
+                            </span>
+                          )}
                         </p>
                         <Badge tone={statusTone(o.status)}>{o.status}</Badge>
                         <Badge tone={isMarket ? "blue" : "amber"}>

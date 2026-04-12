@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
-import { allergenLabel, dayLabel, formatPrice } from "@/lib/constants";
+import { allergenLabel, dayLabel, formatPrice, portionSizeLabel } from "@/lib/constants";
 import { CancelOrderButton } from "./cancel-button";
 import { ReviewForm } from "./review-form";
 
@@ -50,6 +50,7 @@ export default async function CustomerOrderDetail({
     confirmed_at?: string | null; ready_at?: string | null;
     completed_at?: string | null; cancelled_at?: string | null;
     estimated_ready_time?: string | null;
+    portion_size?: string | null;
   };
 
   const isMarket = o.vertical === "market";
@@ -115,6 +116,11 @@ export default async function CustomerOrderDetail({
               <div>
                 <p className="text-sm font-semibold text-stone-900">
                   {o.quantity}× {itemName ?? "—"}
+                  {o.portion_size && (
+                    <span className="ml-1 text-xs font-normal text-violet-600">
+                      ({portionSizeLabel(o.portion_size)})
+                    </span>
+                  )}
                 </p>
                 <p className="text-xs text-stone-500">
                   {o.scheduled_for ? dayLabel(o.scheduled_for) : o.type}
@@ -209,7 +215,7 @@ export default async function CustomerOrderDetail({
             active={o.status === "ready"}
             last
           />
-          {order.status === "cancelled" && (
+          {o.status === "cancelled" && (
             <TimelineStep
               label="Cancelled"
               description="This order was cancelled"

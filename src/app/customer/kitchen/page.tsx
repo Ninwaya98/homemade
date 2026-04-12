@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
-import { allergenLabel, formatPrice, todayIso, CUISINES } from "@/lib/constants";
+import { allergenLabel, formatPrice, minPriceCents, todayIso, CUISINES } from "@/lib/constants";
 
 export const metadata = {
   title: "Kitchen — HomeMade",
@@ -161,7 +161,11 @@ export default async function KitchenBrowsePage({
                       )}
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-stone-900 group-hover:text-violet-700">{dish.name}</p>
-                        <p className="text-sm font-medium text-violet-600">{formatPrice(dish.price_cents)}</p>
+                        <p className="text-sm font-medium text-violet-600">
+                          {(dish as any).portion_sizes
+                            ? `from ${formatPrice(minPriceCents(dish.price_cents, (dish as any).portion_sizes))}`
+                            : formatPrice(dish.price_cents)}
+                        </p>
                         {dish.allergens.length > 0 && (
                           <p className="mt-0.5 truncate text-[10px] text-stone-400">
                             contains: {dish.allergens.map(allergenLabel).join(", ")}

@@ -77,42 +77,21 @@ export async function signIn(
     return { error: error.message, fields: { email } };
   }
 
-  // Determine where to send the user based on their capabilities.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  // Everyone lands on /customer (browse-first). Admins go to /admin.
+  // Cooks/sellers access their dashboards via "Manage shop" in the nav.
   let destination = next || "/customer";
-  if (!next && user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    const role = profile?.role as string | undefined;
-
-    if (role === "admin") {
-      destination = "/admin";
-    } else {
-      // Check cook capability
-      const { data: cookProfile } = await supabase
-        .from("cook_profiles")
-        .select("status")
+  if (!next) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
         .eq("id", user.id)
-        .maybeSingle();
-      if (cookProfile) {
-        destination = "/cook";
-      } else {
-        // Check seller capability
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: sellerProfile } = await (supabase as any)
-          .from("seller_profiles")
-          .select("status")
-          .eq("id", user.id)
-          .maybeSingle();
-        if (sellerProfile) {
-          destination = "/seller";
-        }
+        .single();
+      if (profile?.role === "admin") {
+        destination = "/admin";
       }
     }
   }

@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
-import { allergenLabel, formatPrice, dayLabel } from "@/lib/constants";
+import { allergenLabel, formatPrice, minPriceCents, dayLabel } from "@/lib/constants";
 
 export const metadata = {
   title: "Cook profile — HomeMade",
@@ -150,8 +150,9 @@ export default async function CookProfilePage({
                   <div className="min-w-0 flex-1">
                     <h3 className="text-base font-semibold text-stone-900">{dish.name}</h3>
                     <p className="text-sm font-medium text-stone-700">
-                      {formatPrice(dish.price_cents)}
-                      {dish.portion_size && ` · ${dish.portion_size}`}
+                      {(dish as any).portion_sizes
+                        ? `from ${formatPrice(minPriceCents(dish.price_cents, (dish as any).portion_sizes))}`
+                        : formatPrice(dish.price_cents)}
                     </p>
                     {dish.description && (
                       <p className="mt-1 text-sm text-stone-600">{dish.description}</p>
@@ -168,7 +169,7 @@ export default async function CookProfilePage({
                     href={`/customer/order/${dish.id}`}
                     size="sm"
                   >
-                    Order
+                    Add to basket
                   </LinkButton>
                 </div>
               </Card>

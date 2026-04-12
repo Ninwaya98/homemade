@@ -39,6 +39,15 @@ export type AvailabilityMode = PublicEnums["availability_mode"];
 export type OrderType = PublicEnums["order_type"];
 export type OrderStatus = PublicEnums["order_status"];
 
+// Weekly schedule template stored in cook_profiles.weekly_schedule JSONB
+// Keys are day-of-week: "0"=Sunday, "1"=Monday, ..., "6"=Saturday
+export type WeeklyDayConfig = {
+  is_open: boolean;
+  mode: "preorder" | "on_demand";
+  max_portions: number;
+};
+export type WeeklySchedule = Partial<Record<"0" | "1" | "2" | "3" | "4" | "5" | "6", WeeklyDayConfig>>;
+
 // Seller types (tables from migration 007 — until types are regenerated, define manually)
 export type SellerStatus = "pending" | "approved" | "suspended";
 export type ProductStatus = "active" | "paused" | "out_of_stock";
@@ -77,6 +86,34 @@ export type Product = {
   status: ProductStatus;
   created_at: string;
   updated_at: string;
+};
+
+// Portion size config stored in dishes.portion_sizes JSONB
+export type PortionSizeConfig = {
+  price_cents: number;
+  label: string;
+  portions: number;
+};
+
+export type DishPortionSizes = Partial<
+  Record<"small" | "medium" | "large", PortionSizeConfig>
+>;
+
+// Basket item for client-side cart (localStorage)
+export type BasketItem = {
+  id: string;
+  dishId: string;
+  dishName: string;
+  cookId: string;
+  cookName: string;
+  photoUrl: string | null;
+  portionSize: "small" | "medium" | "large" | null;
+  portionLabel: string | null;
+  priceCents: number;
+  portions: number;
+  quantity: number;
+  scheduledFor: string;
+  allergens: string[];
 };
 
 // Joined / projected views used by feature pages

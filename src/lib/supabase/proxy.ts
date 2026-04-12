@@ -61,7 +61,9 @@ export async function updateSession(request: NextRequest) {
     path.startsWith("/admin") ||
     path.startsWith("/customer/order") ||
     path.startsWith("/customer/orders") ||
-    path.startsWith("/customer/market/order");
+    path.startsWith("/customer/basket") ||
+    path.startsWith("/customer/market/order") ||
+    path.startsWith("/account");
 
   if (isProtected && !user) {
     const url = request.nextUrl.clone();
