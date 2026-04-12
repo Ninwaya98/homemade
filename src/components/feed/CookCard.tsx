@@ -21,6 +21,7 @@ export function CookCard({
   isOpen?: boolean;
 }) {
   const initial = cook.name.trim().charAt(0).toUpperCase();
+  const displayName = type === "seller" && cook.shopName ? cook.shopName : cook.name;
 
   return (
     <Link
@@ -41,11 +42,15 @@ export function CookCard({
           </div>
         )}
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-stone-900">
-            {type === "seller" && cook.shopName ? cook.shopName : cook.name}
-          </p>
+          <div className="flex items-center gap-1">
+            <p className="truncate text-sm font-semibold text-stone-900">{displayName}</p>
+            {/* Verified badge */}
+            <svg className="h-3.5 w-3.5 flex-none text-violet-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M16.403 12.652a3 3 0 000-5.304 3 3 0 00-3.75-3.751 3 3 0 00-5.305 0 3 3 0 00-3.751 3.75 3 3 0 000 5.305 3 3 0 003.75 3.751 3 3 0 005.305 0 3 3 0 003.751-3.75zm-2.546-4.46a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+            </svg>
+          </div>
           {cook.location && (
-            <p className="truncate text-[11px] text-stone-500">{cook.location}</p>
+            <p className="truncate text-[11px] text-stone-600">{cook.location}</p>
           )}
         </div>
       </div>
@@ -61,7 +66,7 @@ export function CookCard({
       </div>
 
       {cook.rating_count > 0 && (
-        <p className="mt-2 text-xs text-stone-500">
+        <p className="mt-2 text-xs text-stone-600">
           <span className="text-amber-500">&#9733;</span> {cook.avg_rating.toFixed(1)}
           <span className="text-stone-400"> ({cook.rating_count})</span>
         </p>

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth";
-import { nextNDays } from "@/lib/constants";
+import { nextNDays, isoDow } from "@/lib/constants";
 import { OrderForm } from "./order-form";
 import type { WeeklySchedule } from "@/lib/types";
 
@@ -108,7 +108,7 @@ export default async function OrderDishPage({
       }
     } else if (schedule) {
       // Derive from weekly template
-      const dow = new Date(date + "T12:00:00Z").getUTCDay();
+      const dow = isoDow(date);
       const dayConfig = schedule[String(dow) as keyof WeeklySchedule];
       if (dayConfig?.is_open) {
         availabilityDays.push({

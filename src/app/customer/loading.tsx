@@ -1,38 +1,37 @@
-export default function CustomerLoading() {
+export default function FeedLoading() {
   return (
-    <div className="space-y-6">
-      <div>
-        <div className="shimmer h-8 w-64 rounded-lg" />
-        <div className="shimmer mt-2 h-4 w-40 rounded" />
+    <div className="space-y-8">
+      {/* Greeting skeleton */}
+      <div className="animate-pulse">
+        <div className="shimmer h-7 w-52 rounded-lg" />
+        <div className="shimmer mt-2 h-4 w-72 rounded-lg" />
       </div>
-      <div className="flex gap-2">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="shimmer h-9 w-20 rounded-full" />
+
+      {/* Pills skeleton */}
+      <div className="flex gap-2 animate-pulse">
+        {[80, 72, 64, 56, 72, 64].map((w, i) => (
+          <div key={i} className="shimmer h-8 flex-none rounded-full" style={{ width: w }} />
         ))}
       </div>
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div
-          key={i}
-          className="overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm"
-        >
-          <div className="flex items-start gap-4 p-5">
-            <div className="shimmer h-16 w-16 flex-none rounded-2xl" />
-            <div className="flex-1 space-y-2.5">
-              <div className="shimmer h-5 w-40 rounded" />
-              <div className="shimmer h-3 w-28 rounded" />
-              <div className="flex gap-1.5">
-                <div className="shimmer h-5 w-14 rounded-full" />
-                <div className="shimmer h-5 w-16 rounded-full" />
-              </div>
-              <div className="shimmer h-4 w-full rounded" />
-            </div>
+
+      {/* Horizontal scroll sections */}
+      {[1, 2, 3].map((section) => (
+        <div key={section} className="space-y-3 animate-pulse">
+          <div className="flex justify-between">
+            <div className="shimmer h-5 w-32 rounded-lg" />
+            <div className="shimmer h-4 w-14 rounded-lg" />
           </div>
-          <div className="border-t border-stone-100 bg-stone-50/50 p-5">
-            <div className="shimmer mb-3 h-3 w-20 rounded" />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="shimmer h-20 rounded-xl" />
-              <div className="shimmer h-20 rounded-xl" />
-            </div>
+          <div className="flex gap-3 overflow-hidden">
+            {[1, 2, 3].map((card) => (
+              <div key={card} className="w-44 flex-none rounded-2xl glass-strong overflow-hidden">
+                <div className="shimmer h-28 w-full" />
+                <div className="space-y-2 p-3">
+                  <div className="shimmer h-4 w-24 rounded" />
+                  <div className="shimmer h-3 w-16 rounded" />
+                  <div className="shimmer h-4 w-14 rounded" />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       ))}

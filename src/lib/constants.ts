@@ -136,6 +136,13 @@ export function todayIso(): string {
   return isoDate(new Date());
 }
 
+// Get day-of-week (0=Sun..6=Sat) from an ISO date string (YYYY-MM-DD).
+// Uses UTC parsing to avoid timezone-related off-by-one bugs.
+export function isoDow(iso: string): number {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+}
+
 export function nextNDays(n: number): string[] {
   const out: string[] = [];
   const base = new Date();

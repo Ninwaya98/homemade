@@ -20,7 +20,7 @@ type BasketContextValue = {
   currentCookId: string | null;
   /** The cook name currently in the basket, or null if empty */
   currentCookName: string | null;
-  addItem: (item: Omit<BasketItem, "id">) => boolean;
+  addItem: (item: Omit<BasketItem, "id">) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearBasket: () => void;
@@ -32,7 +32,7 @@ const BasketContext = createContext<BasketContextValue>({
   totalCents: 0,
   currentCookId: null,
   currentCookName: null,
-  addItem: () => false,
+  addItem: () => {},
   removeItem: () => {},
   updateQuantity: () => {},
   clearBasket: () => {},
@@ -79,19 +79,10 @@ export function BasketProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("storage", handler);
   }, []);
 
-  // Single-cook enforcement: only allow items from one cook at a time.
-  // Returns true if added, false if blocked (different cook).
-  const addItem = useCallback((item: Omit<BasketItem, "id">): boolean => {
-    let added = false;
-    setItems((prev) => {
-      if (prev.length > 0 && prev[0].cookId !== item.cookId) {
-        added = false;
-        return prev; // block — different cook
-      }
-      added = true;
-      return [...prev, { ...item, id: crypto.randomUUID() }];
-    });
-    return added;
+  // Add an item. Callers should check currentCookId before calling
+  // to enforce single-cook restriction (the order form does this).
+  const addItem = useCallback((item: Omit<BasketItem, "id">) => {
+    setItems((prev) => [...prev, { ...item, id: crypto.randomUUID() }]);
   }, []);
 
   const removeItem = useCallback((id: string) => {

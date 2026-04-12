@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
-import { todayIso } from "@/lib/constants";
+import { todayIso, isoDow } from "@/lib/constants";
 import { LinkButton } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/Card";
 import { HorizontalScroll } from "@/components/feed/HorizontalScroll";
@@ -60,7 +60,7 @@ export default async function FeedPage() {
       .from("products")
       .select(`
         id, name, price_cents, photo_urls, category,
-        seller_profiles!inner(id, shop_name, status, profiles!seller_profiles_id_fkey!inner(full_name))
+        seller_profiles!inner(id, shop_name, avg_rating, rating_count, status, profiles!seller_profiles_id_fkey!inner(full_name))
       `)
       .eq("status", "active")
       .eq("seller_profiles.status", "approved")
@@ -93,7 +93,7 @@ export default async function FeedPage() {
     );
     let openViaSchedule = false;
     if (!hasOpenDay && c.weekly_schedule) {
-      const dow = new Date(today + "T12:00:00Z").getUTCDay();
+      const dow = isoDow(today);
       const dayConfig = c.weekly_schedule[String(dow)];
       openViaSchedule = dayConfig?.is_open ?? false;
     }
@@ -190,6 +190,8 @@ export default async function FeedPage() {
                   portion_sizes: d.portion_sizes ?? null,
                 }}
                 cookName={d.cook_profiles?.profiles?.full_name ?? "Cook"}
+                cookRating={d.cook_profiles?.avg_rating}
+                cookRatingCount={d.cook_profiles?.rating_count}
                 href={isLoggedIn ? `/customer/order/${d.id}` : `/customer/cooks/${d.cook_profiles?.id}`}
               />
             ))}
@@ -214,6 +216,8 @@ export default async function FeedPage() {
                   category: p.category,
                 }}
                 sellerName={p.seller_profiles?.shop_name ?? "Seller"}
+                sellerRating={p.seller_profiles?.avg_rating}
+                sellerRatingCount={p.seller_profiles?.rating_count}
                 href={isLoggedIn ? `/customer/market/order/${p.id}` : `/customer/market/sellers/${p.seller_profiles?.id}`}
               />
             ))}
