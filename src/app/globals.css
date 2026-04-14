@@ -18,6 +18,7 @@ html,
 body {
   background: var(--color-background);
   color: var(--color-foreground);
+  overflow-x: hidden;
 }
 
 /* Larger tap targets on mobile inputs and buttons */
