@@ -32,7 +32,7 @@ export default async function CookLayout({
 
   return (
     <div className="min-h-screen gradient-mesh">
-      <header className="glass-header z-30">
+      <header className="glass-header relative z-30">
         <div className="mx-auto max-w-3xl px-5 py-4">
           <div className="flex items-center justify-between">
             <Link href="/cook" className="text-lg font-black tracking-tight">
