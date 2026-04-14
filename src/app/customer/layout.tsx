@@ -127,23 +127,23 @@ export default async function CustomerLayout({
                 <li className="ml-auto flex items-center gap-1.5">
                   <Link
                     href="/customer/basket"
-                    className="relative flex h-8 w-8 items-center justify-center rounded-full border border-violet-200/50 bg-violet-50/60 transition hover:border-violet-300 hover:bg-violet-100/80"
+                    className="relative flex items-center gap-1.5 rounded-full border border-violet-200/50 dark:border-violet-500/25 bg-violet-50/60 dark:bg-violet-900/30 px-3 py-1.5 text-xs font-medium text-violet-600 dark:text-violet-300 transition hover:border-violet-300 hover:bg-violet-100/80"
                   >
                     <svg
-                      width="16"
-                      height="16"
+                      width="14"
+                      height="14"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="1.8"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="text-violet-400"
                     >
                       <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                       <line x1="3" y1="6" x2="21" y2="6" />
                       <path d="M16 10a4 4 0 01-8 0" />
                     </svg>
+                    Basket
                     <BasketBadge />
                   </Link>
                 </li>
