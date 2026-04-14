@@ -12,25 +12,28 @@ export async function toggleFavorite(formData: FormData) {
   const productId = formData.get("productId") as string | null;
   if (!dishId && !productId) return { error: "Missing item" };
 
-  const sb = supabase as never;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any;
 
-  // Check existing
-  let existing: { id: string }[] | null = null;
-  if (dishId) {
-    const { data } = await (sb as any).from("favorites").select("id").eq("user_id", user.id).eq("dish_id", dishId);
-    existing = data;
-  } else {
-    const { data } = await (sb as any).from("favorites").select("id").eq("user_id", user.id).eq("product_id", productId);
-    existing = data;
-  }
+  // Race-safe toggle: try to delete first. If nothing was deleted, insert.
+  // This avoids the SELECT-then-INSERT/DELETE race where a concurrent request
+  // could create a duplicate between the check and the write.
+  const col = dishId ? "dish_id" : "product_id";
+  const val = dishId || productId;
 
-  if (existing && existing.length > 0) {
-    await (sb as any).from("favorites").delete().eq("id", existing[0].id);
-  } else {
-    const row: Record<string, string> = { user_id: user.id };
-    if (dishId) row.dish_id = dishId;
-    if (productId) row.product_id = productId;
-    await (sb as any).from("favorites").insert(row);
+  const { data: deleted } = await sb
+    .from("favorites")
+    .delete()
+    .eq("user_id", user.id)
+    .eq(col, val)
+    .select("id");
+
+  if (!deleted || deleted.length === 0) {
+    // Didn't exist — insert it
+    await sb.from("favorites").insert({
+      user_id: user.id,
+      ...(dishId ? { dish_id: dishId } : { product_id: productId }),
+    });
   }
 
   revalidatePath("/customer");

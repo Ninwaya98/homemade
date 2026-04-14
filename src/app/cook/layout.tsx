@@ -13,19 +13,11 @@ export default async function CookLayout({
 }) {
   const profile = await requireAuth();
   const supabase = await createClient();
-  const { data: cookProfile } = await supabase
-    .from("cook_profiles")
-    .select("status")
-    .eq("id", profile.id)
-    .maybeSingle();
-
-  // Check if user also has a seller shop
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: sellerProfile } = await (supabase as any)
-    .from("seller_profiles")
-    .select("status")
-    .eq("id", profile.id)
-    .maybeSingle();
+  const [{ data: cookProfile }, { data: sellerProfile }] = await Promise.all([
+    supabase.from("cook_profiles").select("status").eq("id", profile.id).maybeSingle(),
+    (supabase as any).from("seller_profiles").select("status").eq("id", profile.id).maybeSingle(),
+  ]);
 
   const navItems = [
     { href: "/cook", label: "Today", icon: "◉" },

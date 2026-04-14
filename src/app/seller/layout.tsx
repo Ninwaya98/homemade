@@ -15,18 +15,10 @@ export default async function SellerLayout({
   const supabase = await createClient();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: sellerProfile } = await (supabase as any)
-    .from("seller_profiles")
-    .select("status, shop_name")
-    .eq("id", profile.id)
-    .maybeSingle();
-
-  // Check if user also has a cook shop
-  const { data: cookProfile } = await supabase
-    .from("cook_profiles")
-    .select("status")
-    .eq("id", profile.id)
-    .maybeSingle();
+  const [{ data: sellerProfile }, { data: cookProfile }] = await Promise.all([
+    (supabase as any).from("seller_profiles").select("status, shop_name").eq("id", profile.id).maybeSingle(),
+    supabase.from("cook_profiles").select("status").eq("id", profile.id).maybeSingle(),
+  ]);
 
   const navItems = [
     { href: "/seller", label: "Dashboard", icon: "◉" },

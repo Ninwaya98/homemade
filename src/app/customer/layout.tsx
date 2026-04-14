@@ -20,19 +20,12 @@ export default async function CustomerLayout({
   let hasSellerProfile = false;
   if (isLoggedIn) {
     const supabase = await createClient();
-    const { data: cp } = await supabase
-      .from("cook_profiles")
-      .select("status")
-      .eq("id", profile.id)
-      .maybeSingle();
-    hasCookProfile = !!cp;
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: sp } = await (supabase as any)
-      .from("seller_profiles")
-      .select("status")
-      .eq("id", profile.id)
-      .maybeSingle();
+    const [{ data: cp }, { data: sp }] = await Promise.all([
+      supabase.from("cook_profiles").select("status").eq("id", profile.id).maybeSingle(),
+      (supabase as any).from("seller_profiles").select("status").eq("id", profile.id).maybeSingle(),
+    ]);
+    hasCookProfile = !!cp;
     hasSellerProfile = !!sp;
   }
 

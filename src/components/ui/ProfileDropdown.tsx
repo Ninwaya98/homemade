@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
 import { useTheme } from "@/lib/theme";
+import { useClickOutside, useEscapeKey } from "@/lib/hooks";
 
 export function ProfileDropdown({
   name,
@@ -21,27 +22,8 @@ export function ProfileDropdown({
   const initial = name.trim().charAt(0).toUpperCase() || "?";
   const hasShop = hasCookShop || hasSellerShop;
 
-  // Close on click outside
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [open]);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!open) return;
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [open]);
+  useClickOutside(ref, () => setOpen(false), open);
+  useEscapeKey(() => setOpen(false), open);
 
   return (
     <div ref={ref} className="relative">

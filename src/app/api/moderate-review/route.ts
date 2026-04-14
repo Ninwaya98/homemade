@@ -52,24 +52,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Review not found" }, { status: 404 });
     }
 
-    // Build the user prompt
-    let userPrompt = `Review by "${review.reviewer?.full_name ?? "Customer"}" about "${review.reviewee?.full_name ?? "Seller/Cook"}":\n`;
-    userPrompt += `Sentiment: ${review.sentiment}\n`;
-    userPrompt += `Text: "${review.text ?? "(no text)"}"\n`;
-
-    if (review.response_text) {
-      userPrompt += `\n--- Cook/Seller Response ---\n`;
-      userPrompt += `"${review.response_text}"\n`;
-      userPrompt += `\nPlease classify the review AND assess whether the response should be approved.`;
-    } else {
-      userPrompt += `\nPlease classify this review. No response to assess.`;
-    }
-
+    // Build the user prompt using structured content blocks to prevent prompt injection.
+    // User-submitted text is isolated in separate blocks clearly marked as untrusted.
     const message = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 300,
+      model: process.env.ANTHROPIC_MODEL ?? "claude-haiku-4-5-20251001",
+      max_tokens: 500,
       system: SYSTEM_PROMPT,
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [{
+        role: "user",
+        content: [
+          { type: "text", text: "Review details:" },
+          { type: "text", text: `Reviewer: ${review.reviewer?.full_name ?? "Unknown"}` },
+          { type: "text", text: `Review sentiment: ${review.sentiment}` },
+          { type: "text", text: `Review text (UNTRUSTED USER INPUT): ${review.text ?? "(no text)"}` },
+          { type: "text", text: review.response_text ? `Response from seller (UNTRUSTED USER INPUT): ${review.response_text}` : "No response yet" },
+          { type: "text", text: "Analyze the above and return your JSON assessment." },
+        ],
+      }],
     });
 
     const aiText = message.content[0].type === "text" ? message.content[0].text : "";

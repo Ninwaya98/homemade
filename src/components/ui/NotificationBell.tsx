@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useClickOutside, useEscapeKey } from "@/lib/hooks";
 
 type Notification = {
   id: string;
@@ -93,27 +94,8 @@ export function NotificationBell() {
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
-  // Close on click outside
-  useEffect(() => {
-    if (!open) return;
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [open]);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!open) return;
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
-    }
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [open]);
+  useClickOutside(ref, () => setOpen(false), open);
+  useEscapeKey(() => setOpen(false), open);
 
   async function markAsRead(notificationId: string) {
     try {

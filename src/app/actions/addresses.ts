@@ -28,6 +28,10 @@ export async function addAddress(formData: FormData) {
   const is_default = formData.get("is_default") === "true";
 
   if (!address_line) return { error: "Address is required" };
+  if (label.length > 100) return { error: "Label is too long (max 100 characters)" };
+  if (address_line.length > 500) return { error: "Address is too long (max 500 characters)" };
+  if (city && city.length > 200) return { error: "City is too long (max 200 characters)" };
+  if (notes && notes.length > 500) return { error: "Notes are too long (max 500 characters)" };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
@@ -53,6 +57,10 @@ export async function updateAddress(formData: FormData) {
   const is_default = formData.get("is_default") === "true";
 
   if (!address_line) return { error: "Address is required" };
+  if (label.length > 100) return { error: "Label is too long (max 100 characters)" };
+  if (address_line.length > 500) return { error: "Address is too long (max 500 characters)" };
+  if (city && city.length > 200) return { error: "City is too long (max 200 characters)" };
+  if (notes && notes.length > 500) return { error: "Notes are too long (max 500 characters)" };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)

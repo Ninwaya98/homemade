@@ -26,6 +26,12 @@ export async function signUp(
       fields: { email, full_name: fullName },
     };
   }
+  if (fullName.length > 255) {
+    return { error: "Name is too long (max 255 characters).", fields: { email, full_name: fullName } };
+  }
+  if (email.length > 320) {
+    return { error: "Email is too long.", fields: { email, full_name: fullName } };
+  }
   if (password.length < 8) {
     return {
       error: "Password must be at least 8 characters.",
@@ -159,14 +165,14 @@ export async function deleteAccount(
     .eq("id", user.id);
 
   if (profileError) {
-    // If deletion fails due to active orders, inform the user.
+    // Generic error to prevent account enumeration of order state.
     if (profileError.message.includes("restrict")) {
       return {
         error:
-          "You have active orders. Please wait until all orders are completed or cancelled before deleting your account.",
+          "Cannot delete account at this time. Please ensure all orders are completed or cancelled.",
       };
     }
-    return { error: `Could not delete account: ${profileError.message}` };
+    return { error: "Cannot delete account at this time. Please try again later." };
   }
 
   // Sign out and redirect to home.

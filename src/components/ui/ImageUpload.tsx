@@ -68,7 +68,7 @@ export function ImageUpload({
             <img
               key={i}
               src={url}
-              alt=""
+              alt="Upload preview"
               className="h-20 w-20 rounded-xl object-cover border border-stone-200 shadow-sm"
             />
           ))}

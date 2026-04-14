@@ -43,6 +43,12 @@ export async function submitSellerOnboarding(
   if (!shopName || shopName.length < 3) {
     return { error: "Shop name must be at least 3 characters." };
   }
+  if (shopName.length > 200) {
+    return { error: "Shop name is too long (max 200 characters)." };
+  }
+  if (shopDescription.length > 2000) {
+    return { error: "Shop description is too long (max 2000 characters)." };
+  }
   if (shopDescription.length < 20) {
     return { error: "Tell customers more about your shop — at least 20 characters." };
   }
@@ -137,6 +143,10 @@ export async function createProduct(
   const ingredients = String(formData.get("ingredients") ?? "").trim() || null;
 
   if (!name) return { error: "Product name is required." };
+  if (name.length > 200) return { error: "Product name is too long (max 200 characters)." };
+  if (description.length > 5000) return { error: "Description is too long (max 5000 characters)." };
+  if (materials && materials.length > 500) return { error: "Materials is too long (max 500 characters)." };
+  if (dimensions && dimensions.length > 500) return { error: "Dimensions is too long (max 500 characters)." };
   if (!Number.isFinite(priceDollars) || priceDollars <= 0) {
     return { error: "Price must be greater than zero." };
   }
@@ -207,6 +217,10 @@ export async function updateProduct(
   const ingredients = String(formData.get("ingredients") ?? "").trim() || null;
 
   if (!name) return { error: "Product name is required." };
+  if (name.length > 200) return { error: "Product name is too long (max 200 characters)." };
+  if (description.length > 5000) return { error: "Description is too long (max 5000 characters)." };
+  if (materials && materials.length > 500) return { error: "Materials is too long (max 500 characters)." };
+  if (dimensions && dimensions.length > 500) return { error: "Dimensions is too long (max 500 characters)." };
   if (!Number.isFinite(priceDollars) || priceDollars <= 0) {
     return { error: "Price must be greater than zero." };
   }
@@ -360,7 +374,14 @@ export async function setSellerOrderStatus(
     await supabase.from("orders").update(extras).eq("id", orderId);
   }
 
-  // Restore stock when seller cancels
+  // Restore stock when seller cancels.
+  //
+  // NOTE: Known race condition — if two cancellations for the same product run
+  // concurrently, both may read the same `stock_quantity` and one restore could
+  // be lost. A proper fix requires an atomic SQL increment (RPC). The current
+  // approach is safe in that it never produces negative stock — the worst case
+  // is stock being slightly lower than expected, which is a conservative failure
+  // mode (seller sees fewer available than actual).
   if (status === "cancelled" && order.product_id) {
     const { data: product } = await supabase
       .from("products")
@@ -368,10 +389,14 @@ export async function setSellerOrderStatus(
       .eq("id", order.product_id)
       .single();
     if (product) {
+      const restoredStock = product.stock_quantity + order.quantity;
       const updates: Record<string, unknown> = {
-        stock_quantity: product.stock_quantity + order.quantity,
+        stock_quantity: restoredStock,
       };
-      if (product.status === "out_of_stock") updates.status = "active";
+      // Re-activate product if it was out of stock and now has inventory
+      if (product.status === "out_of_stock" && restoredStock > 0) {
+        updates.status = "active";
+      }
       await supabase.from("products").update(updates).eq("id", order.product_id);
     }
   }
@@ -389,6 +414,7 @@ export async function respondToSellerReview(formData: FormData) {
   const reviewId = String(formData.get("review_id") ?? "");
   const responseText = String(formData.get("response_text") ?? "").trim();
   if (!reviewId || !responseText) return;
+  if (responseText.length > 2000) return;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sb = supabase as any;

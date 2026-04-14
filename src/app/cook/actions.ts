@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAuth, requireCookProfile } from "@/lib/auth";
 import { ALLERGENS, DEFAULT_DAILY_PORTION_CAP, PORTION_SIZES, portionSizePortions } from "@/lib/constants";
 import { isTransitionAllowed, buildStatusExtras } from "@/lib/order-utils";
+import { uploadPhoto } from "@/lib/upload-utils";
 import type {
   AvailabilityMode,
   DishStatus,
@@ -14,14 +15,17 @@ import type {
   PortionSizeConfig,
 } from "@/lib/types";
 
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/bmp", "image/tiff", "image/avif", "image/heic", "image/heif", "image/svg+xml"]);
 const ALLOWED_CERT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
-const ALLOWED_IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp", "gif", "bmp", "tiff", "tif", "avif", "heic", "heif", "svg"]);
 const ALLOWED_CERT_EXTS = new Set(["pdf", "jpg", "jpeg", "png", "webp"]);
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 
-function safeExt(filename: string, allowed: Set<string>, fallback: string): string {
+function safeCertExt(filename: string): string {
   const raw = filename.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "";
-  return allowed.has(raw) ? raw : fallback;
+  return ALLOWED_CERT_EXTS.has(raw) ? raw : "pdf";
+}
+
+function safeExt(filename: string): string {
+  return filename.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
 }
 
 function validateFileType(file: File, allowedTypes: Set<string>): boolean {
@@ -93,14 +97,6 @@ export async function submitOnboarding(
 
   const photoFile = formData.get("photo") as File | null;
 
-  // Validate photo size and type early, before uploading anything
-  if (photoFile && photoFile.size > 0 && photoFile.size > 5 * 1024 * 1024) {
-    return { error: "Photo is too large (max 5 MB).", fields };
-  }
-  if (photoFile && photoFile.size > 0 && !validateFileType(photoFile, ALLOWED_IMAGE_TYPES)) {
-    return { error: "Photo must be a JPG, PNG, WebP, or GIF image.", fields };
-  }
-
   // 1) Update the profile row with phone + location (via RPC to bypass RLS recursion)
   {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -114,7 +110,7 @@ export async function submitOnboarding(
   // 2) Upload certificate (private bucket, path = <user_id>/cert_<ts>.<ext>)
   let certPath: string;
   {
-    const ext = safeExt(certFile.name, ALLOWED_CERT_EXTS, "pdf");
+    const ext = safeCertExt(certFile.name);
     certPath = `${profile.id}/cert_${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from("certificates")
@@ -128,7 +124,7 @@ export async function submitOnboarding(
   // 3) Optional: upload cook photo (public bucket — size already validated above)
   let photoPath: string | null = null;
   if (photoFile && photoFile.size > 0) {
-    const ext = safeExt(photoFile.name, ALLOWED_IMAGE_EXTS, "jpg");
+    const ext = safeExt(photoFile.name);
     photoPath = `${profile.id}/avatar_${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from("cook-photos")
@@ -259,7 +255,7 @@ export async function createDish(
     if (!validateFileType(photoFile, ALLOWED_IMAGE_TYPES)) {
       return { error: "Photo must be a JPG, PNG, WebP, or GIF image." };
     }
-    const ext = safeExt(photoFile.name, ALLOWED_IMAGE_EXTS, "jpg");
+    const ext = safeExt(photoFile.name);
     const path = `${profile.id}/dish_${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from("dish-photos")
@@ -326,7 +322,7 @@ export async function updateDish(
 
   const photoFile = formData.get("photo") as File | null;
   if (photoFile && photoFile.size > 0) {
-    const ext = safeExt(photoFile.name, ALLOWED_IMAGE_EXTS, "jpg");
+    const ext = safeExt(photoFile.name);
     const path = `${profile.id}/dish_${Date.now()}.${ext}`;
     const { error } = await supabase.storage
       .from("dish-photos")
@@ -486,7 +482,14 @@ export async function setOrderStatus(
     await (supabase.from("orders") as any).update(extras).eq("id", orderId);
   }
 
-  // Refund portions when cook cancels an order (portion-size aware)
+  // Refund portions when cook cancels an order (portion-size aware).
+  //
+  // NOTE: Known race condition — if two cancellations for the same cook+date
+  // run concurrently, both may read the same `portions_taken` value and one
+  // refund could be lost. A proper fix requires an atomic SQL decrement (RPC).
+  // The Math.max(0, ...) guard ensures portions_taken never goes negative,
+  // so the worst case is a slightly inflated portions_taken (fewer available
+  // slots than expected), which is a safe failure mode.
   if (status === "cancelled" && order.scheduled_for) {
     const portionsPerUnit = portionSizePortions(order.portion_size ?? "");
     const totalPortions = order.quantity * portionsPerUnit;
@@ -497,11 +500,10 @@ export async function setOrderStatus(
       .eq("date", order.scheduled_for)
       .single();
     if (avail) {
+      const newPortionsTaken = Math.max(0, avail.portions_taken - totalPortions);
       await supabase
         .from("availability")
-        .update({
-          portions_taken: Math.max(0, avail.portions_taken - totalPortions),
-        })
+        .update({ portions_taken: newPortionsTaken })
         .eq("cook_id", profile.id)
         .eq("date", order.scheduled_for);
     }

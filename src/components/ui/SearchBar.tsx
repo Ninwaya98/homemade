@@ -64,11 +64,12 @@ export default function SearchBar({ placeholder = "Search...", defaultValue, ton
         type="text"
         value={value}
         onChange={handleChange}
+        onKeyDown={(e) => { if (e.key === "Escape") handleClear(); }}
         placeholder={placeholder}
         className="w-full bg-transparent py-2.5 pl-10 pr-9 text-sm text-stone-800 placeholder:text-stone-400 outline-none"
       />
       {value && (
-        <button onClick={handleClear} className="absolute right-3 text-stone-400 hover:text-stone-600">
+        <button onClick={handleClear} aria-label="Clear search" className="absolute right-3 text-stone-400 hover:text-stone-600">
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>

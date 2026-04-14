@@ -29,6 +29,9 @@ export async function placeOrder(
   const deliveryAddress = String(formData.get("delivery_address") ?? "").trim() || null;
   const allergenAck = formData.get("allergen_ack") === "on";
 
+  if (notes && notes.length > 500) return { error: "Notes are too long (max 500 characters)." };
+  if (deliveryAddress && deliveryAddress.length > 500) return { error: "Delivery address is too long (max 500 characters)." };
+
   if (!dishId || !scheduledFor) {
     return { error: "Missing dish or date." };
   }
@@ -130,6 +133,9 @@ export async function checkoutBasket(
   const notes = String(formData.get("notes") ?? "").trim() || null;
   const deliveryAddress = String(formData.get("delivery_address") ?? "").trim() || null;
 
+  if (notes && notes.length > 500) return { error: "Notes are too long (max 500 characters)." };
+  if (deliveryAddress && deliveryAddress.length > 500) return { error: "Delivery address is too long (max 500 characters)." };
+
   let items: BasketItem[];
   try {
     items = JSON.parse(itemsJson);
@@ -196,6 +202,8 @@ export async function leaveReview(formData: FormData) {
   const sentiment = String(formData.get("sentiment") ?? "") as "like" | "dislike";
   const text = String(formData.get("text") ?? "").trim() || null;
 
+  if (text && text.length > 2000) return;
+
   if (!orderId || !["like", "dislike"].includes(sentiment)) return;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -259,6 +267,9 @@ export async function placeProductOrder(
   const type = String(formData.get("type") ?? "pickup") as "pickup" | "delivery";
   const notes = String(formData.get("notes") ?? "").trim() || null;
   const deliveryAddress = String(formData.get("delivery_address") ?? "").trim() || null;
+
+  if (notes && notes.length > 500) return { error: "Notes are too long (max 500 characters)." };
+  if (deliveryAddress && deliveryAddress.length > 500) return { error: "Delivery address is too long (max 500 characters)." };
 
   if (!productId) return { error: "Missing product." };
 
