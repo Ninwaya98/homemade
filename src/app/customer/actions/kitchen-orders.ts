@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth";
 import { splitOrderTotal, portionSizePortions } from "@/lib/constants";
 import type { BasketItem } from "@/lib/types";
+import { orderNotesSchema } from "@/lib/schemas";
 
 export type OrderFormState = { error?: string } | undefined;
 export type CheckoutState =
@@ -28,8 +29,8 @@ export async function placeOrder(
   const deliveryAddress = String(formData.get("delivery_address") ?? "").trim() || null;
   const allergenAck = formData.get("allergen_ack") === "on";
 
-  if (notes && notes.length > 500) return { error: "Notes are too long (max 500 characters)." };
-  if (deliveryAddress && deliveryAddress.length > 500) return { error: "Delivery address is too long (max 500 characters)." };
+  const parsedNotes = orderNotesSchema.safeParse({ notes, delivery_address: deliveryAddress });
+  if (!parsedNotes.success) return { error: parsedNotes.error.issues[0].message };
 
   if (!dishId || !scheduledFor) {
     return { error: "Missing dish or date." };
@@ -132,8 +133,8 @@ export async function checkoutBasket(
   const notes = String(formData.get("notes") ?? "").trim() || null;
   const deliveryAddress = String(formData.get("delivery_address") ?? "").trim() || null;
 
-  if (notes && notes.length > 500) return { error: "Notes are too long (max 500 characters)." };
-  if (deliveryAddress && deliveryAddress.length > 500) return { error: "Delivery address is too long (max 500 characters)." };
+  const parsedNotes = orderNotesSchema.safeParse({ notes, delivery_address: deliveryAddress });
+  if (!parsedNotes.success) return { error: parsedNotes.error.issues[0].message };
 
   let items: BasketItem[];
   try {

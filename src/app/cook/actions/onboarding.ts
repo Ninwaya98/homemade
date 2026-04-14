@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth";
 import { ALLOWED_CERT_TYPES, ALLOWED_IMAGE_TYPES, safeCertExt, safeImageExt, validateFileType } from "@/lib/file-validation";
+import { cookOnboardingSchema } from "@/lib/schemas";
 
 // =====================================================================
 // Cook onboarding
@@ -43,20 +44,9 @@ export async function submitOnboarding(
   // Preserve field values on error so the form doesn't clear
   const fields = { bio, cuisine_tags: cuisineRaw, phone, location };
 
-  if (bio.length < 20) {
-    return { error: "Tell customers a bit more about your cooking — at least 20 characters.", fields };
-  }
-  if (cuisineTags.length === 0) {
-    return { error: "Pick at least one cuisine tag.", fields };
-  }
-  if (!phone) {
-    return { error: "We need a phone number so customers can reach you about pickups.", fields };
-  }
-  if (!/^[+\d\s\-()]{7,20}$/.test(phone)) {
-    return { error: "Please enter a valid phone number.", fields };
-  }
-  if (!location) {
-    return { error: "Add a location (city or neighbourhood) so we can match you with nearby customers.", fields };
+  const parsed = cookOnboardingSchema.safeParse({ bio, cuisine_tags: cuisineTags, phone, location });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message, fields };
   }
 
   const certFile = formData.get("certificate") as File | null;

@@ -130,16 +130,7 @@ export async function approveResolution(reviewId: string) {
     resolved_by: admin.id,
   }).eq("id", reviewId);
 
-  // Recalculate — need to figure out the vertical
-  const { data: cookCheck } = await supabase
-    .from("cook_profiles")
-    .select("id")
-    .eq("id", review.reviewee_id)
-    .maybeSingle();
-
-  const { recalculateProfileScore } = await import("@/lib/review-utils");
-  const vertical = cookCheck ? "kitchen" : "market";
-  await recalculateProfileScore(sb, review.reviewee_id, vertical);
+  // Score recalculation handled by database trigger (migration 015)
 
   revalidatePath("/admin/reviews");
 }

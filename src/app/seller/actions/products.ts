@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireSellerProfile } from "@/lib/auth";
 import type { ProductCategory } from "@/lib/types";
 import { ALLOWED_IMAGE_TYPES, safeImageExt, validateFileType } from "@/lib/file-validation";
+import { productSchema } from "@/lib/schemas";
 
 // =====================================================================
 // Product CRUD
@@ -43,15 +44,16 @@ export async function createProduct(
   const stockQuantity = Math.max(0, Math.min(999, Number(formData.get("stock_quantity") ?? 0)));
   const ingredients = String(formData.get("ingredients") ?? "").trim() || null;
 
-  if (!name) return { error: "Product name is required." };
-  if (name.length > 200) return { error: "Product name is too long (max 200 characters)." };
-  if (description.length > 5000) return { error: "Description is too long (max 5000 characters)." };
-  if (materials && materials.length > 500) return { error: "Materials is too long (max 500 characters)." };
-  if (dimensions && dimensions.length > 500) return { error: "Dimensions is too long (max 500 characters)." };
-  if (!Number.isFinite(priceDollars) || priceDollars <= 0) {
-    return { error: "Price must be greater than zero." };
-  }
-  if (!category) return { error: "Select a category." };
+  const parsed = productSchema.safeParse({
+    name,
+    description: description || undefined,
+    price: priceDollars,
+    category,
+    stock_quantity: stockQuantity,
+    materials,
+    dimensions,
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
   if (stockQuantity < 1) return { error: "Stock quantity must be at least 1." };
 
   // Upload photos (multiple, max 5)
@@ -117,14 +119,16 @@ export async function updateProduct(
   const stockQuantity = Math.max(0, Math.min(999, Number(formData.get("stock_quantity") ?? 0)));
   const ingredients = String(formData.get("ingredients") ?? "").trim() || null;
 
-  if (!name) return { error: "Product name is required." };
-  if (name.length > 200) return { error: "Product name is too long (max 200 characters)." };
-  if (description.length > 5000) return { error: "Description is too long (max 5000 characters)." };
-  if (materials && materials.length > 500) return { error: "Materials is too long (max 500 characters)." };
-  if (dimensions && dimensions.length > 500) return { error: "Dimensions is too long (max 500 characters)." };
-  if (!Number.isFinite(priceDollars) || priceDollars <= 0) {
-    return { error: "Price must be greater than zero." };
-  }
+  const parsed = productSchema.safeParse({
+    name,
+    description: description || undefined,
+    price: priceDollars,
+    category,
+    stock_quantity: stockQuantity,
+    materials,
+    dimensions,
+  });
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   // Retained photos (existing URLs the user kept)
   const retainedRaw = String(formData.get("retained_photo_urls") ?? "");

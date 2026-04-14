@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireCookProfile } from "@/lib/auth";
 import { ALLERGENS, PORTION_SIZES } from "@/lib/constants";
 import { ALLOWED_IMAGE_TYPES, safeImageExt, validateFileType } from "@/lib/file-validation";
+import { dishSchema } from "@/lib/schemas";
 import type {
   DishStatus,
   DishPortionSizes,
@@ -84,7 +85,8 @@ export async function createDish(
   const description = String(formData.get("description") ?? "").trim();
   const cuisineTag = String(formData.get("cuisine_tag") ?? "").trim() || null;
 
-  if (!name) return { error: "Dish name is required." };
+  const parsedDish = dishSchema.safeParse({ name, description: description || undefined });
+  if (!parsedDish.success) return { error: parsedDish.error.issues[0].message };
 
   const { portionSizes, minPrice, error: psError } = parsePortionSizes(formData);
   if (psError) return { error: psError };
@@ -149,7 +151,8 @@ export async function updateDish(
   const description = String(formData.get("description") ?? "").trim();
   const cuisineTag = String(formData.get("cuisine_tag") ?? "").trim() || null;
 
-  if (!name) return { error: "Dish name is required." };
+  const parsedDish = dishSchema.safeParse({ name, description: description || undefined });
+  if (!parsedDish.success) return { error: parsedDish.error.issues[0].message };
 
   const { portionSizes, minPrice, error: psError } = parsePortionSizes(formData);
   if (psError) return { error: psError };

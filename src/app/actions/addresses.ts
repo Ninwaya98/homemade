@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { addressSchema } from "@/lib/schemas";
 
 export async function getAddresses() {
   const supabase = await createClient();
@@ -27,11 +28,8 @@ export async function addAddress(formData: FormData) {
   const notes = (formData.get("notes") as string)?.trim() || null;
   const is_default = formData.get("is_default") === "true";
 
-  if (!address_line) return { error: "Address is required" };
-  if (label.length > 100) return { error: "Label is too long (max 100 characters)" };
-  if (address_line.length > 500) return { error: "Address is too long (max 500 characters)" };
-  if (city && city.length > 200) return { error: "City is too long (max 200 characters)" };
-  if (notes && notes.length > 500) return { error: "Notes are too long (max 500 characters)" };
+  const parsed = addressSchema.safeParse({ label, address_line, city, notes });
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)
@@ -56,11 +54,8 @@ export async function updateAddress(formData: FormData) {
   const notes = (formData.get("notes") as string)?.trim() || null;
   const is_default = formData.get("is_default") === "true";
 
-  if (!address_line) return { error: "Address is required" };
-  if (label.length > 100) return { error: "Label is too long (max 100 characters)" };
-  if (address_line.length > 500) return { error: "Address is too long (max 500 characters)" };
-  if (city && city.length > 200) return { error: "City is too long (max 200 characters)" };
-  if (notes && notes.length > 500) return { error: "Notes are too long (max 500 characters)" };
+  const parsed = addressSchema.safeParse({ label, address_line, city, notes });
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await (supabase as any)

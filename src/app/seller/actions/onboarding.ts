@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth";
 import type { ProductCategory } from "@/lib/types";
 import { ALLOWED_IMAGE_TYPES, safeImageExt, validateFileType } from "@/lib/file-validation";
+import { sellerOnboardingSchema } from "@/lib/schemas";
 
 // =====================================================================
 // Seller onboarding
@@ -28,29 +29,15 @@ export async function submitSellerOnboarding(
   const phone = String(formData.get("phone") ?? "").trim();
   const location = String(formData.get("location") ?? "").trim();
 
-  if (!shopName || shopName.length < 3) {
-    return { error: "Shop name must be at least 3 characters." };
-  }
-  if (shopName.length > 200) {
-    return { error: "Shop name is too long (max 200 characters)." };
-  }
-  if (shopDescription.length > 2000) {
-    return { error: "Shop description is too long (max 2000 characters)." };
-  }
-  if (shopDescription.length < 20) {
-    return { error: "Tell customers more about your shop — at least 20 characters." };
-  }
-  if (!category) {
-    return { error: "Pick a primary category for your shop." };
-  }
-  if (!phone) {
-    return { error: "We need a phone number so customers can reach you." };
-  }
-  if (!/^[+\d\s\-()]{7,20}$/.test(phone)) {
-    return { error: "Please enter a valid phone number." };
-  }
-  if (!location) {
-    return { error: "Add a location so we can match you with nearby customers." };
+  const parsed = sellerOnboardingSchema.safeParse({
+    shop_name: shopName,
+    shop_description: shopDescription,
+    category,
+    phone,
+    location,
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
   }
 
   // Update profile with phone + location (via RPC to bypass RLS recursion)

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth";
+import { reviewSchema } from "@/lib/schemas";
 
 // Customer leaves a review on a completed order (like/dislike model).
 export async function leaveReview(formData: FormData) {
@@ -14,9 +15,8 @@ export async function leaveReview(formData: FormData) {
   const sentiment = String(formData.get("sentiment") ?? "") as "like" | "dislike";
   const text = String(formData.get("text") ?? "").trim() || null;
 
-  if (text && text.length > 2000) return;
-
-  if (!orderId || !["like", "dislike"].includes(sentiment)) return;
+  const parsed = reviewSchema.safeParse({ order_id: orderId, sentiment, text });
+  if (!parsed.success) return;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: order } = await (supabase as any)
@@ -52,10 +52,7 @@ export async function leaveReview(formData: FormData) {
     { onConflict: "order_id,role" },
   );
 
-  // Recalculate profile score using the new utility
-  const { recalculateProfileScore } = await import("@/lib/review-utils");
-  const vertical = orderFull.vertical ?? "kitchen";
-  await recalculateProfileScore(supabase, revieweeId, vertical);
+  // Score recalculation handled by database trigger (migration 015)
 
   revalidatePath(`/customer/orders/${orderId}`);
   if (orderFull.cook_id) revalidatePath(`/customer/cooks/${orderFull.cook_id}`);

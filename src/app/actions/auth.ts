@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { signUpSchema } from "@/lib/schemas";
 
 export type AuthFormState =
   | {
@@ -20,21 +21,10 @@ export async function signUp(
   const password = String(formData.get("password") ?? "");
   const fullName = String(formData.get("full_name") ?? "").trim();
 
-  if (!email || !password || !fullName) {
+  const parsed = signUpSchema.safeParse({ email, password, full_name: fullName });
+  if (!parsed.success) {
     return {
-      error: "Please fill in your name, email, and password.",
-      fields: { email, full_name: fullName },
-    };
-  }
-  if (fullName.length > 255) {
-    return { error: "Name is too long (max 255 characters).", fields: { email, full_name: fullName } };
-  }
-  if (email.length > 320) {
-    return { error: "Email is too long.", fields: { email, full_name: fullName } };
-  }
-  if (password.length < 8) {
-    return {
-      error: "Password must be at least 8 characters.",
+      error: parsed.error.issues[0].message,
       fields: { email, full_name: fullName },
     };
   }

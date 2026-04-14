@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
-import { recalculateProfileScore } from "@/lib/review-utils";
+// Score recalculation now handled by database trigger (migration 015)
 
 const anthropic = new Anthropic(); // reads ANTHROPIC_API_KEY from env
 
@@ -93,14 +93,7 @@ export async function POST(request: Request) {
         resolved_by: admin.id,
       }).eq("id", reviewId);
 
-      // Recalculate score
-      const { data: cookCheck } = await supabase
-        .from("cook_profiles")
-        .select("id")
-        .eq("id", review.reviewee_id)
-        .maybeSingle();
-      const vertical = cookCheck ? "kitchen" : "market";
-      await recalculateProfileScore(sb, review.reviewee_id, vertical);
+      // Score recalculation handled by database trigger (migration 015)
     }
 
     return NextResponse.json({
