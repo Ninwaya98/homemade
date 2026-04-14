@@ -1,48 +1,65 @@
 # HomeMade
 
-Two-vertical marketplace platform: **HomeMade Kitchen** (home-cooked food) + **HomeMade Market** (handmade goods).
+Two-vertical marketplace: **HomeMade Food** (home-cooked food, rose) + **HomeMade Art** (handmade goods, sky blue). Brand color = purple (rose + blue).
 
 ## Stack
-- Next.js 16 (App Router, TypeScript, Tailwind v4)
-- Supabase (Postgres + Auth + Storage)
+- Next.js 16 (App Router, TypeScript, Tailwind v4 with `@custom-variant dark`)
+- Supabase (Postgres + Auth + Storage + RLS + Triggers)
+- Zod (server action input validation)
 - Stripe Connect (stubbed — not wired yet)
 
-## Key files
-- `src/lib/auth.ts` — `getCurrentProfile()`, `requireRole(role)`
-- `src/lib/constants.ts` — allergens, cuisines, product categories, price helpers
-- `src/lib/types.ts` — convenience type aliases from generated DB types + manual seller types
-- `src/lib/order-utils.ts` — shared order FSM transitions and timestamp helpers
-- `src/lib/supabase/{client,server,proxy}.ts` — Supabase client setup
-- `src/proxy.ts` — Next.js 16 middleware (guards /cook, /seller, /customer, /admin)
+## Project structure
+
+### Actions — split by feature domain (barrel re-exported)
+```
+src/app/cook/actions/       — onboarding, dishes, schedule, orders, reviews
+src/app/seller/actions/     — onboarding, products, orders, reviews
+src/app/customer/actions/   — kitchen-orders, market-orders, reviews
+src/app/actions/            — auth, favorites, addresses
+```
+Each role's `actions.ts` re-exports from `actions/index.ts`. Import from `@/app/cook/actions` works.
+
+### Constants — split by domain (barrel re-exported)
+```
+src/lib/constants/          — allergens, portions, products, pricing, dates
+```
+Import from `@/lib/constants` works (re-exports from `constants/index.ts`).
+
+### Components — barrel exports available
+```
+src/components/ui/index.ts  — all UI components (Button, Card, Badge, Field, etc.)
+src/components/feed/index.ts — all feed components (DishCard, ProductCard, CookCard, etc.)
+```
+
+### Key lib files
+- `src/lib/schemas.ts` — Zod validation schemas for all server actions
+- `src/lib/file-validation.ts` — shared file type/size validation
+- `src/lib/hooks.ts` — useClickOutside, useEscapeKey
+- `src/lib/auth.ts` — auth guards (41 importers — don't restructure)
+- `src/lib/order-utils.ts` — shared order FSM
+- `src/lib/review-utils.ts` — score helpers (DB trigger handles recalculation)
+- `src/lib/supabase/{client,server,proxy}.ts` — Supabase clients
+- `src/proxy.ts` — Next.js 16 middleware
 
 ## Roles
-- `customer` — browses both Kitchen and Market, places orders
+- `customer` — browses Kitchen + Market, places orders, leaves reviews
 - `cook` — lists dishes, manages food orders (Kitchen vertical)
 - `seller` — lists products, manages goods orders (Market vertical)
-- `admin` — approves cooks/sellers, monitors health dashboards
-
-## Route structure
-```
-/                     Landing (two-vertical hero)
-/sign-up              Role selection: customer | cook | seller
-/cook/*               Kitchen seller dashboard
-/seller/*             Market seller dashboard
-/customer             Two-doors chooser (Kitchen | Market)
-/customer/kitchen     Food browse feed
-/customer/market      Goods browse feed
-/customer/orders      Unified order history (both verticals)
-/admin                Cook approvals + seller approvals
-```
+- `admin` — approves cooks/sellers, moderates reviews
 
 ## Database
-- Migrations in `supabase/migrations/` (001-007)
+- 15 migrations in `supabase/migrations/` (001-015)
 - Generated types: `npx supabase gen types typescript --linked > src/lib/database.types.ts 2>/dev/null`
-- Seller tables (007) not in generated types yet — manual types in `types.ts`, queries use `as any` casts
+- Migration 014: security fixes (RLS, price validation, indexes)
+- Migration 015: review score trigger (auto-recalculates on review changes)
 
 ## Important patterns
-- Seller/product queries cast `supabase as any` since generated types don't include migration 007 tables
-- Order table is unified with `vertical: 'kitchen' | 'market'` discriminator
-- `cook_payout_cents` column is reused for seller payouts (same column, both verticals)
-- Order FSM logic is shared via `src/lib/order-utils.ts`
+- Order table unified with `vertical: 'kitchen' | 'market'` discriminator
+- Review scores calculated by DB trigger, not JavaScript
+- All server actions validated with Zod schemas from `src/lib/schemas.ts`
+- Dark mode: `@custom-variant dark` + global CSS overrides in globals.css
+- Card accents: thin border + corner gradient wash (not blurry blobs)
+- Dashboard headers: cook = "HomeMade Kitchen", seller = "HomeMade Art"
+- Dark mode toggle lives inside ProfileDropdown, not as standalone button
 
 @AGENTS.md
