@@ -40,7 +40,7 @@ export function ProfileDropdown({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-56 origin-top-right animate-scale-in rounded-2xl glass-strong dark:!bg-[rgba(20,17,35,0.97)] dark:border-violet-500/20 border border-violet-100 p-1.5 shadow-xl shadow-violet-500/10">
+        <div className="absolute right-0 top-full z-50 mt-2 w-56 origin-top-right animate-scale-in rounded-2xl glass-strong border border-violet-100 p-1.5 shadow-xl shadow-violet-500/10 profile-dropdown">
           {/* Header */}
           <div className="px-3 py-2.5">
             <p className="text-sm font-semibold text-stone-900 truncate">{name}</p>
