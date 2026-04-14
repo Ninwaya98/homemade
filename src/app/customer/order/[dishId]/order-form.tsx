@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/Button";
@@ -170,8 +171,7 @@ export function OrderForm({
       <Card>
         <div className="flex items-start gap-4">
           {dish.photo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={dish.photo_url} alt="" className="h-24 w-24 flex-none rounded-xl object-cover shadow-sm" />
+            <Image src={dish.photo_url} alt="" width={96} height={96} className="h-24 w-24 flex-none rounded-xl object-cover shadow-sm" />
           ) : (
             <div className="flex h-24 w-24 flex-none items-center justify-center rounded-xl bg-stone-100 text-3xl">🍽</div>
           )}

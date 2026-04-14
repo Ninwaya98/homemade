@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -62,8 +63,7 @@ export default async function CookOrderDetail({
       <Card>
         <div className="flex items-start gap-4">
           {dish?.photo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={dish.photo_url} alt="" className="h-20 w-20 flex-none rounded-xl object-cover shadow-sm" />
+            <Image src={dish.photo_url} alt="" width={80} height={80} className="h-20 w-20 flex-none rounded-xl object-cover shadow-sm" />
           ) : (
             <div className="flex h-20 w-20 flex-none items-center justify-center rounded-xl bg-stone-100 text-2xl">🍽</div>
           )}

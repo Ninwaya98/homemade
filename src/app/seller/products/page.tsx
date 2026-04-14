@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
@@ -54,10 +55,11 @@ export default async function SellerProductsPage({
               <Card hover>
                 <div className="flex items-center gap-4">
                   {p.photo_urls.length > 0 ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={p.photo_urls[0]}
                       alt=""
+                      width={64}
+                      height={64}
                       className="h-16 w-16 flex-none rounded-xl object-cover"
                     />
                   ) : (
@@ -68,16 +70,37 @@ export default async function SellerProductsPage({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-stone-900">{p.name}</p>
-                      <Badge tone={p.status === "active" ? "green" : p.status === "out_of_stock" ? "red" : "neutral"}>
-                        {p.status === "out_of_stock" ? "out of stock" : p.status}
+                      <Badge tone={
+                        p.stock_quantity === 0 ? "red" :
+                        p.status === "active" ? "green" :
+                        p.status === "paused" ? "neutral" : "red"
+                      }>
+                        {p.stock_quantity === 0 ? "out of stock" :
+                         p.status === "active" ? "active" :
+                         p.status === "paused" ? "paused" : p.status}
                       </Badge>
                     </div>
-                    <p className="text-sm font-medium text-violet-600">
+                    <p className="text-sm font-medium text-sky-600">
                       {formatPrice(p.price_cents)}
                     </p>
-                    <p className="text-xs text-stone-500">
-                      {productCategoryLabel(p.category)} · {p.stock_quantity} in stock
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs text-stone-500">
+                        {productCategoryLabel(p.category)}
+                      </p>
+                      {p.stock_quantity === 0 ? (
+                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
+                          No stock — tap to restock
+                        </span>
+                      ) : p.stock_quantity <= 3 ? (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">
+                          Low stock: {p.stock_quantity} left
+                        </span>
+                      ) : (
+                        <span className="text-xs text-stone-400">
+                          {p.stock_quantity} in stock
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </Card>

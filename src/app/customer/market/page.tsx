@@ -1,9 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { createClient } from "@/lib/supabase/server";
 import { EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
+import SearchBar from "@/components/ui/SearchBar";
 import { formatPrice, PRODUCT_CATEGORIES, productCategoryLabel } from "@/lib/constants";
 
 export const metadata = {
@@ -13,11 +16,12 @@ export const metadata = {
 export default async function MarketBrowsePage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; q?: string }>;
 }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
   const sp = await searchParams;
+  const q = sp.q?.trim();
 
   let sellersQuery = supabase
     .from("seller_profiles")
@@ -52,16 +56,28 @@ export default async function MarketBrowsePage({
       activeProducts: (s.products ?? []).filter((p) => p.status === "active"),
     }))
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .filter((s: any) => s.activeProducts.length > 0);
+    .filter((s: any) => s.activeProducts.length > 0)
+    .filter((s: any) => {
+      if (!q) return true;
+      const ql = q.toLowerCase();
+      const shopMatch = s.shop_name?.toLowerCase().includes(ql);
+      const descMatch = s.shop_description?.toLowerCase().includes(ql);
+      const productMatch = s.activeProducts.some((p: any) => p.name.toLowerCase().includes(ql));
+      return shopMatch || descMatch || productMatch;
+    });
 
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold text-stone-900">
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">
           HomeMade Market
         </h1>
-        <p className="mt-1 text-sm text-stone-500">Handmade goods from local artisans and makers</p>
+        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">Handmade goods from local artisans and makers</p>
       </header>
+
+      <Suspense>
+        <SearchBar placeholder="Search sellers or products..." tone="sky" />
+      </Suspense>
 
       {/* Category filter pills */}
       <div className="-mx-1 flex flex-wrap gap-1.5">
@@ -93,10 +109,11 @@ export default async function MarketBrowsePage({
                 className="flex items-start gap-4 p-5 transition hover:bg-stone-50/50"
               >
                 {seller.photo_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={seller.photo_url}
                     alt=""
+                    width={64}
+                    height={64}
                     className="h-16 w-16 flex-none rounded-2xl object-cover shadow-sm ring-2 ring-stone-200"
                   />
                 ) : (
@@ -142,10 +159,11 @@ export default async function MarketBrowsePage({
                       className="group flex items-center gap-3 rounded-xl glass p-3 transition hover:border-violet-300 hover:shadow-md"
                     >
                       {product.photo_urls.length > 0 ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={product.photo_urls[0]}
                           alt=""
+                          width={56}
+                          height={56}
                           className="h-14 w-14 flex-none rounded-lg object-cover"
                         />
                       ) : (

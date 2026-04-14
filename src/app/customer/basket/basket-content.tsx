@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useActionState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -68,8 +69,7 @@ export function BasketContent() {
           <Card key={item.id}>
             <div className="flex items-start gap-3">
               {item.photoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={item.photoUrl} alt="" className="h-14 w-14 flex-none rounded-xl object-cover shadow-sm" />
+                <Image src={item.photoUrl} alt="" width={56} height={56} className="h-14 w-14 flex-none rounded-xl object-cover shadow-sm" />
               ) : (
                 <div className="flex h-14 w-14 flex-none items-center justify-center rounded-xl bg-stone-100 text-xl">🍽</div>
               )}

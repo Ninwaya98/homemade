@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
+import { useTheme } from "@/lib/theme";
 
 export function ProfileDropdown({
   name,
@@ -15,6 +16,7 @@ export function ProfileDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const { theme, toggleTheme } = useTheme();
 
   const initial = name.trim().charAt(0).toUpperCase() || "?";
   const hasShop = hasCookShop || hasSellerShop;
@@ -77,6 +79,12 @@ export function ProfileDropdown({
             label="My orders"
             onClick={() => setOpen(false)}
           />
+          <DropdownLink
+            href="/customer/favorites"
+            icon="♡"
+            label="My favorites"
+            onClick={() => setOpen(false)}
+          />
 
           {/* Shop links */}
           {hasShop && (
@@ -106,11 +114,21 @@ export function ProfileDropdown({
 
           <div className="my-1 border-t border-stone-200/60" />
 
+          {/* Theme toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-stone-700 dark:text-stone-300 transition hover:bg-violet-50 dark:hover:bg-violet-900/30 hover:text-violet-800 dark:hover:text-violet-300"
+          >
+            <span className="text-xs">{theme === "dark" ? "☀" : "🌙"}</span>
+            {theme === "dark" ? "Light mode" : "Dark mode"}
+          </button>
+
           {/* Sign out */}
           <form action={signOut}>
             <button
               type="submit"
-              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-stone-600 transition hover:bg-red-50 hover:text-red-700"
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-stone-600 dark:text-stone-400 transition hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 dark:hover:text-red-400"
             >
               <span className="text-xs">↩</span>
               Sign out

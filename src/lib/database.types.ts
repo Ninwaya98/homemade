@@ -96,11 +96,17 @@ export type Database = {
           certification_url: string | null
           created_at: string
           cuisine_tags: string[]
+          dislike_count: number
           id: string
+          is_available: boolean
           last_active_at: string
+          like_count: number
           photo_url: string | null
           rating_count: number
+          resolved_count: number
+          score: number | null
           status: Database["public"]["Enums"]["cook_status"]
+          weekly_schedule: Json | null
         }
         Insert: {
           approved_at?: string | null
@@ -110,11 +116,17 @@ export type Database = {
           certification_url?: string | null
           created_at?: string
           cuisine_tags?: string[]
+          dislike_count?: number
           id: string
+          is_available?: boolean
           last_active_at?: string
+          like_count?: number
           photo_url?: string | null
           rating_count?: number
+          resolved_count?: number
+          score?: number | null
           status?: Database["public"]["Enums"]["cook_status"]
+          weekly_schedule?: Json | null
         }
         Update: {
           approved_at?: string | null
@@ -124,11 +136,17 @@ export type Database = {
           certification_url?: string | null
           created_at?: string
           cuisine_tags?: string[]
+          dislike_count?: number
           id?: string
+          is_available?: boolean
           last_active_at?: string
+          like_count?: number
           photo_url?: string | null
           rating_count?: number
+          resolved_count?: number
+          score?: number | null
           status?: Database["public"]["Enums"]["cook_status"]
+          weekly_schedule?: Json | null
         }
         Relationships: [
           {
@@ -158,6 +176,7 @@ export type Database = {
           name: string
           photo_url: string | null
           portion_size: string | null
+          portion_sizes: Json | null
           price_cents: number
           status: Database["public"]["Enums"]["dish_status"]
           updated_at: string
@@ -172,6 +191,7 @@ export type Database = {
           name: string
           photo_url?: string | null
           portion_size?: string | null
+          portion_sizes?: Json | null
           price_cents: number
           status?: Database["public"]["Enums"]["dish_status"]
           updated_at?: string
@@ -186,6 +206,7 @@ export type Database = {
           name?: string
           photo_url?: string | null
           portion_size?: string | null
+          portion_sizes?: Json | null
           price_cents?: number
           status?: Database["public"]["Enums"]["dish_status"]
           updated_at?: string
@@ -209,52 +230,82 @@ export type Database = {
       }
       orders: {
         Row: {
+          cancelled_at: string | null
           commission_cents: number
-          cook_id: string
+          completed_at: string | null
+          confirmed_at: string | null
+          cook_id: string | null
           cook_payout_cents: number
           created_at: string
           customer_id: string
-          dish_id: string
+          delivery_address: string | null
+          dish_id: string | null
+          estimated_ready_time: string | null
           id: string
           notes: string | null
+          portion_size: string | null
+          product_id: string | null
           quantity: number
+          ready_at: string | null
           scheduled_for: string | null
+          seller_id: string | null
           status: Database["public"]["Enums"]["order_status"]
           total_cents: number
           type: Database["public"]["Enums"]["order_type"]
           updated_at: string
+          vertical: Database["public"]["Enums"]["order_vertical"]
         }
         Insert: {
+          cancelled_at?: string | null
           commission_cents: number
-          cook_id: string
+          completed_at?: string | null
+          confirmed_at?: string | null
+          cook_id?: string | null
           cook_payout_cents: number
           created_at?: string
           customer_id: string
-          dish_id: string
+          delivery_address?: string | null
+          dish_id?: string | null
+          estimated_ready_time?: string | null
           id?: string
           notes?: string | null
+          portion_size?: string | null
+          product_id?: string | null
           quantity: number
+          ready_at?: string | null
           scheduled_for?: string | null
+          seller_id?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           total_cents: number
           type: Database["public"]["Enums"]["order_type"]
           updated_at?: string
+          vertical?: Database["public"]["Enums"]["order_vertical"]
         }
         Update: {
+          cancelled_at?: string | null
           commission_cents?: number
-          cook_id?: string
+          completed_at?: string | null
+          confirmed_at?: string | null
+          cook_id?: string | null
           cook_payout_cents?: number
           created_at?: string
           customer_id?: string
-          dish_id?: string
+          delivery_address?: string | null
+          dish_id?: string | null
+          estimated_ready_time?: string | null
           id?: string
           notes?: string | null
+          portion_size?: string | null
+          product_id?: string | null
           quantity?: number
+          ready_at?: string | null
           scheduled_for?: string | null
+          seller_id?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           total_cents?: number
           type?: Database["public"]["Enums"]["order_type"]
           updated_at?: string
+          vertical?: Database["public"]["Enums"]["order_vertical"]
         }
         Relationships: [
           {
@@ -285,36 +336,60 @@ export type Database = {
             referencedRelation: "dishes"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "seller_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "seller_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       payouts: {
         Row: {
           amount_cents: number
-          cook_id: string
+          cook_id: string | null
           created_at: string
           id: string
           period_end: string
           period_start: string
+          seller_id: string | null
           status: Database["public"]["Enums"]["payout_status"]
           stripe_transfer_id: string | null
         }
         Insert: {
           amount_cents: number
-          cook_id: string
+          cook_id?: string | null
           created_at?: string
           id?: string
           period_end: string
           period_start: string
+          seller_id?: string | null
           status?: Database["public"]["Enums"]["payout_status"]
           stripe_transfer_id?: string | null
         }
         Update: {
           amount_cents?: number
-          cook_id?: string
+          cook_id?: string | null
           created_at?: string
           id?: string
           period_end?: string
           period_start?: string
+          seller_id?: string | null
           status?: Database["public"]["Enums"]["payout_status"]
           stripe_transfer_id?: string | null
         }
@@ -331,6 +406,92 @@ export type Database = {
             columns: ["cook_id"]
             isOneToOne: false
             referencedRelation: "cook_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payouts_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "seller_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payouts_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "seller_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: Database["public"]["Enums"]["product_category"]
+          condition: string
+          created_at: string
+          description: string | null
+          dimensions: string | null
+          id: string
+          ingredients: string | null
+          materials: string | null
+          name: string
+          photo_urls: string[]
+          price_cents: number
+          seller_id: string
+          status: Database["public"]["Enums"]["product_status"]
+          stock_quantity: number
+          subcategory: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["product_category"]
+          condition?: string
+          created_at?: string
+          description?: string | null
+          dimensions?: string | null
+          id?: string
+          ingredients?: string | null
+          materials?: string | null
+          name: string
+          photo_urls?: string[]
+          price_cents: number
+          seller_id: string
+          status?: Database["public"]["Enums"]["product_status"]
+          stock_quantity?: number
+          subcategory?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["product_category"]
+          condition?: string
+          created_at?: string
+          description?: string | null
+          dimensions?: string | null
+          id?: string
+          ingredients?: string | null
+          materials?: string | null
+          name?: string
+          photo_urls?: string[]
+          price_cents?: number
+          seller_id?: string
+          status?: Database["public"]["Enums"]["product_status"]
+          stock_quantity?: number
+          subcategory?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "seller_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "seller_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -367,33 +528,57 @@ export type Database = {
       }
       reviews: {
         Row: {
+          ai_sentiment: string | null
+          ai_summary: string | null
           created_at: string
           id: string
           order_id: string
           rating: number
+          resolution_status: string
+          resolved_at: string | null
+          resolved_by: string | null
+          response_at: string | null
+          response_text: string | null
           reviewee_id: string
           reviewer_id: string
           role: Database["public"]["Enums"]["review_role"]
+          sentiment: string
           text: string | null
         }
         Insert: {
+          ai_sentiment?: string | null
+          ai_summary?: string | null
           created_at?: string
           id?: string
           order_id: string
           rating: number
+          resolution_status?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          response_at?: string | null
+          response_text?: string | null
           reviewee_id: string
           reviewer_id: string
           role: Database["public"]["Enums"]["review_role"]
+          sentiment: string
           text?: string | null
         }
         Update: {
+          ai_sentiment?: string | null
+          ai_summary?: string | null
           created_at?: string
           id?: string
           order_id?: string
           rating?: number
+          resolution_status?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          response_at?: string | null
+          response_text?: string | null
           reviewee_id?: string
           reviewer_id?: string
           role?: Database["public"]["Enums"]["review_role"]
+          sentiment?: string
           text?: string | null
         }
         Relationships: [
@@ -402,6 +587,13 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -415,6 +607,78 @@ export type Database = {
             foreignKeyName: "reviews_reviewer_id_fkey"
             columns: ["reviewer_id"]
             isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seller_profiles: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          avg_rating: number
+          category: Database["public"]["Enums"]["product_category"]
+          created_at: string
+          dislike_count: number
+          id: string
+          last_active_at: string
+          like_count: number
+          photo_url: string | null
+          rating_count: number
+          resolved_count: number
+          score: number | null
+          shop_description: string | null
+          shop_name: string
+          status: Database["public"]["Enums"]["seller_status"]
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          avg_rating?: number
+          category: Database["public"]["Enums"]["product_category"]
+          created_at?: string
+          dislike_count?: number
+          id: string
+          last_active_at?: string
+          like_count?: number
+          photo_url?: string | null
+          rating_count?: number
+          resolved_count?: number
+          score?: number | null
+          shop_description?: string | null
+          shop_name: string
+          status?: Database["public"]["Enums"]["seller_status"]
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          avg_rating?: number
+          category?: Database["public"]["Enums"]["product_category"]
+          created_at?: string
+          dislike_count?: number
+          id?: string
+          last_active_at?: string
+          like_count?: number
+          photo_url?: string | null
+          rating_count?: number
+          resolved_count?: number
+          score?: number | null
+          shop_description?: string | null
+          shop_name?: string
+          status?: Database["public"]["Enums"]["seller_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_profiles_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -446,21 +710,78 @@ export type Database = {
           },
         ]
       }
+      seller_health: {
+        Row: {
+          active_products: number | null
+          avg_rating: number | null
+          category: Database["public"]["Enums"]["product_category"] | null
+          created_at: string | null
+          full_name: string | null
+          health_status: string | null
+          id: string | null
+          last_active_at: string | null
+          last_order_at: string | null
+          orders_last_7d: number | null
+          rating_count: number | null
+          shop_name: string | null
+          status: Database["public"]["Enums"]["seller_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       is_admin: { Args: never; Returns: boolean }
-      place_order: {
+      place_order:
+        | {
+            Args: {
+              p_commission_cents: number
+              p_cook_payout_cents: number
+              p_dish_id: string
+              p_notes?: string
+              p_quantity: number
+              p_scheduled_for: string
+              p_total_cents: number
+              p_type: Database["public"]["Enums"]["order_type"]
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              p_commission_cents: number
+              p_cook_payout_cents: number
+              p_dish_id: string
+              p_notes?: string
+              p_portion_size?: string
+              p_quantity: number
+              p_scheduled_for: string
+              p_total_cents: number
+              p_type: Database["public"]["Enums"]["order_type"]
+            }
+            Returns: string
+          }
+      place_product_order: {
         Args: {
           p_commission_cents: number
-          p_cook_payout_cents: number
-          p_dish_id: string
           p_notes?: string
+          p_product_id: string
           p_quantity: number
-          p_scheduled_for: string
+          p_seller_payout_cents: number
           p_total_cents: number
           p_type: Database["public"]["Enums"]["order_type"]
         }
         Returns: string
+      }
+      update_own_profile: {
+        Args: { p_location?: string; p_phone?: string }
+        Returns: undefined
       }
     }
     Enums: {
@@ -474,9 +795,17 @@ export type Database = {
         | "completed"
         | "cancelled"
       order_type: "pickup" | "delivery"
+      order_vertical: "kitchen" | "market"
       payout_status: "pending" | "paid" | "failed"
-      review_role: "customer" | "cook"
-      user_role: "cook" | "customer" | "admin"
+      product_category:
+        | "crafts_art"
+        | "clothing_accessories"
+        | "home_decor"
+        | "food_products"
+      product_status: "active" | "paused" | "out_of_stock"
+      review_role: "customer" | "cook" | "seller"
+      seller_status: "pending" | "approved" | "suspended"
+      user_role: "cook" | "customer" | "admin" | "seller"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -612,9 +941,18 @@ export const Constants = {
       dish_status: ["active", "paused", "sold_out"],
       order_status: ["pending", "confirmed", "ready", "completed", "cancelled"],
       order_type: ["pickup", "delivery"],
+      order_vertical: ["kitchen", "market"],
       payout_status: ["pending", "paid", "failed"],
-      review_role: ["customer", "cook"],
-      user_role: ["cook", "customer", "admin"],
+      product_category: [
+        "crafts_art",
+        "clothing_accessories",
+        "home_decor",
+        "food_products",
+      ],
+      product_status: ["active", "paused", "out_of_stock"],
+      review_role: ["customer", "cook", "seller"],
+      seller_status: ["pending", "approved", "suspended"],
+      user_role: ["cook", "customer", "admin", "seller"],
     },
   },
 } as const

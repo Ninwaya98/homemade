@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, TextareaField } from "@/components/ui/Field";
 import { Card } from "@/components/ui/Card";
 import { PRODUCT_CATEGORIES, PRODUCT_CONDITIONS } from "@/lib/constants";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 
 const initial: ProductFormState = undefined;
 
@@ -162,7 +163,7 @@ export function ProductForm({
       <Card>
         <h2 className="text-base font-semibold text-stone-900">Photos</h2>
         <p className="mt-1 text-sm text-stone-600">
-          Add up to 5 photos of your product. The first one is the main image.
+          Add up to 5 photos. Any format — auto-cropped to square, compressed to &lt;1 MB.
         </p>
 
         {retainedPhotos.length > 0 && (
@@ -173,7 +174,7 @@ export function ProductForm({
                 <img
                   src={url}
                   alt=""
-                  className="h-20 w-20 rounded-lg object-cover"
+                  className="h-20 w-20 rounded-xl object-cover border border-stone-200 shadow-sm"
                 />
                 <button
                   type="button"
@@ -188,13 +189,7 @@ export function ProductForm({
         )}
 
         <div className="mt-4">
-          <input
-            type="file"
-            name="photos"
-            accept="image/jpeg,image/png,image/webp"
-            multiple
-            className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-full file:border-0 file:bg-violet-600 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-violet-700"
-          />
+          <ImageUpload name="photos" multiple />
         </div>
       </Card>
 

@@ -70,6 +70,37 @@ textarea {
     linear-gradient(180deg, #f8f7ff 0%, #faf5ff 100%);
 }
 
+.gradient-mesh-food {
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(254,205,211,0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(254,205,211,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(186,230,253,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(196,181,253,0.2) 0%, transparent 50%);
+}
+
+.gradient-mesh-art {
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(186,230,253,0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(186,230,253,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(254,205,211,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(196,181,253,0.2) 0%, transparent 50%);
+}
+
+/* ── Zone section tints ──────────────────────────────────── */
+
+/* Zone classes removed — DynamicBackground handles colors via DOM */
+
+/* ── Card tints for mixed zone ──────────────────────────── */
+
+.card-tint-rose {
+  border-color: rgba(254,205,211,0.5) !important;
+  box-shadow: 0 2px 12px rgba(251,113,133,0.08), 0 1px 4px rgba(0,0,0,0.02) !important;
+}
+.card-tint-sky {
+  border-color: rgba(186,230,253,0.5) !important;
+  box-shadow: 0 2px 12px rgba(56,189,248,0.08), 0 1px 4px rgba(0,0,0,0.02) !important;
+}
+
 .gradient-purple {
   background: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 100%);
 }
@@ -179,4 +210,116 @@ textarea {
   background-clip: text;
   color: transparent;
   animation: gradientShift 8s ease-in-out infinite;
+}
+
+/* ── Toast slide-in ────────────────────────────────────────── */
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Dark mode ─────────────────────────────────────────────── */
+
+.dark {
+  color-scheme: dark;
+}
+
+.dark body,
+.dark html {
+  background: #0c0a14;
+  color: #e7e5ef;
+}
+
+.dark .glass {
+  background: rgba(30, 27, 50, 0.65);
+  border-color: rgba(139, 92, 246, 0.12);
+}
+
+.dark .glass-strong {
+  background: rgba(30, 27, 50, 0.8);
+  border-color: rgba(139, 92, 246, 0.15);
+}
+
+.dark .glass-dark {
+  background: rgba(12, 10, 20, 0.8);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.dark .glass-header {
+  background: rgba(12, 10, 20, 0.85);
+  border-bottom-color: rgba(139, 92, 246, 0.15);
+}
+
+.dark .gradient-hero {
+  background: linear-gradient(135deg, #1a1528 0%, #0f1620 30%, #1a1015 60%, #1a1528 100%);
+}
+
+.dark .gradient-mesh {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(139,92,246,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(56,189,248,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(251,113,133,0.1) 0%, transparent 50%),
+    linear-gradient(180deg, #0c0a14 0%, #100e1a 100%);
+}
+
+.dark .gradient-mesh-food {
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(251,113,133,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(251,113,133,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(56,189,248,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(139,92,246,0.08) 0%, transparent 50%);
+}
+
+.dark .gradient-mesh-art {
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(56,189,248,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 70%, rgba(56,189,248,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(251,113,133,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(139,92,246,0.08) 0%, transparent 50%);
+}
+
+.dark .gradient-purple {
+  background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+}
+
+.dark .gradient-rose {
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+}
+
+.dark .gradient-blue {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+}
+
+.dark .card-hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.dark .card-hover:hover {
+  box-shadow:
+    0 20px 50px -15px rgba(139, 92, 246, 0.25),
+    0 8px 20px -8px rgba(139, 92, 246, 0.15);
+}
+
+.dark .card-tint-rose {
+  border-color: rgba(251,113,133,0.2) !important;
+  box-shadow: 0 2px 12px rgba(251,113,133,0.06), 0 1px 4px rgba(0,0,0,0.15) !important;
+}
+
+.dark .card-tint-sky {
+  border-color: rgba(56,189,248,0.2) !important;
+  box-shadow: 0 2px 12px rgba(56,189,248,0.06), 0 1px 4px rgba(0,0,0,0.15) !important;
+}
+
+.dark .shimmer {
+  background: linear-gradient(90deg, #1a1528 25%, #251f3a 50%, #1a1528 75%);
+  background-size: 200% 100%;
+}
+
+.dark .focus-ring:focus-visible {
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.5);
 }

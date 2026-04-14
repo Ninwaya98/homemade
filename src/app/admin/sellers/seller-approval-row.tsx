@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import Image from "next/image";
 
 import { approveSeller, rejectSeller } from "@/app/admin/actions";
 import { Card } from "@/components/ui/Card";
@@ -37,10 +38,11 @@ export function SellerApprovalRow({ seller }: { seller: Seller }) {
     <Card>
       <div className="flex items-start gap-4">
         {seller.photo_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={seller.photo_url}
             alt=""
+            width={64}
+            height={64}
             className="h-16 w-16 flex-none rounded-2xl object-cover"
           />
         ) : (

@@ -1,9 +1,12 @@
+import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { createClient } from "@/lib/supabase/server";
 import { EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
+import SearchBar from "@/components/ui/SearchBar";
 import { allergenLabel, formatPrice, minPriceCents, todayIso, CUISINES } from "@/lib/constants";
 
 export const metadata = {
@@ -13,10 +16,11 @@ export const metadata = {
 export default async function KitchenBrowsePage({
   searchParams,
 }: {
-  searchParams: Promise<{ cuisine?: string; today?: string }>;
+  searchParams: Promise<{ cuisine?: string; today?: string; q?: string }>;
 }) {
   const supabase = await createClient();
   const sp = await searchParams;
+  const q = sp.q?.trim();
 
   let cooksQuery = supabase
     .from("cook_profiles")
@@ -51,16 +55,28 @@ export default async function KitchenBrowsePage({
       isOpenToday: (c.availability ?? []).some((a) => a.is_open),
     }))
     .filter((c) => c.activeDishes.length > 0)
-    .filter((c) => !sp.today || c.isOpenToday);
+    .filter((c) => !sp.today || c.isOpenToday)
+    .filter((c) => {
+      if (!q) return true;
+      const ql = q.toLowerCase();
+      const nameMatch = c.profile?.full_name?.toLowerCase().includes(ql);
+      const cuisineMatch = c.cuisine_tags.some((t) => t.toLowerCase().includes(ql));
+      const dishMatch = c.activeDishes.some((d) => d.name.toLowerCase().includes(ql));
+      return nameMatch || cuisineMatch || dishMatch;
+    });
 
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold text-stone-900">
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">
           HomeMade Kitchen
         </h1>
-        <p className="mt-1 text-sm text-stone-500">Home-cooked food from approved cooks near you</p>
+        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">Home-cooked food from approved cooks near you</p>
       </header>
+
+      <Suspense>
+        <SearchBar placeholder="Search cooks, dishes, or cuisines..." tone="rose" />
+      </Suspense>
 
       {/* Filter pills */}
       <div className="-mx-1 flex flex-wrap gap-1.5">
@@ -96,10 +112,11 @@ export default async function KitchenBrowsePage({
                 className="flex items-start gap-4 p-5 transition hover:bg-stone-50/50"
               >
                 {cook.photo_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={cook.photo_url}
                     alt=""
+                    width={64}
+                    height={64}
                     className="h-16 w-16 flex-none rounded-2xl object-cover shadow-sm ring-2 ring-violet-100"
                   />
                 ) : (
@@ -154,8 +171,7 @@ export default async function KitchenBrowsePage({
                       className="group flex items-center gap-3 rounded-xl glass p-3 transition hover:border-violet-300 hover:shadow-md"
                     >
                       {dish.photo_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={dish.photo_url} alt="" className="h-14 w-14 flex-none rounded-lg object-cover" />
+                        <Image src={dish.photo_url} alt="" width={56} height={56} className="h-14 w-14 flex-none rounded-lg object-cover" />
                       ) : (
                         <div className="flex h-14 w-14 flex-none items-center justify-center rounded-lg bg-stone-100 text-2xl">🍽</div>
                       )}

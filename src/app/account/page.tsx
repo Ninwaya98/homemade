@@ -122,6 +122,19 @@ export default async function AccountPage() {
         )}
       </section>
 
+      {/* ── Delivery Addresses ─────────────────────────────── */}
+      <section className="mt-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-stone-100">Delivery Addresses</h2>
+          <Link href="/account/addresses" className="text-sm text-violet-600 dark:text-violet-400 hover:underline">
+            Manage addresses
+          </Link>
+        </div>
+        <p className="mt-1 text-sm text-slate-500 dark:text-stone-400">
+          Save addresses for faster checkout when ordering food.
+        </p>
+      </section>
+
       <hr className="my-8 border-violet-200/40" />
 
       {/* ── Danger zone ────────────────────────────────────── */}

@@ -108,6 +108,56 @@ export async function reinstateSeller(sellerId: string): Promise<AdminActionResu
   revalidatePath("/admin/sellers/all");
 }
 
+// ── Review moderation ───────────────────────────────────────────────
+
+export async function approveResolution(reviewId: string) {
+  const admin = await requireRole("admin");
+  const supabase = await createClient();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any;
+
+  const { data: review } = await sb
+    .from("reviews")
+    .select("reviewee_id, resolution_status")
+    .eq("id", reviewId)
+    .single();
+  if (!review || review.resolution_status !== "pending") return;
+
+  await sb.from("reviews").update({
+    resolution_status: "approved",
+    resolved_at: new Date().toISOString(),
+    resolved_by: admin.id,
+  }).eq("id", reviewId);
+
+  // Recalculate — need to figure out the vertical
+  const { data: cookCheck } = await supabase
+    .from("cook_profiles")
+    .select("id")
+    .eq("id", review.reviewee_id)
+    .maybeSingle();
+
+  const { recalculateProfileScore } = await import("@/lib/review-utils");
+  const vertical = cookCheck ? "kitchen" : "market";
+  await recalculateProfileScore(sb, review.reviewee_id, vertical);
+
+  revalidatePath("/admin/reviews");
+}
+
+export async function rejectResolution(reviewId: string) {
+  const admin = await requireRole("admin");
+  const supabase = await createClient();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any).from("reviews").update({
+    resolution_status: "rejected",
+    resolved_at: new Date().toISOString(),
+    resolved_by: admin.id,
+  }).eq("id", reviewId);
+
+  revalidatePath("/admin/reviews");
+}
+
 /**
  * Generate a short-lived signed URL for an admin to view a cook's
  * food handler certificate. The certificates bucket is private; only

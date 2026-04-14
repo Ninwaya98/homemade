@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Image from "next/image";
 
 import { approveCook, rejectCook, getCertificateSignedUrl } from "./actions";
 import { Button } from "@/components/ui/Button";
@@ -53,10 +54,11 @@ export function CookApprovalRow({ cook }: { cook: CookForReview }) {
     <Card>
       <div className="flex items-start gap-4">
         {cook.photo_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={cook.photo_url}
             alt=""
+            width={64}
+            height={64}
             className="h-16 w-16 rounded-full object-cover"
           />
         ) : (

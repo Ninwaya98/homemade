@@ -187,16 +187,16 @@ export async function checkoutBasket(
   };
 }
 
-// Customer leaves a review on a completed order.
+// Customer leaves a review on a completed order (like/dislike model).
 export async function leaveReview(formData: FormData) {
   const profile = await requireAuth();
   const supabase = await createClient();
 
   const orderId = String(formData.get("order_id") ?? "");
-  const rating = Math.max(1, Math.min(5, Number(formData.get("rating") ?? 0)));
+  const sentiment = String(formData.get("sentiment") ?? "") as "like" | "dislike";
   const text = String(formData.get("text") ?? "").trim() || null;
 
-  if (!orderId || !rating) return;
+  if (!orderId || !["like", "dislike"].includes(sentiment)) return;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: order } = await (supabase as any)
@@ -214,45 +214,28 @@ export async function leaveReview(formData: FormData) {
   const revieweeId = orderFull.cook_id ?? orderFull.seller_id;
   if (!revieweeId) return;
 
-  await supabase.from("reviews").upsert(
+  // Backward-compat rating: like=5, dislike=1
+  const rating = sentiment === "like" ? 5 : 1;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any).from("reviews").upsert(
     {
       order_id: orderId,
       reviewer_id: profile.id,
       reviewee_id: revieweeId,
       role: "customer",
+      sentiment,
       rating,
       text,
+      resolution_status: "none",
     },
     { onConflict: "order_id,role" },
   );
 
-  // Recompute the reviewee's avg rating + count.
-  const { data: stats } = await supabase
-    .from("reviews")
-    .select("rating")
-    .eq("reviewee_id", revieweeId)
-    .eq("role", "customer");
-  if (stats) {
-    const count = stats.length;
-    const avg = count
-      ? Number((stats.reduce((s, r) => s + r.rating, 0) / count).toFixed(2))
-      : 0;
-
-    // Update the right profile table based on vertical
-    const vertical = orderFull.vertical ?? "kitchen";
-    if (vertical === "market") {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase as any)
-        .from("seller_profiles")
-        .update({ avg_rating: avg, rating_count: count })
-        .eq("id", revieweeId);
-    } else {
-      await supabase
-        .from("cook_profiles")
-        .update({ avg_rating: avg, rating_count: count })
-        .eq("id", revieweeId);
-    }
-  }
+  // Recalculate profile score using the new utility
+  const { recalculateProfileScore } = await import("@/lib/review-utils");
+  const vertical = orderFull.vertical ?? "kitchen";
+  await recalculateProfileScore(supabase, revieweeId, vertical);
 
   revalidatePath(`/customer/orders/${orderId}`);
   if (orderFull.cook_id) revalidatePath(`/customer/cooks/${orderFull.cook_id}`);

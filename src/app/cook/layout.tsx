@@ -4,6 +4,7 @@ import { requireAuth } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { NavLink } from "@/components/ui/NavLink";
 import { ProfileDropdown } from "@/components/ui/ProfileDropdown";
+import { NotificationBell } from "@/components/ui/NotificationBell";
 
 export default async function CookLayout({
   children,
@@ -32,6 +33,8 @@ export default async function CookLayout({
     { href: "/cook/schedule", label: "Schedule", icon: "▦" },
     { href: "/cook/orders", label: "Orders", icon: "▤" },
     { href: "/cook/earnings", label: "Earnings", icon: "$" },
+    { href: "/cook/analytics", label: "Analytics", icon: "▥" },
+    { href: "/cook/reviews", label: "Reviews", icon: "★" },
   ];
   const showNav = cookProfile?.status === "approved";
 
@@ -42,15 +45,16 @@ export default async function CookLayout({
           <div className="flex items-center justify-between">
             <Link href="/cook" className="text-lg font-black tracking-tight">
               <span className="gradient-text-animate">HomeMade</span>
-              <span className="ml-1 text-slate-600">Kitchen</span>
+              <span className="ml-1 text-slate-600 dark:text-stone-300">Kitchen</span>
             </Link>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Link
                 href="/customer"
                 className="text-sm text-slate-500 transition hover:text-violet-600"
               >
                 Browse
               </Link>
+              <NotificationBell />
               <ProfileDropdown
                 name={profile.full_name}
                 hasCookShop={true}
@@ -59,7 +63,7 @@ export default async function CookLayout({
             </div>
           </div>
           <p className="mt-1 text-sm text-slate-500">
-            Hi <span className="font-medium text-slate-700">{profile.full_name.split(" ")[0]}</span> — your kitchen
+            Hi <span className="font-medium text-slate-700 dark:text-stone-200">{profile.full_name.split(" ")[0]}</span> — your kitchen
           </p>
         </div>
         {showNav && (

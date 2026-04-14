@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
@@ -90,8 +91,7 @@ export default async function CustomerOrdersPage({
                 <Card hover>
                   <div className="flex items-center gap-4">
                     {photoUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={photoUrl} alt="" className="h-16 w-16 flex-none rounded-xl object-cover" />
+                      <Image src={photoUrl} alt="" width={64} height={64} className="h-16 w-16 flex-none rounded-xl object-cover" />
                     ) : (
                       <div className="flex h-16 w-16 flex-none items-center justify-center rounded-xl bg-stone-100 text-2xl">
                         {isMarket ? "🛍" : "🍽"}

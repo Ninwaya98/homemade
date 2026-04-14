@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -83,9 +84,10 @@ export default async function CustomerOrderDetail({
   // If completed, has the customer left a review yet?
   let existingReview = null;
   if (order.status === "completed") {
-    const { data } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = await (supabase as any)
       .from("reviews")
-      .select("rating, text")
+      .select("sentiment, text")
       .eq("order_id", order.id)
       .eq("role", "customer")
       .maybeSingle();
@@ -108,8 +110,7 @@ export default async function CustomerOrderDetail({
           <div className="mx-auto mt-6 max-w-xs rounded-xl border border-stone-200 bg-white p-4 text-left shadow-sm">
             <div className="flex items-center gap-3">
               {itemPhotoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={itemPhotoUrl} alt="" className="h-14 w-14 rounded-lg object-cover" />
+                <Image src={itemPhotoUrl} alt="" width={56} height={56} className="h-14 w-14 rounded-lg object-cover" />
               ) : (
                 <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-stone-100 text-xl">{isMarket ? "🛍" : "🍽"}</div>
               )}
@@ -153,8 +154,7 @@ export default async function CustomerOrderDetail({
       <Card>
         <div className="flex items-start gap-4">
           {itemPhotoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={itemPhotoUrl} alt="" className="h-20 w-20 flex-none rounded-xl object-cover shadow-sm" />
+            <Image src={itemPhotoUrl} alt="" width={80} height={80} className="h-20 w-20 flex-none rounded-xl object-cover shadow-sm" />
           ) : (
             <div className="flex h-20 w-20 flex-none items-center justify-center rounded-xl bg-stone-100 text-2xl">{isMarket ? "🛍" : "🍽"}</div>
           )}
@@ -244,8 +244,7 @@ export default async function CustomerOrderDetail({
           className="mt-3 flex items-center gap-3 transition hover:opacity-90"
         >
           {providerPhoto ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={providerPhoto} alt="" className="h-12 w-12 rounded-full object-cover ring-2 ring-violet-100" />
+            <Image src={providerPhoto} alt="" width={48} height={48} className="h-12 w-12 rounded-full object-cover ring-2 ring-violet-100" />
           ) : (
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-violet-200 text-sm font-bold text-violet-600">
               {(providerName ?? "?")[0]?.toUpperCase()}

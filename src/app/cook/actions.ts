@@ -14,9 +14,9 @@ import type {
   PortionSizeConfig,
 } from "@/lib/types";
 
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/bmp", "image/tiff", "image/avif", "image/heic", "image/heif", "image/svg+xml"]);
 const ALLOWED_CERT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
-const ALLOWED_IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
+const ALLOWED_IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp", "gif", "bmp", "tiff", "tif", "avif", "heic", "heif", "svg"]);
 const ALLOWED_CERT_EXTS = new Set(["pdf", "jpg", "jpeg", "png", "webp"]);
 
 function safeExt(filename: string, allowed: Set<string>, fallback: string): string {
@@ -509,4 +509,37 @@ export async function setOrderStatus(
 
   revalidatePath("/cook/orders");
   revalidatePath(`/cook/orders/${orderId}`);
+}
+
+// ── Review response ─────────────────────────────────────────────────
+
+export async function respondToReview(formData: FormData) {
+  const { cookProfile: cook } = await requireCookProfile();
+  const supabase = await createClient();
+
+  const reviewId = String(formData.get("review_id") ?? "");
+  const responseText = String(formData.get("response_text") ?? "").trim();
+  if (!reviewId || !responseText) return;
+
+  // Verify this review is addressed to the cook
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: review } = await (supabase as any)
+    .from("reviews")
+    .select("reviewee_id, resolution_status")
+    .eq("id", reviewId)
+    .single();
+
+  if (!review || review.reviewee_id !== cook.id || review.resolution_status !== "none") return;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any)
+    .from("reviews")
+    .update({
+      response_text: responseText,
+      response_at: new Date().toISOString(),
+      resolution_status: "pending",
+    })
+    .eq("id", reviewId);
+
+  revalidatePath("/cook/reviews");
 }

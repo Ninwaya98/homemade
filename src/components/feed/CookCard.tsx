@@ -1,5 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Badge } from "@/components/ui/Badge";
+import { RatingBar } from "@/components/ui/RatingBar";
 
 export function CookCard({
   cook,
@@ -15,6 +17,9 @@ export function CookCard({
     shopName?: string;
     avg_rating: number;
     rating_count: number;
+    score?: number | null;
+    like_count?: number;
+    dislike_count?: number;
   };
   href: string;
   type: "cook" | "seller";
@@ -30,10 +35,11 @@ export function CookCard({
     >
       <div className="flex items-center gap-3">
         {cook.photo_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={cook.photo_url}
-            alt=""
+            alt={cook.name}
+            width={48}
+            height={48}
             className="h-12 w-12 flex-none rounded-full object-cover ring-2 ring-violet-100"
           />
         ) : (
@@ -65,12 +71,13 @@ export function CookCard({
         ))}
       </div>
 
-      {cook.rating_count > 0 && (
-        <p className="mt-2 text-xs text-stone-600">
-          <span className="text-amber-500">&#9733;</span> {cook.avg_rating.toFixed(1)}
-          <span className="text-stone-400"> ({cook.rating_count})</span>
-        </p>
-      )}
+      <div className="mt-2">
+        <RatingBar
+          score={cook.score ?? null}
+          reviewCount={(cook.like_count ?? 0) + (cook.dislike_count ?? 0) || cook.rating_count}
+          size="sm"
+        />
+      </div>
     </Link>
   );
 }

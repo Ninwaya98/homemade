@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, TextareaField } from "@/components/ui/Field";
 import { Card } from "@/components/ui/Card";
 import { AllergenChecklist } from "@/components/ui/AllergenChecklist";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import { CUISINES, PORTION_SIZES, formatPrice } from "@/lib/constants";
 import type { DishPortionSizes } from "@/lib/types";
 
@@ -190,23 +191,10 @@ export function DishForm({
       <Card>
         <h3 className="text-sm font-semibold text-stone-900">Photo</h3>
         <p className="mt-1 text-xs text-stone-500">
-          A good photo doubles orders. Square or landscape, &lt; 5 MB.
+          A good photo doubles orders. Any format — auto-cropped to square.
         </p>
-        <div className="mt-4 flex items-center gap-4">
-          {defaultValues?.photo_url && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={defaultValues.photo_url}
-              alt=""
-              className="h-20 w-20 rounded-lg object-cover"
-            />
-          )}
-          <input
-            type="file"
-            name="photo"
-            accept="image/jpeg,image/png,image/webp"
-            className="block w-full text-sm text-stone-700 file:mr-4 file:rounded-full file:border-0 file:bg-stone-200 file:px-4 file:py-2 file:text-sm file:font-medium file:text-stone-900 hover:file:bg-stone-300"
-          />
+        <div className="mt-4">
+          <ImageUpload name="photo" existingUrl={defaultValues?.photo_url} />
         </div>
       </Card>
 

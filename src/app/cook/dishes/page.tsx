@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
@@ -64,10 +65,11 @@ export default async function DishesPage({
             <Card key={dish.id}>
               <div className="flex items-start gap-4">
                 {dish.photo_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
+                  <Image
                     src={dish.photo_url}
                     alt=""
+                    width={80}
+                    height={80}
                     className="h-20 w-20 rounded-lg object-cover"
                   />
                 ) : (

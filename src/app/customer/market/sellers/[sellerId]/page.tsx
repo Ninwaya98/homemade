@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -5,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice, productCategoryLabel } from "@/lib/constants";
+import { RatingBar } from "@/components/ui/RatingBar";
+import { ProductRecommendations } from "@/components/feed/Recommendations";
 
 export const metadata = {
   title: "Seller — HomeMade Market",
@@ -46,6 +49,15 @@ export default async function SellerDetailPage({
     .order("created_at", { ascending: false })
     .limit(10);
 
+  // Recommendations: products from other sellers
+  const { data: recProducts } = await supabase
+    .from("products")
+    .select("id, name, price_cents, photo_urls, seller_profiles!inner(id, shop_name, status)")
+    .eq("status", "active")
+    .eq("seller_profiles.status", "approved")
+    .neq("seller_id", sellerId)
+    .limit(4);
+
   const profile = seller.profiles as { full_name?: string; location?: string | null };
 
   return (
@@ -58,10 +70,11 @@ export default async function SellerDetailPage({
       <Card>
         <div className="flex items-start gap-4">
           {seller.photo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={seller.photo_url}
               alt=""
+              width={80}
+              height={80}
               className="h-20 w-20 flex-none rounded-2xl object-cover shadow-sm ring-2 ring-stone-200"
             />
           ) : (
@@ -76,11 +89,9 @@ export default async function SellerDetailPage({
             </p>
             <div className="mt-1.5 flex items-center gap-2">
               <Badge tone="neutral">{productCategoryLabel(seller.category)}</Badge>
-              {seller.rating_count > 0 && (
-                <span className="text-sm text-violet-600">
-                  ★ {Number(seller.avg_rating).toFixed(1)} ({seller.rating_count})
-                </span>
-              )}
+            </div>
+            <div className="mt-1.5">
+              <RatingBar score={seller.score ?? null} reviewCount={(seller.like_count ?? 0) + (seller.dislike_count ?? 0) || seller.rating_count} size="md" />
             </div>
           </div>
         </div>
@@ -107,12 +118,15 @@ export default async function SellerDetailPage({
                 className="group card-hover overflow-hidden rounded-3xl glass-strong"
               >
                 {p.photo_urls.length > 0 ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={p.photo_urls[0]}
-                    alt=""
-                    className="h-40 w-full object-cover"
-                  />
+                  <div className="relative h-40 w-full">
+                    <Image
+                      src={p.photo_urls[0]}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                    />
+                  </div>
                 ) : (
                   <div className="flex h-40 w-full items-center justify-center bg-stone-100 text-4xl">🛍</div>
                 )}
@@ -135,18 +149,24 @@ export default async function SellerDetailPage({
         )}
       </div>
 
+      {/* Recommendations */}
+      <ProductRecommendations products={(recProducts ?? []) as any} />
+
       {/* Reviews */}
       {reviews && reviews.length > 0 && (
         <div>
           <h2 className="mb-3 text-lg font-bold text-stone-900">Reviews</h2>
           <div className="space-y-3">
-            {reviews.map((r: { rating: number; text: string | null; created_at: string; profiles: { full_name?: string } }, i: number) => (
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {reviews.map((r: any, i: number) => (
               <Card key={i}>
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium text-stone-900">
                     {r.profiles?.full_name ?? "Customer"}
                   </p>
-                  <p className="text-sm text-violet-600">{"★".repeat(r.rating)}</p>
+                  <span className={`text-sm font-medium ${r.sentiment === "like" ? "text-emerald-600" : "text-rose-500"}`}>
+                    {r.sentiment === "like" ? "\uD83D\uDC4D" : "\uD83D\uDC4E"}
+                  </span>
                 </div>
                 {r.text && <p className="mt-2 text-sm text-stone-600">{r.text}</p>}
                 <p className="mt-1 text-[10px] text-stone-400">

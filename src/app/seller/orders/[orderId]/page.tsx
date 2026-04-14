@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -46,8 +47,7 @@ export default async function SellerOrderDetail({
       <Card>
         <div className="flex items-start gap-4">
           {product?.photo_urls && product.photo_urls.length > 0 ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={product.photo_urls[0]} alt="" className="h-20 w-20 flex-none rounded-xl object-cover shadow-sm" />
+            <Image src={product.photo_urls[0]} alt="" width={80} height={80} className="h-20 w-20 flex-none rounded-xl object-cover shadow-sm" />
           ) : (
             <div className="flex h-20 w-20 flex-none items-center justify-center rounded-xl bg-stone-100 text-2xl">🛍</div>
           )}

@@ -8,8 +8,8 @@ import { requireAuth, requireSellerProfile } from "@/lib/auth";
 import type { ProductCategory } from "@/lib/types";
 import { isTransitionAllowed, buildStatusExtras } from "@/lib/order-utils";
 
-const ALLOWED_IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const ALLOWED_IMAGE_EXTS = new Set(["jpg", "jpeg", "png", "webp", "gif", "bmp", "tiff", "tif", "avif", "heic", "heif", "svg"]);
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "image/bmp", "image/tiff", "image/avif", "image/heic", "image/heif", "image/svg+xml"]);
 
 function safeExt(filename: string, fallback: string): string {
   const raw = filename.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "";
@@ -178,7 +178,7 @@ export async function createProduct(
     stock_quantity: stockQuantity,
     photo_urls: photoUrls,
     ingredients,
-    status: "active",
+    status: stockQuantity > 0 ? "active" : "out_of_stock",
   });
   if (error) return { error: `Could not save product: ${error.message}` };
 
@@ -237,6 +237,21 @@ export async function updateProduct(
     newUrls.push(supabase.storage.from("product-photos").getPublicUrl(path).data.publicUrl);
   }
 
+  // Auto-sync status with stock quantity
+  const { data: currentProduct } = await supabase
+    .from("products")
+    .select("status, stock_quantity")
+    .eq("id", productId)
+    .eq("seller_id", profile.id)
+    .single();
+
+  let newStatus = currentProduct?.status;
+  if (stockQuantity === 0 && currentProduct?.status === "active") {
+    newStatus = "out_of_stock";
+  } else if (stockQuantity > 0 && currentProduct?.status === "out_of_stock") {
+    newStatus = "active";
+  }
+
   const { error } = await supabase
     .from("products")
     .update({
@@ -249,6 +264,7 @@ export async function updateProduct(
       dimensions,
       condition,
       stock_quantity: stockQuantity,
+      status: newStatus,
       photo_urls: [...retainedUrls, ...newUrls],
       ingredients,
     })
@@ -265,9 +281,24 @@ export async function setProductStatus(productId: string, status: "active" | "pa
   const { profile } = await requireSellerProfile();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
+
+  // If reactivating, check stock to decide between active vs out_of_stock
+  let finalStatus = status;
+  if (status === "active") {
+    const { data: product } = await supabase
+      .from("products")
+      .select("stock_quantity")
+      .eq("id", productId)
+      .eq("seller_id", profile.id)
+      .single();
+    if (product && product.stock_quantity === 0) {
+      finalStatus = "out_of_stock";
+    }
+  }
+
   await supabase
     .from("products")
-    .update({ status })
+    .update({ status: finalStatus })
     .eq("id", productId)
     .eq("seller_id", profile.id);
   revalidatePath("/seller/products");
@@ -347,4 +378,37 @@ export async function setSellerOrderStatus(
 
   revalidatePath("/seller/orders");
   revalidatePath(`/seller/orders/${orderId}`);
+}
+
+// ── Review response ─────────────────────────────────────────────────
+
+export async function respondToSellerReview(formData: FormData) {
+  const { sellerProfile: seller } = await requireSellerProfile();
+  const supabase = await createClient();
+
+  const reviewId = String(formData.get("review_id") ?? "");
+  const responseText = String(formData.get("response_text") ?? "").trim();
+  if (!reviewId || !responseText) return;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sb = supabase as any;
+
+  const { data: review } = await sb
+    .from("reviews")
+    .select("reviewee_id, resolution_status")
+    .eq("id", reviewId)
+    .single();
+
+  if (!review || review.reviewee_id !== seller.id || review.resolution_status !== "none") return;
+
+  await sb
+    .from("reviews")
+    .update({
+      response_text: responseText,
+      response_at: new Date().toISOString(),
+      resolution_status: "pending",
+    })
+    .eq("id", reviewId);
+
+  revalidatePath("/seller/reviews");
 }

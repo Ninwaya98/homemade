@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import Image from "next/image";
 
 import { placeProductOrder, type ProductOrderFormState } from "@/app/customer/actions";
 import { Button } from "@/components/ui/Button";
@@ -100,11 +101,12 @@ export function ProductOrderForm({
               {product.photo_urls.length > 0 ? (
                 <div className="flex gap-2 overflow-x-auto">
                   {product.photo_urls.slice(0, 3).map((url, i) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       key={i}
                       src={url}
                       alt=""
+                      width={i === 0 ? 96 : 80}
+                      height={96}
                       className={`flex-none rounded-xl object-cover shadow-sm ${i === 0 ? "h-24 w-24" : "h-24 w-20"}`}
                     />
                   ))}
