@@ -31,7 +31,7 @@ export default async function SellerLayout({
 
   return (
     <div className="min-h-screen gradient-mesh">
-      <header className="glass-header sticky top-0 z-30">
+      <header className="glass-header z-30">
         <div className="mx-auto max-w-3xl px-5 py-4">
           <div className="flex items-center justify-between">
             <Link href="/seller" className="text-lg font-black tracking-tight">

@@ -326,10 +326,9 @@ textarea {
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.5);
 }
 
-/* Solid dark backgrounds for overlays that must not bleed */
-.dark .profile-dropdown {
-  background: #141125 !important;
-  border-color: rgba(139, 92, 246, 0.25) !important;
+/* Dark mode dropdown — solid so nothing bleeds */
+.dark {
+  --dropdown-bg: #141125;
 }
 
 /* ── Dark mode: global text color overrides ────────────────── */
