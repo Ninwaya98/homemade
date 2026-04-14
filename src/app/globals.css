@@ -243,8 +243,8 @@ textarea {
 }
 
 .dark .glass-strong {
-  background: rgba(30, 27, 50, 0.8);
-  border-color: rgba(139, 92, 246, 0.15);
+  background: rgba(35, 30, 58, 0.85);
+  border-color: rgba(139, 92, 246, 0.18);
 }
 
 .dark .glass-dark {
@@ -325,3 +325,51 @@ textarea {
 .dark .focus-ring:focus-visible {
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.5);
 }
+
+/* ── Dark mode: global text color overrides ────────────────── */
+/* These catch all Tailwind text utilities that are dark-on-dark */
+
+:is(.dark) :where(.text-stone-900) { color: #e8e6f0; }
+:is(.dark) :where(.text-stone-800) { color: #d4d1de; }
+:is(.dark) :where(.text-stone-700) { color: #b5b1c2; }
+:is(.dark) :where(.text-stone-600) { color: #9b96aa; }
+:is(.dark) :where(.text-stone-500) { color: #8a8598; }
+:is(.dark) :where(.text-slate-900) { color: #e8e6f0; }
+:is(.dark) :where(.text-slate-800) { color: #d4d1de; }
+:is(.dark) :where(.text-slate-700) { color: #b5b1c2; }
+:is(.dark) :where(.text-slate-600) { color: #9b96aa; }
+:is(.dark) :where(.text-slate-500) { color: #8a8598; }
+
+/* ── Dark mode: background overrides ───────────────────────── */
+
+:is(.dark) :where(.bg-white) { background-color: rgba(24, 21, 40, 0.7); }
+:is(.dark) :where(.bg-stone-50) { background-color: rgba(30, 27, 50, 0.5); }
+:is(.dark) :where(.bg-stone-100) { background-color: rgba(35, 32, 55, 0.5); }
+:is(.dark) :where(.bg-violet-50) { background-color: rgba(59, 40, 100, 0.3); }
+:is(.dark) :where(.bg-rose-50) { background-color: rgba(80, 30, 45, 0.3); }
+:is(.dark) :where(.bg-sky-50) { background-color: rgba(20, 50, 80, 0.3); }
+:is(.dark) :where(.bg-emerald-50) { background-color: rgba(20, 60, 45, 0.3); }
+:is(.dark) :where(.bg-amber-50) { background-color: rgba(70, 55, 20, 0.3); }
+:is(.dark) :where(.bg-red-50) { background-color: rgba(70, 20, 25, 0.3); }
+:is(.dark) :where(.bg-violet-100) { background-color: rgba(70, 50, 120, 0.35); }
+:is(.dark) :where(.bg-rose-100) { background-color: rgba(100, 40, 55, 0.35); }
+:is(.dark) :where(.bg-sky-100) { background-color: rgba(30, 65, 100, 0.35); }
+
+/* ── Dark mode: border overrides ───────────────────────────── */
+
+:is(.dark) :where(.border-stone-100) { border-color: rgba(139, 92, 246, 0.08); }
+:is(.dark) :where(.border-stone-200) { border-color: rgba(139, 92, 246, 0.12); }
+:is(.dark) :where(.border-violet-100) { border-color: rgba(139, 92, 246, 0.15); }
+:is(.dark) :where(.border-violet-200) { border-color: rgba(139, 92, 246, 0.2); }
+:is(.dark) :where(.border-rose-200) { border-color: rgba(251, 113, 133, 0.15); }
+:is(.dark) :where(.border-sky-200) { border-color: rgba(56, 189, 248, 0.15); }
+
+/* ── Dark mode: hover state overrides ──────────────────────── */
+
+:is(.dark) :where(.hover\:bg-stone-50\/50):hover { background-color: rgba(45, 40, 65, 0.3); }
+:is(.dark) :where(.hover\:bg-violet-50):hover { background-color: rgba(59, 40, 100, 0.4); }
+:is(.dark) :where(.hover\:bg-red-50):hover { background-color: rgba(70, 20, 25, 0.4); }
+
+/* ── Dark mode: gradient text still visible ────────────────── */
+
+:is(.dark) :where(.bg-gradient-to-br) { opacity: 0.85; }
