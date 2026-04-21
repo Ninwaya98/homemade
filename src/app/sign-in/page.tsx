@@ -9,9 +9,10 @@ export const metadata = {
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; mode?: string }>;
 }) {
-  const { next } = await searchParams;
+  const { next, mode } = await searchParams;
+  const isAddMode = mode === "add";
 
   return (
     <main className="flex min-h-screen items-center justify-center gradient-mesh px-5 py-10">
@@ -24,13 +25,15 @@ export default async function SignInPage({
             &larr; Back
           </Link>
           <h1 className="mt-6 text-3xl font-bold text-stone-900">
-            Welcome back
+            {isAddMode ? "Add an account" : "Welcome back"}
           </h1>
           <p className="mt-2 text-stone-500">
-            Sign in to browse, buy, or manage your shop.
+            {isAddMode
+              ? "Sign in with a different account. Your current account stays signed in."
+              : "Sign in to browse, buy, or manage your shop."}
           </p>
 
-          <SignInForm next={next} />
+          <SignInForm next={next} addMode={isAddMode} />
         </div>
 
         <p className="mt-6 text-center text-sm text-stone-500">

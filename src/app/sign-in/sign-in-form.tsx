@@ -1,13 +1,29 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 
 import { signIn, type AuthFormState } from "@/app/actions/auth";
+import { syncCurrentSession } from "@/lib/account-switcher";
 
 const initialState: AuthFormState = undefined;
 
-export function SignInForm({ next }: { next?: string }) {
+export function SignInForm({
+  next,
+  addMode = false,
+}: {
+  next?: string;
+  addMode?: boolean;
+}) {
   const [state, action, pending] = useActionState(signIn, initialState);
+
+  // In add-another-account mode, snapshot the current session into the bag
+  // BEFORE the form submit replaces the cookie. If the user bails without
+  // submitting, their existing account is safely in the bag.
+  useEffect(() => {
+    if (addMode) {
+      void syncCurrentSession();
+    }
+  }, [addMode]);
 
   return (
     <form action={action} className="mt-8 space-y-5">
@@ -71,7 +87,7 @@ export function SignInForm({ next }: { next?: string }) {
         disabled={pending}
         className="w-full rounded-full gradient-purple px-5 py-3 text-base font-medium text-white shadow-lg shadow-violet-500/25 transition hover:shadow-xl disabled:opacity-60"
       >
-        {pending ? "Signing in…" : "Sign in"}
+        {pending ? "Signing in…" : addMode ? "Add account" : "Sign in"}
       </button>
     </form>
   );

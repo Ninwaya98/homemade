@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NavLink } from "@/components/ui/NavLink";
 import { ProfileDropdown } from "@/components/ui/ProfileDropdown";
 import { NotificationBell } from "@/components/ui/NotificationBell";
+import { SessionSyncer } from "@/components/auth/SessionSyncer";
 
 export default async function CustomerLayout({
   children,
@@ -56,6 +57,7 @@ export default async function CustomerLayout({
 
   return (
     <div className="min-h-screen">
+      {isLoggedIn && <SessionSyncer />}
       <header className="glass-header relative z-30">
         <div className="mx-auto max-w-3xl px-5 py-3">
           <div className="flex items-center justify-between">
