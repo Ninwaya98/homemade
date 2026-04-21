@@ -1,10 +1,8 @@
 export function TipsSection() {
   return (
-    <section className="relative overflow-hidden rounded-3xl glass-strong !border-transparent p-6 sm:p-8 space-y-6">
-      {/* Purple accent lines -- clipped by overflow-hidden to follow the box's curves */}
-      <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-[3px] bg-violet-300/60" />
-      <div className="pointer-events-none absolute left-0 top-0 right-0 h-[3px] bg-violet-300/60" />
-      <div className="pointer-events-none absolute inset-0 rounded-3xl" style={{background:"linear-gradient(135deg, rgba(196,181,253,0.2) 0%, transparent 35%)"}} />
+    <section className="relative overflow-hidden rounded-3xl glass-strong p-6">
+      <div className="pointer-events-none absolute inset-0 rounded-3xl border-l-[3px] border-t-[3px] border-sky-300/60" />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl" style={{background:"linear-gradient(135deg, rgba(186,230,253,0.25) 0%, transparent 40%)"}} />
 
       <div className="relative">
         {/* Header */}
