@@ -28,7 +28,7 @@ export function TipsSection() {
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-200/60 text-[11px] font-bold text-violet-700">2</span>
               <div>
                 <p className="text-xs font-semibold text-stone-800">Order</p>
-                <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">Add to cart, choose delivery or pickup, and check out.</p>
+                <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">Pick a product, choose delivery or pickup, and place your order.</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-xl bg-violet-50/50 p-3.5">

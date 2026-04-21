@@ -10,7 +10,13 @@ const pills = PRODUCT_CATEGORIES.map((c) => ({
 
 export function CategoryPills() {
   return (
-    <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+    <div
+      className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide"
+      style={{
+        maskImage: "linear-gradient(to right, black calc(100% - 24px), transparent)",
+        WebkitMaskImage: "linear-gradient(to right, black calc(100% - 24px), transparent)",
+      }}
+    >
       {pills.map((pill) => (
         <Link
           key={pill.href + pill.label}
