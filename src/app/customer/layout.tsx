@@ -71,6 +71,7 @@ export default async function CustomerLayout({
                   <ProfileDropdown
                     name={profile.full_name}
                     hasSellerShop={hasSellerProfile}
+                    isAdmin={profile.role === "admin"}
                   />
                 </>
               ) : (

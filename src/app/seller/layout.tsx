@@ -52,6 +52,7 @@ export default async function SellerLayout({
               <ProfileDropdown
                 name={profile.full_name}
                 hasSellerShop={true}
+                isAdmin={profile.role === "admin"}
               />
             </div>
           </div>
