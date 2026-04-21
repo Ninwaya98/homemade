@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { Card, EmptyState } from "@/components/ui/Card";
@@ -22,7 +24,15 @@ export default async function SellerApprovalsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-stone-900">Seller approvals</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold text-stone-900">Seller approvals</h1>
+        <Link
+          href="/admin/sellers/new"
+          className="rounded-full bg-violet-600 px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-violet-700"
+        >
+          + Create shop
+        </Link>
+      </div>
 
       {pendingSellers && pendingSellers.length > 0 ? (
         <div className="space-y-4">

@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
-import { adminSellerUpdateSchema, productSchema } from "@/lib/schemas";
+import { adminSellerUpdateSchema, productSchema, sellerOnboardingSchema } from "@/lib/schemas";
 import { ALLOWED_IMAGE_TYPES, safeImageExt, validateFileType } from "@/lib/file-validation";
 import { buildStatusExtras, isTransitionAllowed } from "@/lib/order-utils";
 import { logAdminAction } from "@/lib/admin-audit";
@@ -66,6 +66,86 @@ export async function rejectSeller(sellerId: string): Promise<AdminActionResult>
   });
   revalidatePath("/admin/sellers");
   revalidatePath("/admin/sellers/all");
+}
+
+export type CreateSellerForUserState =
+  | { error?: string; success?: boolean; fields?: Record<string, string> }
+  | undefined;
+
+/**
+ * Admin promotes an existing customer to a seller by creating their
+ * seller_profiles row directly (status='approved'). The user keeps
+ * their customer role — seller capability is row-based, not role-
+ * based, so no role flip needed.
+ */
+export async function createSellerForUser(
+  userId: string,
+  _state: CreateSellerForUserState,
+  formData: FormData,
+): Promise<CreateSellerForUserState> {
+  const me = await requireRole("admin");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabase = await createClient() as any;
+
+  // Guard: user must exist and not already be a seller.
+  const [{ data: profile }, { data: existingSeller }] = await Promise.all([
+    supabase.from("profiles").select("id, full_name").eq("id", userId).maybeSingle(),
+    supabase.from("seller_profiles").select("id").eq("id", userId).maybeSingle(),
+  ]);
+  if (!profile) return { error: "User not found." };
+  if (existingSeller) return { error: "This user already has a shop." };
+
+  const shop_name = String(formData.get("shop_name") ?? "").trim();
+  const shop_description = String(formData.get("shop_description") ?? "").trim();
+  const category = String(formData.get("category") ?? "").trim();
+  const phone = String(formData.get("phone") ?? "").trim();
+  const location = String(formData.get("location") ?? "").trim();
+
+  const parsed = sellerOnboardingSchema.safeParse({
+    shop_name,
+    shop_description,
+    category,
+    phone,
+    location,
+  });
+  if (!parsed.success) {
+    return {
+      error: parsed.error.issues[0]?.message ?? "Invalid input.",
+      fields: { shop_name, shop_description, category, phone, location },
+    };
+  }
+
+  // Sync phone + location on the owner's profile row.
+  await supabase
+    .from("profiles")
+    .update({ phone, location })
+    .eq("id", userId);
+
+  const { error } = await supabase.from("seller_profiles").insert({
+    id: userId,
+    shop_name,
+    shop_description,
+    category,
+    status: "approved",
+    approved_at: new Date().toISOString(),
+    approved_by: me.id,
+  });
+  if (error) return { error: `Could not create shop: ${error.message}` };
+
+  await logAdminAction({
+    adminId: me.id,
+    action: "seller.create",
+    targetTable: "seller_profiles",
+    targetId: userId,
+    targetSellerId: userId,
+    newValues: { shop_name, category, status: "approved" },
+    notes: `Admin provisioned shop for ${profile.full_name}.`,
+  });
+
+  revalidatePath("/admin/sellers");
+  revalidatePath("/admin/sellers/all");
+  revalidatePath("/admin/sellers/new");
+  redirect(`/admin/sellers/${userId}?created=1`);
 }
 
 export async function reinstateSeller(sellerId: string): Promise<AdminActionResult> {
