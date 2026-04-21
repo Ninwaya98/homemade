@@ -9,6 +9,7 @@ import { requireRole } from "@/lib/auth";
 import { adminSellerUpdateSchema, productSchema } from "@/lib/schemas";
 import { ALLOWED_IMAGE_TYPES, safeImageExt, validateFileType } from "@/lib/file-validation";
 import { buildStatusExtras, isTransitionAllowed } from "@/lib/order-utils";
+import { logAdminAction } from "@/lib/admin-audit";
 import type { ProductCategory } from "@/lib/types";
 
 export type AdminActionResult = { error?: string } | undefined;
@@ -30,6 +31,14 @@ export async function approveSeller(sellerId: string): Promise<AdminActionResult
     })
     .eq("id", sellerId);
   if (error) return { error: `Failed to approve seller: ${error.message}` };
+  await logAdminAction({
+    adminId: me.id,
+    action: "seller.approve",
+    targetTable: "seller_profiles",
+    targetId: sellerId,
+    targetSellerId: sellerId,
+    newValues: { status: "approved" },
+  });
   revalidatePath("/admin/sellers");
   revalidatePath("/admin/sellers/all");
 }
@@ -47,6 +56,14 @@ export async function rejectSeller(sellerId: string): Promise<AdminActionResult>
     })
     .eq("id", sellerId);
   if (error) return { error: `Failed to reject seller: ${error.message}` };
+  await logAdminAction({
+    adminId: me.id,
+    action: "seller.reject",
+    targetTable: "seller_profiles",
+    targetId: sellerId,
+    targetSellerId: sellerId,
+    newValues: { status: "suspended" },
+  });
   revalidatePath("/admin/sellers");
   revalidatePath("/admin/sellers/all");
 }
@@ -64,6 +81,14 @@ export async function reinstateSeller(sellerId: string): Promise<AdminActionResu
     })
     .eq("id", sellerId);
   if (error) return { error: `Failed to reinstate seller: ${error.message}` };
+  await logAdminAction({
+    adminId: me.id,
+    action: "seller.reinstate",
+    targetTable: "seller_profiles",
+    targetId: sellerId,
+    targetSellerId: sellerId,
+    newValues: { status: "approved" },
+  });
   revalidatePath("/admin/sellers/all");
 }
 
@@ -82,9 +107,15 @@ export async function updateSellerProfile(
   _state: AdminSellerUpdateState,
   formData: FormData,
 ): Promise<AdminSellerUpdateState> {
-  await requireRole("admin");
+  const me = await requireRole("admin");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
+
+  // Capture "before" for the audit log.
+  const [{ data: beforeSeller }, { data: beforeProfile }] = await Promise.all([
+    supabase.from("seller_profiles").select("shop_name, shop_description, category").eq("id", sellerId).maybeSingle(),
+    supabase.from("profiles").select("phone, location").eq("id", sellerId).maybeSingle(),
+  ]);
 
   const rawShopName = String(formData.get("shop_name") ?? "").trim();
   const rawShopDescription = String(formData.get("shop_description") ?? "").trim();
@@ -138,6 +169,16 @@ export async function updateSellerProfile(
     if (error) return { error: `Failed to update contact info: ${error.message}` };
   }
 
+  await logAdminAction({
+    adminId: me.id,
+    action: "seller.update",
+    targetTable: "seller_profiles",
+    targetId: sellerId,
+    targetSellerId: sellerId,
+    oldValues: { ...(beforeSeller ?? {}), ...(beforeProfile ?? {}) },
+    newValues: { ...sellerPatch, ...profilePatch },
+  });
+
   revalidatePath(`/admin/sellers/${sellerId}`);
   revalidatePath("/admin/sellers/all");
   return { success: true };
@@ -167,6 +208,15 @@ export async function approveResolution(reviewId: string) {
 
   // Score recalculation handled by database trigger (migration 015)
 
+  await logAdminAction({
+    adminId: admin.id,
+    action: "review.approve_resolution",
+    targetTable: "reviews",
+    targetId: reviewId,
+    targetSellerId: review.reviewee_id ?? null,
+    newValues: { resolution_status: "approved" },
+  });
+
   revalidatePath("/admin/reviews");
 }
 
@@ -175,11 +225,27 @@ export async function rejectResolution(reviewId: string) {
   const supabase = await createClient();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase as any).from("reviews").update({
+  const sb = supabase as any;
+  const { data: review } = await sb
+    .from("reviews")
+    .select("reviewee_id")
+    .eq("id", reviewId)
+    .maybeSingle();
+
+  await sb.from("reviews").update({
     resolution_status: "rejected",
     resolved_at: new Date().toISOString(),
     resolved_by: admin.id,
   }).eq("id", reviewId);
+
+  await logAdminAction({
+    adminId: admin.id,
+    action: "review.reject_resolution",
+    targetTable: "reviews",
+    targetId: reviewId,
+    targetSellerId: review?.reviewee_id ?? null,
+    newValues: { resolution_status: "rejected" },
+  });
 
   revalidatePath("/admin/reviews");
 }
@@ -212,7 +278,7 @@ export async function adminCreateProduct(
   _state: ProductFormState,
   formData: FormData,
 ): Promise<ProductFormState> {
-  await requireRole("admin");
+  const me = await requireRole("admin");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -264,7 +330,7 @@ export async function adminCreateProduct(
     photoUrls.push(supabase.storage.from("product-photos").getPublicUrl(path).data.publicUrl);
   }
 
-  const { error } = await supabase.from("products").insert({
+  const { data: inserted, error } = await supabase.from("products").insert({
     seller_id: sellerId,
     name,
     description: description || null,
@@ -278,8 +344,17 @@ export async function adminCreateProduct(
     photo_urls: photoUrls,
     ingredients,
     status: stockQuantity > 0 ? "active" : "out_of_stock",
-  });
+  }).select("id").single();
   if (error) return { error: `Could not save product: ${error.message}` };
+
+  await logAdminAction({
+    adminId: me.id,
+    action: "product.create",
+    targetTable: "products",
+    targetId: inserted?.id ?? null,
+    targetSellerId: sellerId,
+    newValues: { name, price_cents: Math.round(priceDollars * 100), category, stock_quantity: stockQuantity },
+  });
 
   revalidatePath(`/admin/sellers/${sellerId}`);
   redirect(`/admin/sellers/${sellerId}?product_created=1`);
@@ -291,7 +366,7 @@ export async function adminUpdateProduct(
   _state: ProductFormState,
   formData: FormData,
 ): Promise<ProductFormState> {
-  await requireRole("admin");
+  const me = await requireRole("admin");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -368,6 +443,15 @@ export async function adminUpdateProduct(
     .eq("seller_id", sellerId);
   if (error) return { error: `Could not save product: ${error.message}` };
 
+  await logAdminAction({
+    adminId: me.id,
+    action: "product.update",
+    targetTable: "products",
+    targetId: productId,
+    targetSellerId: sellerId,
+    newValues: { name, price_cents: Math.round(priceDollars * 100), category, stock_quantity: stockQuantity, status: newStatus },
+  });
+
   revalidatePath(`/admin/sellers/${sellerId}`);
   redirect(`/admin/sellers/${sellerId}?product_updated=1`);
 }
@@ -377,7 +461,7 @@ export async function adminSetProductStatus(
   productId: string,
   status: "active" | "paused" | "out_of_stock",
 ) {
-  await requireRole("admin");
+  const me = await requireRole("admin");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -397,6 +481,16 @@ export async function adminSetProductStatus(
     .update({ status: finalStatus })
     .eq("id", productId)
     .eq("seller_id", sellerId);
+
+  await logAdminAction({
+    adminId: me.id,
+    action: "product.set_status",
+    targetTable: "products",
+    targetId: productId,
+    targetSellerId: sellerId,
+    newValues: { status: finalStatus },
+  });
+
   revalidatePath(`/admin/sellers/${sellerId}`);
 }
 
@@ -413,7 +507,7 @@ export async function adminSetOrderStatus(
   orderId: string,
   nextStatus: "confirmed" | "ready" | "completed" | "cancelled",
 ): Promise<AdminOrderStatusResult> {
-  await requireRole("admin");
+  const me = await requireRole("admin");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -437,12 +531,22 @@ export async function adminSetOrderStatus(
     .eq("id", orderId);
   if (error) return { error: `Could not update order: ${error.message}` };
 
+  await logAdminAction({
+    adminId: me.id,
+    action: "order.set_status",
+    targetTable: "orders",
+    targetId: orderId,
+    targetSellerId: current.seller_id ?? null,
+    oldValues: { status: current.status },
+    newValues: { status: nextStatus },
+  });
+
   if (current.seller_id) revalidatePath(`/admin/sellers/${current.seller_id}`);
   revalidatePath("/admin/sellers/all");
 }
 
 export async function adminDeleteProduct(sellerId: string, productId: string) {
-  await requireRole("admin");
+  const me = await requireRole("admin");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -459,10 +563,26 @@ export async function adminDeleteProduct(sellerId: string, productId: string) {
       .update({ status: "paused" })
       .eq("id", productId)
       .eq("seller_id", sellerId);
+    await logAdminAction({
+      adminId: me.id,
+      action: "product.soft_delete",
+      targetTable: "products",
+      targetId: productId,
+      targetSellerId: sellerId,
+      notes: "Product had active orders; paused instead of deleted.",
+      newValues: { status: "paused" },
+    });
     revalidatePath(`/admin/sellers/${sellerId}`);
     return;
   }
 
   await supabase.from("products").delete().eq("id", productId).eq("seller_id", sellerId);
+  await logAdminAction({
+    adminId: me.id,
+    action: "product.delete",
+    targetTable: "products",
+    targetId: productId,
+    targetSellerId: sellerId,
+  });
   revalidatePath(`/admin/sellers/${sellerId}`);
 }
