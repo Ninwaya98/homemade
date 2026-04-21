@@ -67,7 +67,12 @@ export default async function AllSellersPage({
               }) => (
                 <tr key={s.id} className="border-b border-stone-100 hover:bg-stone-50">
                   <td className="px-3 py-3">
-                    <p className="font-medium text-stone-900">{s.shop_name}</p>
+                    <Link
+                      href={`/admin/sellers/${s.id}`}
+                      className="font-medium text-stone-900 hover:text-violet-700 hover:underline"
+                    >
+                      {s.shop_name}
+                    </Link>
                     <p className="text-xs text-stone-500">{s.full_name}</p>
                   </td>
                   <td className="px-3 py-3">

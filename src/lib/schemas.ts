@@ -59,6 +59,37 @@ export const sellerOnboardingSchema = z.object({
 });
 
 // =====================================================================
+// Admin seller edit — mirrors sellerOnboardingSchema but every field
+// is individually optional so partial patches are valid
+// =====================================================================
+
+export const adminSellerUpdateSchema = z.object({
+  shop_name: z
+    .string()
+    .min(3, "Shop name must be at least 3 characters.")
+    .max(200, "Shop name is too long (max 200 characters).")
+    .optional(),
+  shop_description: z
+    .string()
+    .min(20, "Shop description must be at least 20 characters.")
+    .max(2000, "Shop description is too long (max 2000 characters).")
+    .optional(),
+  category: z
+    .string()
+    .min(1, "Category is required.")
+    .optional(),
+  phone: z
+    .string()
+    .regex(/^[+\d\s\-()]{7,20}$/, "Please enter a valid phone number.")
+    .optional(),
+  location: z
+    .string()
+    .min(3, "Location must be at least 3 characters.")
+    .max(200, "Location is too long (max 200 characters).")
+    .optional(),
+});
+
+// =====================================================================
 // Product (seller)
 // =====================================================================
 
