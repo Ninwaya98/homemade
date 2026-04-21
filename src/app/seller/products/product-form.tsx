@@ -30,14 +30,22 @@ export function ProductForm({
   mode,
   product,
   defaultCategory,
+  action: customAction,
 }: {
   mode: "create" | "edit";
   product?: ProductData;
   defaultCategory?: string;
+  /**
+   * Optional override for the server action. Admin flows pass their
+   * own action that writes under a specified sellerId. Defaults to
+   * the seller's own create/update actions.
+   */
+  action?: (state: ProductFormState, formData: FormData) => Promise<ProductFormState>;
 }) {
-  const boundAction = mode === "edit" && product
+  const defaultBound = mode === "edit" && product
     ? updateProduct.bind(null, product.id)
     : createProduct;
+  const boundAction = customAction ?? defaultBound;
   const [state, action, pending] = useActionState(boundAction, initial);
   const [category, setCategory] = useState(product?.category ?? defaultCategory ?? "");
   const [retainedPhotos, setRetainedPhotos] = useState<string[]>(product?.photo_urls ?? []);
