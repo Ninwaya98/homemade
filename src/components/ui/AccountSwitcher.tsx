@@ -18,7 +18,13 @@ import {
  *
  * Consumed by ProfileDropdown.
  */
-export function AccountSwitcher({ onNavigate }: { onNavigate?: () => void }) {
+export function AccountSwitcher({
+  onNavigate,
+  hideHeading = false,
+}: {
+  onNavigate?: () => void;
+  hideHeading?: boolean;
+}) {
   const [accounts, setAccounts] = useState<StoredAccount[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [switchingId, setSwitchingId] = useState<string | null>(null);
@@ -84,9 +90,11 @@ export function AccountSwitcher({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div>
-      <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-stone-400">
-        Accounts
-      </p>
+      {!hideHeading && (
+        <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-stone-400">
+          Accounts
+        </p>
+      )}
 
       {accounts.map((acc) => {
         const isActive = acc.userId === activeId;
