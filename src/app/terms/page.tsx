@@ -19,7 +19,7 @@ export default function TermsPage() {
       </h1>
       <p className="mt-2 text-sm text-stone-500">Last updated: April 2026</p>
 
-      <div className="mt-8 space-y-6 text-sm leading-relaxed text-stone-700">
+      <div className="mt-8 space-y-8 text-base leading-relaxed text-stone-700">
         <section>
           <h2 className="text-lg font-semibold text-stone-900">1. About the Platform</h2>
           <p>

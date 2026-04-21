@@ -117,7 +117,7 @@ export default async function FeedPage() {
             {(products ?? []).length > 0 && (
               <HorizontalScroll>
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {(products ?? []).map((p: any) => (
+                {(products ?? []).map((p: any, i: number) => (
                   <ProductCard
                     key={p.id}
                     product={{
@@ -131,6 +131,7 @@ export default async function FeedPage() {
                     sellerScore={p.seller_profiles?.score ?? null}
                     sellerReviewCount={(p.seller_profiles?.like_count ?? 0) + (p.seller_profiles?.dislike_count ?? 0) || p.seller_profiles?.rating_count}
                     href={isLoggedIn ? `/customer/market/order/${p.id}` : `/customer/market/sellers/${p.seller_profiles?.id}`}
+                    priority={i === 0}
                   />
                 ))}
               </HorizontalScroll>

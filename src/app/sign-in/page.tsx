@@ -27,7 +27,7 @@ export default async function SignInPage({
             Welcome back
           </h1>
           <p className="mt-2 text-stone-500">
-            Sign in to keep creating — or to keep discovering handmade goods.
+            Sign in to browse, buy, or manage your shop.
           </p>
 
           <SignInForm next={next} />

@@ -10,6 +10,7 @@ export function ProductCard({
   sellerReviewCount,
   href,
   className = "",
+  priority = false,
 }: {
   product: {
     id: string;
@@ -23,6 +24,7 @@ export function ProductCard({
   sellerReviewCount?: number;
   href: string;
   className?: string;
+  priority?: boolean;
 }) {
   const photo = product.photo_urls[0] ?? null;
 
@@ -33,7 +35,7 @@ export function ProductCard({
     >
       {photo ? (
         <div className="relative h-28 w-full">
-          <Image src={photo} alt={product.name} fill className="object-cover" sizes="176px" />
+          <Image src={photo} alt={product.name} fill className="object-cover" sizes="176px" priority={priority} />
         </div>
       ) : (
         <div className="flex h-28 w-full items-center justify-center bg-gradient-to-br from-stone-100 via-sky-50 to-stone-100">
