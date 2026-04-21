@@ -3,6 +3,7 @@ import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
 import { requireRole } from "@/lib/auth";
 import { NavLink } from "@/components/ui/NavLink";
+import { SessionSyncer } from "@/components/auth/SessionSyncer";
 
 export default async function AdminLayout({
   children,
@@ -19,6 +20,7 @@ export default async function AdminLayout({
 
   return (
     <div className="min-h-screen gradient-mesh">
+      <SessionSyncer />
       <header className="glass-header relative z-30">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-6">

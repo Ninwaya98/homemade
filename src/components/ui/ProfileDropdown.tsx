@@ -2,9 +2,10 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { signOut } from "@/app/actions/auth";
 import { useTheme } from "@/lib/theme";
 import { useClickOutside, useEscapeKey } from "@/lib/hooks";
+import { AccountSwitcher } from "@/components/ui/AccountSwitcher";
+import { SignOutButton } from "@/components/ui/SignOutButton";
 
 export function ProfileDropdown({
   name,
@@ -39,13 +40,18 @@ export function ProfileDropdown({
       {/* Dropdown */}
       {open && (
         <div
-          className="absolute right-0 top-full z-50 mt-2 w-56 origin-top-right animate-scale-in rounded-2xl border border-violet-100 p-1.5 shadow-xl shadow-violet-500/10"
+          className="absolute right-0 top-full z-50 mt-2 w-64 origin-top-right animate-scale-in rounded-2xl border border-violet-100 p-1.5 shadow-xl shadow-violet-500/10"
           style={{ background: "var(--dropdown-bg, rgba(255,255,255,0.92))", backdropFilter: "blur(24px) saturate(200%)", WebkitBackdropFilter: "blur(24px) saturate(200%)" }}
         >
           {/* Header */}
           <div className="px-3 py-2.5">
             <p className="text-sm font-semibold text-stone-900 truncate">{name}</p>
           </div>
+
+          <div className="my-1 border-t border-stone-200/60" />
+
+          {/* Account switcher */}
+          <AccountSwitcher onNavigate={() => setOpen(false)} />
 
           <div className="my-1 border-t border-stone-200/60" />
 
@@ -100,15 +106,7 @@ export function ProfileDropdown({
           </button>
 
           {/* Sign out */}
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-stone-600 dark:text-stone-400 transition hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 dark:hover:text-red-400"
-            >
-              <span className="text-xs">↩</span>
-              Sign out
-            </button>
-          </form>
+          <SignOutButton />
         </div>
       )}
     </div>

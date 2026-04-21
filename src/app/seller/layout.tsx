@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NavLink } from "@/components/ui/NavLink";
 import { ProfileDropdown } from "@/components/ui/ProfileDropdown";
 import { NotificationBell } from "@/components/ui/NotificationBell";
+import { SessionSyncer } from "@/components/auth/SessionSyncer";
 
 export default async function SellerLayout({
   children,
@@ -32,6 +33,7 @@ export default async function SellerLayout({
 
   return (
     <div className="min-h-screen gradient-mesh">
+      <SessionSyncer />
       <header className="glass-header relative z-30">
         <div className="mx-auto max-w-3xl px-5 py-4">
           <div className="flex items-center justify-between">
