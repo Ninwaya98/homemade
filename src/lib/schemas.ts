@@ -34,27 +34,6 @@ export const signUpSchema = z.object({
 });
 
 // =====================================================================
-// Cook onboarding
-// =====================================================================
-
-export const cookOnboardingSchema = z.object({
-  bio: z
-    .string()
-    .min(20, "Tell customers a bit more about your cooking — at least 20 characters.")
-    .max(2000, "Bio is too long (max 2000 characters)."),
-  cuisine_tags: z
-    .array(z.string())
-    .min(1, "Pick at least one cuisine tag."),
-  phone: z
-    .string()
-    .min(1, "We need a phone number so customers can reach you about pickups.")
-    .regex(/^[+\d\s\-()]{7,20}$/, "Please enter a valid phone number."),
-  location: z
-    .string()
-    .min(1, "Add a location (city or neighbourhood) so we can match you with nearby customers."),
-});
-
-// =====================================================================
 // Seller onboarding
 // =====================================================================
 
@@ -77,21 +56,6 @@ export const sellerOnboardingSchema = z.object({
   location: z
     .string()
     .min(1, "Add a location so we can match you with nearby customers."),
-});
-
-// =====================================================================
-// Dish (cook)
-// =====================================================================
-
-export const dishSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Dish name is required.")
-    .max(200, "Dish name is too long (max 200 characters)."),
-  description: z
-    .string()
-    .max(5000, "Description is too long (max 5000 characters).")
-    .optional(),
 });
 
 // =====================================================================

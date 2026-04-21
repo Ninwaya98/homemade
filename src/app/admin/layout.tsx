@@ -12,9 +12,7 @@ export default async function AdminLayout({
   await requireRole("admin");
 
   const navItems = [
-    { href: "/admin", label: "Cook approvals" },
     { href: "/admin/sellers", label: "Seller approvals" },
-    { href: "/admin/cooks", label: "All cooks" },
     { href: "/admin/sellers/all", label: "All sellers" },
     { href: "/admin/reviews", label: "Reviews" },
   ];

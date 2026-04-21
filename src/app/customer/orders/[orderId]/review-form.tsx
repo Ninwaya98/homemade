@@ -64,7 +64,7 @@ export function ReviewForm({
     <Card>
       <h2 className="text-base font-semibold text-stone-900">How was it?</h2>
       <p className="mt-1 text-xs text-stone-500">
-        Your feedback helps the community find great cooks & sellers.
+        Your feedback helps the community find great sellers.
       </p>
 
       {/* Like / Dislike buttons */}

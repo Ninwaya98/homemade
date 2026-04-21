@@ -7,7 +7,7 @@ import { requireAuth } from "@/lib/auth";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { LinkButton } from "@/components/ui/Button";
-import { allergenLabel, dayLabel, formatPrice, portionSizeLabel } from "@/lib/constants";
+import { dayLabel, formatPrice } from "@/lib/constants";
 import { CancelOrderButton } from "./cancel-button";
 import { ReviewForm } from "./review-form";
 
@@ -30,8 +30,6 @@ export default async function CustomerOrderDetail({
     .from("orders")
     .select(`
       *,
-      dishes(id, name, description, allergens, photo_url),
-      cook_profiles!orders_cook_id_fkey(id, photo_url, profiles!cook_profiles_id_fkey(full_name, phone, location)),
       products(id, name, description, photo_urls, ingredients, category),
       seller_profiles!orders_seller_id_fkey(id, shop_name, photo_url, profiles!seller_profiles_id_fkey(full_name, phone, location))
     `)
@@ -41,28 +39,18 @@ export default async function CustomerOrderDetail({
 
   if (!order) notFound();
 
-  // Cast — order is untyped due to multi-vertical joins
+  // Cast — order is untyped due to seller joins
   const o = order as Record<string, unknown> & {
     id: string; status: string; quantity: number; total_cents: number;
     commission_cents: number; cook_payout_cents: number; type: string;
     scheduled_for: string | null; notes: string | null; created_at: string;
-    vertical: string;
     delivery_address?: string | null;
     confirmed_at?: string | null; ready_at?: string | null;
     completed_at?: string | null; cancelled_at?: string | null;
     estimated_ready_time?: string | null;
-    portion_size?: string | null;
   };
 
-  const isMarket = o.vertical === "market";
-
-  const dish = order.dishes as { id?: string; name?: string; description?: string | null; allergens?: string[]; photo_url?: string | null } | null;
   const product = order.products as { id?: string; name?: string; description?: string | null; photo_urls?: string[]; ingredients?: string | null; category?: string } | null;
-  const cook = order.cook_profiles as {
-    id: string;
-    photo_url: string | null;
-    profiles: { full_name?: string; phone?: string | null; location?: string | null };
-  } | null;
   const seller = order.seller_profiles as {
     id: string;
     shop_name: string;
@@ -71,15 +59,15 @@ export default async function CustomerOrderDetail({
   } | null;
 
   // Unified values
-  const itemName = isMarket ? product?.name : dish?.name;
-  const itemId = isMarket ? product?.id : dish?.id;
-  const itemPhotoUrl = isMarket ? (product?.photo_urls ?? [])[0] : dish?.photo_url;
-  const providerName = isMarket ? seller?.shop_name : cook?.profiles?.full_name;
-  const providerId = isMarket ? seller?.id : cook?.id;
-  const providerPhoto = isMarket ? seller?.photo_url : cook?.photo_url;
-  const providerLocation = isMarket ? seller?.profiles?.location : cook?.profiles?.location;
-  const providerPhone = isMarket ? seller?.profiles?.phone : cook?.profiles?.phone;
-  const providerLink = isMarket ? `/customer/market/sellers/${providerId}` : `/customer/cooks/${providerId}`;
+  const itemName = product?.name;
+  const itemId = product?.id;
+  const itemPhotoUrl = (product?.photo_urls ?? [])[0];
+  const providerName = seller?.shop_name;
+  const providerId = seller?.id;
+  const providerPhoto = seller?.photo_url;
+  const providerLocation = seller?.profiles?.location;
+  const providerPhone = seller?.profiles?.phone;
+  const providerLink = `/customer/market/sellers/${providerId}`;
 
   // If completed, has the customer left a review yet?
   let existingReview = null;
@@ -112,16 +100,11 @@ export default async function CustomerOrderDetail({
               {itemPhotoUrl ? (
                 <Image src={itemPhotoUrl} alt="" width={56} height={56} className="h-14 w-14 rounded-lg object-cover" />
               ) : (
-                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-stone-100 text-xl">{isMarket ? "🛍" : "🍽"}</div>
+                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-stone-100 text-xl">🛍</div>
               )}
               <div>
                 <p className="text-sm font-semibold text-stone-900">
                   {o.quantity}× {itemName ?? "—"}
-                  {o.portion_size && (
-                    <span className="ml-1 text-xs font-normal text-violet-600">
-                      ({portionSizeLabel(o.portion_size)})
-                    </span>
-                  )}
                 </p>
                 <p className="text-xs text-stone-500">
                   {o.scheduled_for ? dayLabel(o.scheduled_for) : o.type}
@@ -156,7 +139,7 @@ export default async function CustomerOrderDetail({
           {itemPhotoUrl ? (
             <Image src={itemPhotoUrl} alt="" width={80} height={80} className="h-20 w-20 flex-none rounded-xl object-cover shadow-sm" />
           ) : (
-            <div className="flex h-20 w-20 flex-none items-center justify-center rounded-xl bg-stone-100 text-2xl">{isMarket ? "🛍" : "🍽"}</div>
+            <div className="flex h-20 w-20 flex-none items-center justify-center rounded-xl bg-stone-100 text-2xl">🛍</div>
           )}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
@@ -164,7 +147,6 @@ export default async function CustomerOrderDetail({
                 {o.quantity}× {itemName ?? "—"}
               </h1>
               <Badge tone={statusTone(o.status)}>{o.status}</Badge>
-              <Badge tone={isMarket ? "blue" : "amber"}>{isMarket ? "Market" : "Kitchen"}</Badge>
             </div>
             <p className="text-sm text-stone-500">
               {o.scheduled_for ? dayLabel(o.scheduled_for) : ""} {o.type}
@@ -172,11 +154,6 @@ export default async function CustomerOrderDetail({
             {o.estimated_ready_time && (
               <p className="mt-1 text-sm font-medium text-violet-600">
                 Estimated ready: {o.estimated_ready_time}
-              </p>
-            )}
-            {!isMarket && dish?.allergens && dish.allergens.length > 0 && (
-              <p className="mt-2 rounded-lg bg-violet-50 px-2.5 py-1.5 text-xs font-medium text-violet-900">
-                Contains: {dish.allergens.map(allergenLabel).join(", ")}
               </p>
             )}
           </div>
@@ -189,13 +166,13 @@ export default async function CustomerOrderDetail({
         <div className="mt-4">
           <TimelineStep
             label="Order placed"
-            description={`Your order has been sent to ${isMarket ? "the seller" : "the cook"}`}
+            description="Your order has been sent to the seller"
             time={o.created_at}
             done
           />
           <TimelineStep
             label="Confirmed"
-            description={o.status === "pending" ? `Waiting for ${isMarket ? "seller" : "cook"} to accept` : `${isMarket ? "Seller" : "Cook"} has accepted your order`}
+            description={o.status === "pending" ? "Waiting for seller to accept" : "Seller has accepted your order"}
             time={o.confirmed_at}
             done={["confirmed", "ready", "completed"].includes(o.status)}
             active={o.status === "pending"}
@@ -238,7 +215,7 @@ export default async function CustomerOrderDetail({
 
       {/* Provider info */}
       <Card>
-        <h2 className="text-sm font-bold text-stone-900">{isMarket ? "Seller" : "Cook"}</h2>
+        <h2 className="text-sm font-bold text-stone-900">Seller</h2>
         <Link
           href={providerLink}
           className="mt-3 flex items-center gap-3 transition hover:opacity-90"
@@ -268,7 +245,7 @@ export default async function CustomerOrderDetail({
         <div className="mt-3 space-y-1.5 text-sm">
           <Row label="Total paid" value={formatPrice(o.total_cents)} bold />
           <p className="text-[11px] text-stone-400">
-            Platform fee {formatPrice(o.commission_cents)}, {isMarket ? "seller" : "cook"} receives{" "}
+            Platform fee {formatPrice(o.commission_cents)}, seller receives{" "}
             {formatPrice(o.cook_payout_cents)}.
           </p>
         </div>
@@ -284,7 +261,7 @@ export default async function CustomerOrderDetail({
           <ReviewForm orderId={o.id} existing={existingReview} />
           {itemId && (
             <LinkButton
-              href={isMarket ? `/customer/market/order/${itemId}` : `/customer/order/${itemId}`}
+              href={`/customer/market/order/${itemId}`}
               variant="secondary"
               size="md"
               fullWidth

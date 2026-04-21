@@ -23,11 +23,10 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-lg font-semibold text-stone-900">1. Data We Collect</h2>
           <p>
-            When you create an account, we collect your name, email address,
-            and role (cook or customer). Cooks additionally provide a phone
-            number, location, bio, cuisine tags, a food handler certificate,
-            and an optional photo. Order and review data is stored to operate
-            the marketplace.
+            When you create an account, we collect your name and email address.
+            Sellers additionally provide a phone number, location, shop
+            description, category, and shop photos. Order and review data is
+            stored to operate the marketplace.
           </p>
         </section>
 
@@ -35,7 +34,7 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-semibold text-stone-900">2. How We Use Your Data</h2>
           <p>
             Your data is used to: operate the marketplace and facilitate
-            orders; display cook profiles to customers; enable reviews and
+            orders; display seller profiles to customers; enable reviews and
             ratings; communicate order updates; comply with legal obligations.
           </p>
         </section>
@@ -43,11 +42,10 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-lg font-semibold text-stone-900">3. Data Sharing</h2>
           <p>
-            We share your data only as necessary: cook names, photos,
-            locations, and bios are publicly visible to customers. Phone
-            numbers are shared with customers who place orders. Certificates
-            are visible only to platform administrators. We do not sell your
-            data to third parties.
+            We share your data only as necessary: seller shop names, photos,
+            locations, and descriptions are publicly visible to customers.
+            Phone numbers are shared with customers who place orders. We do
+            not sell your data to third parties.
           </p>
         </section>
 
@@ -55,9 +53,9 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-semibold text-stone-900">4. Data Storage</h2>
           <p>
             Your data is stored securely using Supabase (hosted on AWS).
-            Passwords are hashed and never stored in plain text. Files
-            (certificates, photos) are stored in encrypted cloud storage
-            buckets with appropriate access controls.
+            Passwords are hashed and never stored in plain text. Files (photos)
+            are stored in encrypted cloud storage buckets with appropriate
+            access controls.
           </p>
         </section>
 

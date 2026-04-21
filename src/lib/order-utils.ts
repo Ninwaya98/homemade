@@ -1,12 +1,12 @@
 // =====================================================================
 // HomeMade — shared order utilities
 // =====================================================================
-// Used by both cook/actions.ts and seller/actions.ts to avoid
-// duplicating the order state machine and timestamp logic.
+// Used by seller/actions.ts for market orders. Kept as a standalone
+// module so the order state machine and timestamp logic stay in one
+// place.
 
 /**
  * Allowed order status transitions (FSM).
- * Both kitchen and market orders follow the same lifecycle.
  */
 export const ORDER_TRANSITIONS: Record<string, string[]> = {
   pending: ["confirmed", "cancelled"],

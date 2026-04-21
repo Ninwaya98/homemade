@@ -15,13 +15,6 @@ export default async function AccountPage() {
   const profile = await requireAuth();
   const supabase = await createClient();
 
-  // Check cook capability
-  const { data: cookProfile } = await supabase
-    .from("cook_profiles")
-    .select("status")
-    .eq("id", profile.id)
-    .maybeSingle();
-
   // Check seller capability
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: sellerProfile } = await (supabase as any)
@@ -41,52 +34,13 @@ export default async function AccountPage() {
       <section className="mt-8 space-y-4">
         <h2 className="text-lg font-semibold text-slate-900">Your roles</h2>
 
-        {/* Cook capability */}
-        {cookProfile ? (
-          <Card>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-slate-900">HomeMade Kitchen</p>
-                <p className="text-sm text-slate-500">You applied to cook</p>
-              </div>
-              <Badge tone={cookProfile.status === "approved" ? "green" : cookProfile.status === "suspended" ? "red" : "amber"}>
-                {cookProfile.status}
-              </Badge>
-            </div>
-            <div className="mt-3">
-              <LinkButton href="/cook" size="sm" variant="secondary">
-                Go to kitchen dashboard
-              </LinkButton>
-            </div>
-          </Card>
-        ) : (
-          <Card>
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-blue-200 text-2xl">
-                👨‍🍳
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-slate-900">Open a Kitchen</p>
-                <p className="mt-1 text-sm text-slate-500">
-                  Cook from home and sell your meals. You&apos;ll need a food handler certificate.
-                </p>
-                <div className="mt-3">
-                  <LinkButton href="/cook/onboarding" size="sm">
-                    Apply to cook
-                  </LinkButton>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
-
         {/* Seller capability */}
         {sellerProfile ? (
           <Card>
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-semibold text-slate-900">
-                  HomeMade Market{sellerProfile.shop_name ? ` — ${sellerProfile.shop_name}` : ""}
+                  HomeMade Art{sellerProfile.shop_name ? ` — ${sellerProfile.shop_name}` : ""}
                 </p>
                 <p className="text-sm text-slate-500">You applied to sell</p>
               </div>
@@ -131,7 +85,7 @@ export default async function AccountPage() {
           </Link>
         </div>
         <p className="mt-1 text-sm text-slate-500 dark:text-stone-400">
-          Save addresses for faster checkout when ordering food.
+          Save addresses for faster checkout.
         </p>
       </section>
 
@@ -142,7 +96,7 @@ export default async function AccountPage() {
         <h2 className="text-lg font-semibold text-red-900">Delete Account</h2>
         <p className="mt-2 text-sm text-slate-600">
           This will permanently delete your account and all associated data
-          (profile, dishes, schedule, reviews). This action cannot be undone.
+          (profile, products, reviews). This action cannot be undone.
           If you have active orders, you must wait until they are completed or
           cancelled first.
         </p>

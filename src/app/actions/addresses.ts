@@ -38,7 +38,6 @@ export async function addAddress(formData: FormData) {
 
   if (error) return { error: error.message };
   revalidatePath("/account/addresses");
-  revalidatePath("/customer/basket");
   return { success: true };
 }
 
@@ -66,7 +65,6 @@ export async function updateAddress(formData: FormData) {
 
   if (error) return { error: error.message };
   revalidatePath("/account/addresses");
-  revalidatePath("/customer/basket");
   return { success: true };
 }
 

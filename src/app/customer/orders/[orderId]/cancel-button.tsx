@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 
-import { cancelOrder } from "@/app/customer/actions";
+import { cancelProductOrder } from "@/app/customer/actions";
 import { Button } from "@/components/ui/Button";
 
 export function CancelOrderButton({ orderId }: { orderId: string }) {
@@ -15,9 +15,9 @@ export function CancelOrderButton({ orderId }: { orderId: string }) {
       fullWidth
       disabled={pending}
       onClick={() => {
-        if (!confirm("Cancel this order? Your portions will be refunded.")) return;
+        if (!confirm("Cancel this order? Your stock will be restored.")) return;
         start(async () => {
-          await cancelOrder(orderId);
+          await cancelProductOrder(orderId);
         });
       }}
     >

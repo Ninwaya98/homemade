@@ -4,13 +4,12 @@ import { useState, useTransition } from "react";
 import { toggleFavorite } from "@/app/actions/favorites";
 
 interface FavoriteButtonProps {
-  dishId?: string;
-  productId?: string;
+  productId: string;
   initialFavorited?: boolean;
   className?: string;
 }
 
-export default function FavoriteButton({ dishId, productId, initialFavorited = false, className = "" }: FavoriteButtonProps) {
+export default function FavoriteButton({ productId, initialFavorited = false, className = "" }: FavoriteButtonProps) {
   const [favorited, setFavorited] = useState(initialFavorited);
   const [isPending, startTransition] = useTransition();
 
@@ -20,8 +19,7 @@ export default function FavoriteButton({ dishId, productId, initialFavorited = f
     setFavorited(!favorited);
     startTransition(async () => {
       const fd = new FormData();
-      if (dishId) fd.set("dishId", dishId);
-      if (productId) fd.set("productId", productId);
+      fd.set("productId", productId);
       const result = await toggleFavorite(fd);
       if (result?.error) setFavorited(favorited);
     });

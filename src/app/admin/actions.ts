@@ -7,53 +7,6 @@ import { requireRole } from "@/lib/auth";
 
 export type AdminActionResult = { error?: string } | undefined;
 
-export async function approveCook(cookId: string): Promise<AdminActionResult> {
-  const me = await requireRole("admin");
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("cook_profiles")
-    .update({
-      status: "approved",
-      approved_at: new Date().toISOString(),
-      approved_by: me.id,
-    })
-    .eq("id", cookId);
-  if (error) return { error: `Failed to approve cook: ${error.message}` };
-  revalidatePath("/admin");
-  revalidatePath("/admin/cooks");
-}
-
-export async function rejectCook(cookId: string): Promise<AdminActionResult> {
-  const me = await requireRole("admin");
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("cook_profiles")
-    .update({
-      status: "suspended",
-      approved_at: null,
-      approved_by: me.id,
-    })
-    .eq("id", cookId);
-  if (error) return { error: `Failed to reject cook: ${error.message}` };
-  revalidatePath("/admin");
-  revalidatePath("/admin/cooks");
-}
-
-export async function reinstateCook(cookId: string): Promise<AdminActionResult> {
-  const me = await requireRole("admin");
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("cook_profiles")
-    .update({
-      status: "approved",
-      approved_at: new Date().toISOString(),
-      approved_by: me.id,
-    })
-    .eq("id", cookId);
-  if (error) return { error: `Failed to reinstate cook: ${error.message}` };
-  revalidatePath("/admin/cooks");
-}
-
 // =====================================================================
 // Seller management
 // =====================================================================

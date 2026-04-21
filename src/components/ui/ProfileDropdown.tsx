@@ -8,11 +8,9 @@ import { useClickOutside, useEscapeKey } from "@/lib/hooks";
 
 export function ProfileDropdown({
   name,
-  hasCookShop,
   hasSellerShop,
 }: {
   name: string;
-  hasCookShop: boolean;
   hasSellerShop: boolean;
 }) {
   const [open, setOpen] = useState(false);
@@ -20,7 +18,7 @@ export function ProfileDropdown({
   const { theme, toggleTheme } = useTheme();
 
   const initial = name.trim().charAt(0).toUpperCase() || "?";
-  const hasShop = hasCookShop || hasSellerShop;
+  const hasShop = hasSellerShop;
 
   useClickOutside(ref, () => setOpen(false), open);
   useEscapeKey(() => setOpen(false), open);
@@ -76,16 +74,8 @@ export function ProfileDropdown({
             <>
               <div className="my-1 border-t border-stone-200/60" />
               <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-stone-400">
-                My shops
+                My shop
               </p>
-              {hasCookShop && (
-                <DropdownLink
-                  href="/cook"
-                  icon="🍳"
-                  label="Kitchen dashboard"
-                  onClick={() => setOpen(false)}
-                />
-              )}
               {hasSellerShop && (
                 <DropdownLink
                   href="/seller"

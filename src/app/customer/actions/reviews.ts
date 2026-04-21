@@ -55,6 +55,5 @@ export async function leaveReview(formData: FormData) {
   // Score recalculation handled by database trigger (migration 015)
 
   revalidatePath(`/customer/orders/${orderId}`);
-  if (orderFull.cook_id) revalidatePath(`/customer/cooks/${orderFull.cook_id}`);
   if (orderFull.seller_id) revalidatePath(`/customer/market/sellers/${orderFull.seller_id}`);
 }

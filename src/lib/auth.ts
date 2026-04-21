@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 
 import { createClient } from "@/lib/supabase/server";
-import type { Profile, UserRole, CookProfile, SellerProfile } from "@/lib/types";
+import type { Profile, UserRole, SellerProfile } from "@/lib/types";
 
 /**
  * Loads the current user's profile (role + name) for the active request.
@@ -39,7 +39,7 @@ export async function requireAuth(): Promise<Profile> {
 
 /**
  * Use at the top of a route handler / server component to enforce a
- * specific role. Only used for admin now — cook/seller use capability checks.
+ * specific role. Only used for admin now — seller uses capability checks.
  * Redirects to /sign-in if unauthenticated, or to the user's own home
  * if they have the wrong role.
  */
@@ -50,31 +50,10 @@ export async function requireRole(role: UserRole | "seller"): Promise<Profile> {
     redirect("/sign-in");
   }
   if (profile.role !== role) {
-    const home: Record<string, string> = { cook: "/cook", seller: "/seller", admin: "/admin", customer: "/customer" };
+    const home: Record<string, string> = { seller: "/seller", admin: "/admin", customer: "/customer" };
     redirect(home[profile.role as string] ?? "/customer");
   }
   return profile;
-}
-
-/**
- * Ensures the user is authenticated AND has a cook_profiles row.
- * If no cook profile exists, redirects to /account where they can apply.
- */
-export async function requireCookProfile(): Promise<{ profile: Profile; cookProfile: CookProfile }> {
-  const profile = await requireAuth();
-  const supabase = await createClient();
-
-  const { data } = await supabase
-    .from("cook_profiles")
-    .select("*")
-    .eq("id", profile.id)
-    .maybeSingle();
-
-  if (!data) {
-    redirect("/account");
-  }
-
-  return { profile, cookProfile: data as CookProfile };
 }
 
 /**
