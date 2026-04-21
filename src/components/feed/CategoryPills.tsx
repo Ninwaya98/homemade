@@ -1,20 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { CUISINES, PRODUCT_CATEGORIES } from "@/lib/constants";
+import { PRODUCT_CATEGORIES } from "@/lib/constants";
 
-const pills = [
-  { label: "Kitchen", href: "/customer/kitchen" },
-  { label: "Market", href: "/customer/market" },
-  ...CUISINES.slice(0, 6).map((c) => ({
-    label: c,
-    href: `/customer/kitchen?cuisine=${c}`,
-  })),
-  ...PRODUCT_CATEGORIES.map((c) => ({
-    label: c.label,
-    href: `/customer/market?category=${c.id}`,
-  })),
-];
+const pills = PRODUCT_CATEGORIES.map((c) => ({
+  label: c.label,
+  href: `/customer/market?category=${c.id}`,
+}));
 
 export function CategoryPills() {
   return (

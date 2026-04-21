@@ -21,14 +21,14 @@ export default function SignUpPage() {
             Join HomeMade
           </h1>
           <p className="mt-2 text-stone-500">
-            Home-cooked food & handmade goods from your community.
+            Handmade goods from your community.
           </p>
 
           <SignUpForm />
 
           <p className="mt-5 rounded-xl border border-violet-200/40 bg-violet-50/50 px-4 py-3 text-xs text-slate-500">
-            Want to sell food or handmade goods? You can apply to open a kitchen
-            or shop from your account page after signing up.
+            Want to sell handmade goods? You can apply to open a shop from your
+            account page after signing up.
           </p>
         </div>
 

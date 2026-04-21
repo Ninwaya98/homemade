@@ -21,14 +21,14 @@ export function TipsSection() {
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-200/60 text-[11px] font-bold text-violet-700">1</span>
               <div>
                 <p className="text-xs font-semibold text-stone-800">Browse</p>
-                <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">Search cooks and sellers by name, cuisine, or category.</p>
+                <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">Search sellers by name or category.</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-xl bg-violet-50/50 p-3.5">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-200/60 text-[11px] font-bold text-violet-700">2</span>
               <div>
                 <p className="text-xs font-semibold text-stone-800">Order</p>
-                <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">Pick portions, choose a day, add to basket. Allergens listed on every dish.</p>
+                <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">Add to cart, choose delivery or pickup, and check out.</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-xl bg-violet-50/50 p-3.5">
@@ -53,7 +53,7 @@ export function TipsSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017a2 2 0 01-.95-.24l-3.296-1.882V12m10-2V6a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905a3.61 3.61 0 01-.608 2.003L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2" />
                 </svg>
                 <p className="text-[11px] leading-relaxed text-stone-600">
-                  <span className="font-semibold text-stone-800">Thumbs up or down</span> — simple and honest. Leave a comment to help cooks improve.
+                  <span className="font-semibold text-stone-800">Thumbs up or down</span> — simple and honest. Leave a comment to help sellers improve.
                 </p>
               </div>
               <div className="flex items-start gap-3 rounded-xl bg-violet-50/50 p-3.5">
@@ -61,7 +61,7 @@ export function TipsSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
                 <p className="text-[11px] leading-relaxed text-stone-600">
-                  <span className="font-semibold text-stone-800">Scores improve</span> — when cooks address your feedback, resolved ratings lift their score.
+                  <span className="font-semibold text-stone-800">Scores improve</span> — when sellers address your feedback, resolved ratings lift their score.
                 </p>
               </div>
             </div>
@@ -92,32 +92,6 @@ export function TipsSection() {
           </div>
         </div>
 
-        <div className="border-t border-violet-100/60 my-5" />
-
-        {/* Tip 3: Colors */}
-        <div>
-          <h3 className="text-sm font-bold text-violet-700 mb-3">Our colours</h3>
-          <div className="grid grid-cols-3 gap-2.5">
-            <div className="rounded-xl p-3.5 text-center bg-rose-50/70 border border-rose-200/40">
-              <div className="mx-auto h-3 w-12 rounded-full bg-rose-300/70 mb-2" />
-              <p className="text-[11px] font-semibold text-rose-700">Rose</p>
-              <p className="text-[10px] text-rose-500/80 mt-0.5">HomeMade Food</p>
-            </div>
-            <div className="rounded-xl p-3.5 text-center bg-sky-50/70 border border-sky-200/40">
-              <div className="mx-auto h-3 w-12 rounded-full bg-sky-300/70 mb-2" />
-              <p className="text-[11px] font-semibold text-sky-700">Blue</p>
-              <p className="text-[10px] text-sky-500/80 mt-0.5">HomeMade Art</p>
-            </div>
-            <div className="rounded-xl p-3.5 text-center bg-violet-50/70 border border-violet-200/40">
-              <div className="mx-auto h-3 w-12 rounded-full bg-violet-300/70 mb-2" />
-              <p className="text-[11px] font-semibold text-violet-700">Purple</p>
-              <p className="text-[10px] text-violet-500/80 mt-0.5">Both combined</p>
-            </div>
-          </div>
-          <p className="mt-2.5 text-center text-[11px] text-stone-400">
-            Rose + Blue = Purple — that&apos;s why HomeMade is all three.
-          </p>
-        </div>
       </div>
     </section>
   );

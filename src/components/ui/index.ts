@@ -3,7 +3,6 @@ export { Card, CardHeader, EmptyState } from "./Card";
 export { Badge } from "./Badge";
 export { NavLink } from "./NavLink";
 export { Field, TextareaField } from "./Field";
-export { BasketBadge } from "./BasketBadge";
 export { ProfileDropdown } from "./ProfileDropdown";
 export { NotificationBell } from "./NotificationBell";
 export { RatingBar } from "./RatingBar";

@@ -11,9 +11,9 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "HomeMade — Real food & handmade goods, made by real people",
+  title: "HomeMade — Handmade goods from local artisans",
   description:
-    "A marketplace connecting home cooks and artisan sellers with neighbours who want authentic, homemade food and handmade goods.",
+    "A marketplace for handmade goods from local artisans in your neighbourhood.",
 };
 
 export const viewport: Viewport = {

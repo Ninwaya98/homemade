@@ -24,49 +24,47 @@ export default function TermsPage() {
           <h2 className="text-lg font-semibold text-stone-900">1. About the Platform</h2>
           <p>
             HomeMade (&quot;we&quot;, &quot;us&quot;, &quot;the platform&quot;) is a
-            marketplace that connects home cooks (&quot;cooks&quot;) with customers
-            (&quot;buyers&quot;). We are not a food producer, restaurant, or delivery
-            service. Each cook operates independently and is solely responsible
-            for the food they prepare and sell through the platform.
+            marketplace that connects artisan sellers (&quot;sellers&quot;) with
+            customers (&quot;buyers&quot;). We are not a manufacturer or shipping
+            service. Each seller operates independently and is solely responsible
+            for the goods they produce and sell through the platform.
           </p>
         </section>
 
         <section>
           <h2 className="text-lg font-semibold text-stone-900">2. Eligibility</h2>
           <p>
-            You must be at least 18 years old to use this platform. Cooks must
-            hold a valid food handler certificate and pass our approval process
-            before listing dishes.
+            You must be at least 18 years old to use this platform. Sellers must
+            pass our approval process before listing products.
           </p>
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold text-stone-900">3. Cook Responsibilities</h2>
+          <h2 className="text-lg font-semibold text-stone-900">3. Seller Responsibilities</h2>
           <p>
-            Cooks agree to: accurately declare all allergens present in their
-            dishes; maintain food safety and hygiene standards; comply with
-            local food preparation and sale regulations; fulfil confirmed
-            orders in a timely manner.
+            Sellers agree to: accurately describe their products and materials;
+            comply with local laws governing the sale of handmade goods;
+            fulfil confirmed orders in a timely manner; handle customer
+            communication respectfully.
           </p>
         </section>
 
         <section>
           <h2 className="text-lg font-semibold text-stone-900">4. Customer Responsibilities</h2>
           <p>
-            Customers agree to: review allergen information before placing an
-            order; acknowledge that home-cooked food may be prepared in
-            environments that contain common allergens; collect orders at the
-            agreed time when using pickup.
+            Customers agree to: review product information before placing an
+            order; collect orders at the agreed time when using pickup;
+            communicate issues with sellers in good faith.
           </p>
         </section>
 
         <section>
           <h2 className="text-lg font-semibold text-stone-900">5. Orders &amp; Payments</h2>
           <p>
-            The platform facilitates orders between cooks and customers. A 16%
+            The platform facilitates orders between sellers and customers. A 16%
             platform commission is applied to each order. Cancellation of
             pending orders is permitted; confirmed orders may only be cancelled
-            by the cook. Refund policies will be detailed once payment
+            by the seller. Refund policies will be detailed once payment
             processing is live.
           </p>
         </section>
@@ -92,10 +90,10 @@ export default function TermsPage() {
           <h2 className="text-lg font-semibold text-stone-900">8. Limitation of Liability</h2>
           <p>
             The platform is provided &quot;as is&quot;. We do not guarantee the
-            quality, safety, or legality of food sold through the platform.
+            quality, safety, or legality of goods sold through the platform.
             To the fullest extent permitted by law, we are not liable for any
-            damages arising from your use of the platform or consumption of
-            food purchased through it.
+            damages arising from your use of the platform or use of goods
+            purchased through it.
           </p>
         </section>
 

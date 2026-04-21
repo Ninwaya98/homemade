@@ -6,7 +6,7 @@ import { updateSession } from "@/lib/supabase/proxy";
  * Next.js 16 renamed `middleware.ts` to `proxy.ts` (same runtime,
  * clearer name). This file refreshes the Supabase session cookie on
  * every request and redirects unauthenticated users away from the
- * /cook, /customer, and /admin areas.
+ * /seller, /customer, and /admin areas.
  */
 export async function proxy(request: NextRequest) {
   return await updateSession(request);

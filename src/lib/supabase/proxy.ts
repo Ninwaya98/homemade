@@ -51,17 +51,14 @@ export async function updateSession(request: NextRequest) {
   // bounces to /sign-in. Real authorization still happens server-side in
   // each route handler / server component.
   //
-  // Customer browse pages (/customer, /customer/kitchen, /customer/market,
-  // /customer/cooks/*, /customer/market/sellers/*) are public so guests can
-  // explore. Only order/checkout paths require a session.
+  // Customer browse pages (/customer, /customer/market,
+  // /customer/market/sellers/*) are public so guests can explore.
+  // Only order/checkout paths require a session.
   const path = request.nextUrl.pathname;
   const isProtected =
-    path.startsWith("/cook") ||
     path.startsWith("/seller") ||
     path.startsWith("/admin") ||
-    path.startsWith("/customer/order") ||
     path.startsWith("/customer/orders") ||
-    path.startsWith("/customer/basket") ||
     path.startsWith("/customer/market/order") ||
     path.startsWith("/account");
 

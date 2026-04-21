@@ -15,10 +15,11 @@ export default async function SellerLayout({
   const supabase = await createClient();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [{ data: sellerProfile }, { data: cookProfile }] = await Promise.all([
-    (supabase as any).from("seller_profiles").select("status, shop_name").eq("id", profile.id).maybeSingle(),
-    supabase.from("cook_profiles").select("status").eq("id", profile.id).maybeSingle(),
-  ]);
+  const { data: sellerProfile } = await (supabase as any)
+    .from("seller_profiles")
+    .select("status, shop_name")
+    .eq("id", profile.id)
+    .maybeSingle();
 
   const navItems = [
     { href: "/seller", label: "Dashboard", icon: "◉" },
@@ -48,7 +49,6 @@ export default async function SellerLayout({
               <NotificationBell />
               <ProfileDropdown
                 name={profile.full_name}
-                hasCookShop={!!cookProfile}
                 hasSellerShop={true}
               />
             </div>
