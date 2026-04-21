@@ -69,6 +69,7 @@ export default async function AdminLayout({
             <ProfileDropdown
               name={profile.full_name}
               hasSellerShop={hasSellerShop}
+              isAdmin
             />
           </div>
         </div>

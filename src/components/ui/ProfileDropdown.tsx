@@ -10,9 +10,11 @@ import { SignOutButton } from "@/components/ui/SignOutButton";
 export function ProfileDropdown({
   name,
   hasSellerShop,
+  isAdmin = false,
 }: {
   name: string;
   hasSellerShop: boolean;
+  isAdmin?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<"main" | "switcher">("main");
@@ -55,10 +57,30 @@ export function ProfileDropdown({
             <>
               {/* Header */}
               <div className="px-3 py-2.5">
-                <p className="text-sm font-semibold text-stone-900 truncate">{name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-stone-900 truncate">{name}</p>
+                  {isAdmin && (
+                    <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-violet-700">
+                      Admin
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="my-1 border-t border-stone-200/60" />
+
+              {/* Admin (shown first so admins always have a way back to /admin) */}
+              {isAdmin && (
+                <>
+                  <DropdownLink
+                    href="/admin"
+                    icon="◆"
+                    label="Admin panel"
+                    onClick={closeAll}
+                  />
+                  <div className="my-1 border-t border-stone-200/60" />
+                </>
+              )}
 
               {/* My Account */}
               <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-stone-400">
