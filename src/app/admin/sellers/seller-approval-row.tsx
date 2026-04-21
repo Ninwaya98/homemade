@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { approveSeller, rejectSeller } from "@/app/admin/actions";
 import { Card } from "@/components/ui/Card";
@@ -70,7 +71,13 @@ export function SellerApprovalRow({ seller }: { seller: Seller }) {
         </div>
       </div>
 
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Link
+          href={`/admin/sellers/${seller.id}`}
+          className="inline-flex items-center rounded-full border border-stone-200 bg-white px-3 py-1.5 text-sm font-medium text-stone-600 transition hover:border-violet-300 hover:text-violet-700"
+        >
+          View details
+        </Link>
         <Button type="button" variant="danger" size="sm" disabled={pending} onClick={handleReject}>
           Reject
         </Button>
