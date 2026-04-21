@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { formatPrice, productCategoryLabel } from "@/lib/constants";
 import {
   adminDeleteProduct,
+  adminSetOrderStatus,
   adminSetProductStatus,
   approveSeller,
   rejectSeller,
@@ -329,7 +330,7 @@ export default async function AdminSellerDetailPage({
         {(recentOrders ?? []).length > 0 ? (
           <ul className="mt-3 divide-y divide-stone-100">
             {(recentOrders as { id: string; status: string; total_cents: number; quantity: number; created_at: string; products: { name?: string } | null }[]).map((o) => (
-              <li key={o.id} className="flex items-center justify-between py-2.5">
+              <li key={o.id} className="flex flex-wrap items-center gap-2 py-2.5">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-stone-900">
                     {o.quantity}× {o.products?.name ?? "—"}
@@ -342,21 +343,81 @@ export default async function AdminSellerDetailPage({
                     })}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    tone={
-                      o.status === "completed"
-                        ? "green"
-                        : o.status === "cancelled"
-                        ? "red"
-                        : "blue"
-                    }
-                  >
-                    {o.status}
-                  </Badge>
-                  <p className="text-sm font-medium text-stone-900">
-                    {formatPrice(o.total_cents)}
-                  </p>
+                <Badge
+                  tone={
+                    o.status === "completed"
+                      ? "green"
+                      : o.status === "cancelled"
+                      ? "red"
+                      : "blue"
+                  }
+                >
+                  {o.status}
+                </Badge>
+                <p className="text-sm font-medium text-stone-900">
+                  {formatPrice(o.total_cents)}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  {o.status === "pending" && (
+                    <form
+                      action={async () => {
+                        "use server";
+                        await adminSetOrderStatus(o.id, "confirmed");
+                      }}
+                    >
+                      <button
+                        type="submit"
+                        className="rounded-full border border-blue-300 bg-white px-2.5 py-1 text-xs font-medium text-blue-700 transition hover:bg-blue-50"
+                      >
+                        Confirm
+                      </button>
+                    </form>
+                  )}
+                  {o.status === "confirmed" && (
+                    <form
+                      action={async () => {
+                        "use server";
+                        await adminSetOrderStatus(o.id, "ready");
+                      }}
+                    >
+                      <button
+                        type="submit"
+                        className="rounded-full border border-blue-300 bg-white px-2.5 py-1 text-xs font-medium text-blue-700 transition hover:bg-blue-50"
+                      >
+                        Mark ready
+                      </button>
+                    </form>
+                  )}
+                  {o.status === "ready" && (
+                    <form
+                      action={async () => {
+                        "use server";
+                        await adminSetOrderStatus(o.id, "completed");
+                      }}
+                    >
+                      <button
+                        type="submit"
+                        className="rounded-full border border-emerald-300 bg-white px-2.5 py-1 text-xs font-medium text-emerald-700 transition hover:bg-emerald-50"
+                      >
+                        Complete
+                      </button>
+                    </form>
+                  )}
+                  {(o.status === "pending" || o.status === "confirmed") && (
+                    <form
+                      action={async () => {
+                        "use server";
+                        await adminSetOrderStatus(o.id, "cancelled");
+                      }}
+                    >
+                      <button
+                        type="submit"
+                        className="rounded-full border border-red-300 bg-white px-2.5 py-1 text-xs font-medium text-red-700 transition hover:bg-red-50"
+                      >
+                        Cancel
+                      </button>
+                    </form>
+                  )}
                 </div>
               </li>
             ))}
