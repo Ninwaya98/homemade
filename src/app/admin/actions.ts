@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
 import { adminSellerUpdateSchema, productSchema } from "@/lib/schemas";
 import { ALLOWED_IMAGE_TYPES, safeImageExt, validateFileType } from "@/lib/file-validation";
+import { buildStatusExtras, isTransitionAllowed } from "@/lib/order-utils";
 import type { ProductCategory } from "@/lib/types";
 
 export type AdminActionResult = { error?: string } | undefined;
@@ -397,6 +398,47 @@ export async function adminSetProductStatus(
     .eq("id", productId)
     .eq("seller_id", sellerId);
   revalidatePath(`/admin/sellers/${sellerId}`);
+}
+
+// =====================================================================
+// Admin-side order status — force any order through the FSM. RLS
+// allows admin UPDATE on orders (migration 005 "orders: admin updates
+// all"), but we still run the transition through the shared FSM check
+// so admins don't accidentally put orders into weird states.
+// =====================================================================
+
+export type AdminOrderStatusResult = { error?: string } | undefined;
+
+export async function adminSetOrderStatus(
+  orderId: string,
+  nextStatus: "confirmed" | "ready" | "completed" | "cancelled",
+): Promise<AdminOrderStatusResult> {
+  await requireRole("admin");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabase = await createClient() as any;
+
+  const { data: current } = await supabase
+    .from("orders")
+    .select("id, status, seller_id")
+    .eq("id", orderId)
+    .maybeSingle();
+  if (!current) return { error: "Order not found." };
+
+  if (!isTransitionAllowed(current.status, nextStatus)) {
+    return {
+      error: `Cannot move order from ${current.status} to ${nextStatus}.`,
+    };
+  }
+
+  const extras = buildStatusExtras(nextStatus);
+  const { error } = await supabase
+    .from("orders")
+    .update({ status: nextStatus, ...extras })
+    .eq("id", orderId);
+  if (error) return { error: `Could not update order: ${error.message}` };
+
+  if (current.seller_id) revalidatePath(`/admin/sellers/${current.seller_id}`);
+  revalidatePath("/admin/sellers/all");
 }
 
 export async function adminDeleteProduct(sellerId: string, productId: string) {
