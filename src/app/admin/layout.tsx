@@ -1,8 +1,10 @@
 import Link from "next/link";
 
-import { signOut } from "@/app/actions/auth";
 import { requireRole } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 import { NavLink } from "@/components/ui/NavLink";
+import { ProfileDropdown } from "@/components/ui/ProfileDropdown";
+import { NotificationBell } from "@/components/ui/NotificationBell";
 import { SessionSyncer } from "@/components/auth/SessionSyncer";
 
 export default async function AdminLayout({
@@ -10,7 +12,18 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await requireRole("admin");
+  const profile = await requireRole("admin");
+
+  // Admin might also own a seller shop — surface the dashboard link in
+  // their profile dropdown if so.
+  const supabase = await createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: sellerProfile } = await (supabase as any)
+    .from("seller_profiles")
+    .select("status")
+    .eq("id", profile.id)
+    .maybeSingle();
+  const hasSellerShop = !!sellerProfile;
 
   const navItems = [
     { href: "/admin/sellers", label: "Seller approvals" },
@@ -45,14 +58,19 @@ export default async function AdminLayout({
               ))}
             </nav>
           </div>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="text-sm text-slate-500 hover:text-slate-900 transition"
+          <div className="flex items-center gap-3">
+            <Link
+              href="/customer"
+              className="text-sm text-slate-500 transition hover:text-violet-600"
             >
-              Sign out
-            </button>
-          </form>
+              Browse
+            </Link>
+            <NotificationBell />
+            <ProfileDropdown
+              name={profile.full_name}
+              hasSellerShop={hasSellerShop}
+            />
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-6 py-8 animate-fade-up">{children}</main>
