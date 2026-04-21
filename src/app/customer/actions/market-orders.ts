@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth";
 import { splitOrderTotal } from "@/lib/constants";
+import { checkOrderLimit } from "@/lib/rate-limit";
 
 // =====================================================================
 // Market orders (product purchases)
@@ -18,6 +19,14 @@ export async function placeProductOrder(
   formData: FormData,
 ): Promise<ProductOrderFormState> {
   const profile = await requireAuth();
+
+  // Throttle orders per user so someone can't spam the orders table
+  // (30 orders / hour is well above any real customer's cadence).
+  const limit = await checkOrderLimit(profile.id);
+  if (!limit.success) {
+    return { error: limit.message ?? "Too many order attempts. Try again later." };
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 

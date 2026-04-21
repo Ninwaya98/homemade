@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
+import { checkModerationLimit, getClientIp } from "@/lib/rate-limit";
 // Score recalculation now handled by database trigger (migration 015)
 
 const anthropic = new Anthropic(); // reads ANTHROPIC_API_KEY from env
@@ -31,6 +32,17 @@ export async function POST(request: Request) {
     const admin = await requireRole("admin");
     if (!admin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate-limit even though this route is admin-gated — protects the
+    // Anthropic API budget if an admin account is ever compromised.
+    const ip = await getClientIp();
+    const limit = await checkModerationLimit(ip);
+    if (!limit.success) {
+      return NextResponse.json(
+        { error: limit.message ?? "Too many moderation requests." },
+        { status: 429, headers: { "Retry-After": String(limit.retryAfter) } },
+      );
     }
 
     const { reviewId } = await request.json();
