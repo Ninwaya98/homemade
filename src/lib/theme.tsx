@@ -15,7 +15,6 @@ const STORAGE_KEY = "homemade-theme";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
@@ -26,7 +25,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       setThemeState("dark");
       document.documentElement.classList.add("dark");
     }
-    setMounted(true);
   }, []);
 
   const setTheme = useCallback((t: Theme) => {
@@ -38,8 +36,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const toggleTheme = useCallback(() => {
     setTheme(theme === "light" ? "dark" : "light");
   }, [theme, setTheme]);
-
-  if (!mounted) return <>{children}</>;
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
