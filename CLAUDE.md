@@ -53,6 +53,20 @@ src/components/feed/index.ts — feed components (ProductCard, SellerCard, etc.)
   order columns) remain in the migration history as DORMANT schema. No
   new code writes to them. Do not drop them without a separate cleanup
   migration.
+- Migration 016 added `admin_audit_log` — append-only log of every
+  admin action (approvals, profile edits, product CRUD, order status
+  forces, review moderation). Read-only via `/admin/audit`.
+
+## External services
+- **Supabase** — Postgres + Auth + Storage
+- **Vercel** — hosting + auto-deploy on push to master
+- **Anthropic** — Claude Haiku for review moderation (`/api/moderate-review`)
+- **Sentry** — error tracking (opt-in via `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_DSN`)
+- **Upstash** — rate limiting (opt-in via `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`).
+  All rate-limit helpers fail open if env vars absent.
+- **Resend** — transactional email (not yet wired; plan in `docs/PLATFORM_SETUP.md`)
+
+See `docs/PLATFORM_SETUP.md` for env var master list and activation steps for the pending services.
 
 ## Important patterns
 - Orders table still carries `vertical` + `cook_id`/`dish_id` columns
