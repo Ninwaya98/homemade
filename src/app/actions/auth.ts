@@ -5,6 +5,11 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { signUpSchema } from "@/lib/schemas";
+import {
+  checkAuthLimit,
+  checkSignUpLimit,
+  getClientIp,
+} from "@/lib/rate-limit";
 
 export type AuthFormState =
   | {
@@ -20,6 +25,16 @@ export async function signUp(
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const fullName = String(formData.get("full_name") ?? "").trim();
+
+  // Throttle sign-ups per IP so a bot can't spam fake accounts.
+  const ip = await getClientIp();
+  const limit = await checkSignUpLimit(ip);
+  if (!limit.success) {
+    return {
+      error: limit.message ?? "Too many sign-up attempts. Try again later.",
+      fields: { email, full_name: fullName },
+    };
+  }
 
   const parsed = signUpSchema.safeParse({ email, password, full_name: fullName });
   if (!parsed.success) {
@@ -66,6 +81,16 @@ export async function signIn(
     return { error: "Email and password are required.", fields: { email } };
   }
 
+  // Throttle credential attempts per IP to stop brute-force attacks.
+  const ip = await getClientIp();
+  const limit = await checkAuthLimit(ip);
+  if (!limit.success) {
+    return {
+      error: limit.message ?? "Too many sign-in attempts. Try again later.",
+      fields: { email },
+    };
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -107,6 +132,17 @@ export async function resetPassword(
   const email = String(formData.get("email") ?? "").trim();
   if (!email) {
     return { error: "Please enter your email address.", fields: { email } };
+  }
+
+  // Reuse auth limiter — forgot-password is a credential-adjacent
+  // endpoint, sharing the bucket prevents enumeration + spam.
+  const ip = await getClientIp();
+  const limit = await checkAuthLimit(ip);
+  if (!limit.success) {
+    return {
+      error: limit.message ?? "Too many reset attempts. Try again later.",
+      fields: { email },
+    };
   }
 
   const supabase = await createClient();
