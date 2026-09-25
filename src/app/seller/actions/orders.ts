@@ -29,38 +29,20 @@ export async function setSellerOrderStatus(
 
   if (!isTransitionAllowed(order.status, status)) return;
 
-  await supabase.from("orders").update({ status }).eq("id", orderId);
-
+  // Status and timestamps in one write, conditional on the status we
+  // checked, so a double click or a simultaneous cancel cannot apply twice.
   const extras = buildStatusExtras(status, estimatedReadyTime);
-  if (Object.keys(extras).length > 0) {
-    await supabase.from("orders").update(extras).eq("id", orderId);
-  }
+  const { data: updated } = await supabase
+    .from("orders")
+    .update({ status, ...extras })
+    .eq("id", orderId)
+    .eq("status", order.status)
+    .select("id");
+  if (!updated?.length) return;
 
-  // Restore stock when seller cancels.
-  //
-  // NOTE: Known race condition — if two cancellations for the same product run
-  // concurrently, both may read the same `stock_quantity` and one restore could
-  // be lost. A proper fix requires an atomic SQL increment (RPC). The current
-  // approach is safe in that it never produces negative stock — the worst case
-  // is stock being slightly lower than expected, which is a conservative failure
-  // mode (seller sees fewer available than actual).
+  // Restore stock when seller cancels (atomic, once per order).
   if (status === "cancelled" && order.product_id) {
-    const { data: product } = await supabase
-      .from("products")
-      .select("stock_quantity, status")
-      .eq("id", order.product_id)
-      .single();
-    if (product) {
-      const restoredStock = product.stock_quantity + order.quantity;
-      const updates: Record<string, unknown> = {
-        stock_quantity: restoredStock,
-      };
-      // Re-activate product if it was out of stock and now has inventory
-      if (product.status === "out_of_stock" && restoredStock > 0) {
-        updates.status = "active";
-      }
-      await supabase.from("products").update(updates).eq("id", order.product_id);
-    }
+    await supabase.rpc("restock_cancelled_order", { p_order_id: orderId });
   }
 
   revalidatePath("/seller/orders");

@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireSellerProfile } from "@/lib/auth";
-import { Card, EmptyState } from "@/components/ui/Card";
+import { Card } from "@/components/ui/Card";
 import { formatPrice } from "@/lib/constants";
 
 export const metadata = {
@@ -19,7 +19,15 @@ export default async function SellerEarningsPage() {
     .eq("vertical", "market")
     .eq("status", "completed")
     .order("created_at", { ascending: false })
-    .limit(50);
+    .limit(20);
+
+  // Totals read every completed order, not just the recent list.
+  const { data: payoutRows } = await supabase
+    .from("orders")
+    .select("cook_payout_cents, completed_at, created_at")
+    .eq("seller_id", profile.id)
+    .eq("vertical", "market")
+    .eq("status", "completed");
 
   const orders = completedOrders ?? [];
   const now = new Date();
@@ -32,10 +40,10 @@ export default async function SellerEarningsPage() {
   let monthTotal = 0;
   let allTimeTotal = 0;
 
-  for (const o of orders) {
+  for (const o of payoutRows ?? []) {
     const payout = o.cook_payout_cents ?? 0;
     allTimeTotal += payout;
-    const d = new Date(o.created_at);
+    const d = new Date(o.completed_at ?? o.created_at);
     if (d >= startOfWeek) weekTotal += payout;
     if (d >= startOfMonth) monthTotal += payout;
   }

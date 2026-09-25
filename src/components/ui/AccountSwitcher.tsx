@@ -32,6 +32,8 @@ export function AccountSwitcher({
   const [, startTransition] = useTransition();
 
   useEffect(() => {
+    // Read after mount on purpose: the server cannot see localStorage.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAccounts(getStoredAccounts());
     setActiveId(getActiveUserId());
 
@@ -53,7 +55,7 @@ export function AccountSwitcher({
     try {
       await switchToAccount(userId);
       // Full reload so SSR layouts refetch with the new user.
-      window.location.href = "/customer";
+      window.location.assign("/customer");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not switch account");
       setAccounts(getStoredAccounts());

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useCallback } from "react";
 
 interface SearchBarProps {
   placeholder?: string;
@@ -37,10 +37,15 @@ export default function SearchBar({ placeholder = "Search...", defaultValue, ton
     [router, pathname, searchParams],
   );
 
-  useEffect(() => {
-    const q = searchParams.get("q") ?? "";
-    setValue(q);
-  }, [searchParams]);
+  // Follow the URL when it changes from outside (back button, a link),
+  // but never overwrite what the user is typing: the URL holds the
+  // trimmed text, so a trailing space would otherwise be eaten.
+  const urlQ = searchParams.get("q") ?? "";
+  const [prevUrlQ, setPrevUrlQ] = useState(urlQ);
+  if (urlQ !== prevUrlQ) {
+    setPrevUrlQ(urlQ);
+    if (urlQ !== value.trim()) setValue(urlQ);
+  }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const v = e.target.value;

@@ -19,6 +19,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
     if (stored) {
+      // Read after mount on purpose: the server cannot see localStorage.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setThemeState(stored);
       document.documentElement.classList.toggle("dark", stored === "dark");
     } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {

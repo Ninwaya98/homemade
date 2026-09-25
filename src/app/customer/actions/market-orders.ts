@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { requireAuth } from "@/lib/auth";
-import { splitOrderTotal } from "@/lib/constants";
 
 // =====================================================================
 // Market orders (product purchases)
@@ -17,7 +16,7 @@ export async function placeProductOrder(
   _state: ProductOrderFormState,
   formData: FormData,
 ): Promise<ProductOrderFormState> {
-  const profile = await requireAuth();
+  await requireAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const supabase = await createClient() as any;
 
@@ -43,16 +42,14 @@ export async function placeProductOrder(
     return { error: `Only ${product.stock_quantity} left in stock.` };
   }
 
+  // Commission and payout are computed inside the database function.
   const totalCents = product.price_cents * quantity;
-  const { commission, payout } = splitOrderTotal(totalCents);
 
   const { data: orderId, error } = await supabase.rpc("place_product_order", {
     p_product_id: productId,
     p_quantity: quantity,
     p_type: type,
     p_total_cents: totalCents,
-    p_commission_cents: commission,
-    p_seller_payout_cents: payout,
     p_notes: notes ?? undefined,
   });
 
@@ -82,23 +79,17 @@ export async function cancelProductOrder(orderId: string) {
   if (!order || order.customer_id !== profile.id || order.vertical !== "market") return;
   if (order.status !== "pending") return;
 
-  await supabase.from("orders").update({ status: "cancelled", cancelled_at: new Date().toISOString() }).eq("id", orderId);
+  // Only one request can move the order out of "pending".
+  const { data: cancelled } = await supabase
+    .from("orders")
+    .update({ status: "cancelled", cancelled_at: new Date().toISOString() })
+    .eq("id", orderId)
+    .eq("status", "pending")
+    .select("id");
+  if (!cancelled?.length) return;
 
-  // Restore stock
-  if (order.product_id) {
-    const { data: product } = await supabase
-      .from("products")
-      .select("stock_quantity, status")
-      .eq("id", order.product_id)
-      .single();
-    if (product) {
-      const updates: Record<string, unknown> = {
-        stock_quantity: product.stock_quantity + order.quantity,
-      };
-      if (product.status === "out_of_stock") updates.status = "active";
-      await supabase.from("products").update(updates).eq("id", order.product_id);
-    }
-  }
+  // Restore stock (atomic, once per order, runs with database rights).
+  await supabase.rpc("restock_cancelled_order", { p_order_id: orderId });
 
   revalidatePath("/customer/orders");
   revalidatePath(`/customer/orders/${orderId}`);

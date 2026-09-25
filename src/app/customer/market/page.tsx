@@ -34,10 +34,15 @@ export default async function MarketBrowsePage({
       avg_rating,
       rating_count,
       profiles!seller_profiles_id_fkey!inner(full_name, location),
-      products(id, name, description, price_cents, photo_urls, status, category, subcategory)
+      products!inner(id, name, description, price_cents, photo_urls, status, category, subcategory)
     `)
     .eq("status", "approved")
-    .limit(30);
+    // Only shops with something for sale, filtered before the limit so
+    // no shop drops off the page.
+    .eq("products.status", "active")
+    .order("avg_rating", { ascending: false })
+    .order("shop_name")
+    .limit(200);
 
   if (sp.category) {
     sellersQuery = sellersQuery.eq("category", sp.category);
@@ -191,10 +196,10 @@ export default async function MarketBrowsePage({
         </div>
       ) : (
         <EmptyState
-          title="No sellers match your filters"
+          title={sp.category || q ? "No sellers match your filters" : "No shops open yet"}
           body={
-            sp.category
-              ? "Try removing the filter."
+            sp.category || q
+              ? "Try removing the filter or search."
               : "As soon as sellers are approved, their products will appear here."
           }
           action={

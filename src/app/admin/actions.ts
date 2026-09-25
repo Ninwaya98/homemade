@@ -608,8 +608,13 @@ export async function adminSetOrderStatus(
   const { error } = await supabase
     .from("orders")
     .update({ status: nextStatus, ...extras })
-    .eq("id", orderId);
+    .eq("id", orderId)
+    .eq("status", current.status);
   if (error) return { error: `Could not update order: ${error.message}` };
+
+  if (nextStatus === "cancelled") {
+    await supabase.rpc("restock_cancelled_order", { p_order_id: orderId });
+  }
 
   await logAdminAction({
     adminId: me.id,

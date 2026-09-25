@@ -2,9 +2,7 @@ import Link from "next/link";
 
 import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth";
-import { Card, EmptyState } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
-import { productCategoryLabel } from "@/lib/constants";
+import { EmptyState } from "@/components/ui/Card";
 import { SellerApprovalRow } from "./seller-approval-row";
 
 export const metadata = {

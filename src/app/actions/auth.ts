@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
+import { safeNextPath } from "@/lib/safe-redirect";
 import { signUpSchema } from "@/lib/schemas";
 
 export type AuthFormState =
@@ -59,8 +60,8 @@ export async function signIn(
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const rawNext = String(formData.get("next") ?? "");
-  // Prevent open-redirect: only allow relative paths starting with /
-  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "";
+  // Prevent open-redirect: only allow same-site paths
+  const next = safeNextPath(rawNext) ?? "";
 
   if (!email || !password) {
     return { error: "Email and password are required.", fields: { email } };
@@ -111,7 +112,7 @@ export async function resetPassword(
 
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback?next=/sign-in`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback?next=/reset-password`,
   });
 
   if (error) {
@@ -119,6 +120,37 @@ export async function resetPassword(
   }
 
   return { success: true };
+}
+
+export type UpdatePasswordState = { error?: string } | undefined;
+
+// Second half of the reset flow: the email link signs the user in via
+// /auth/callback, which sends them to /reset-password to pick a new one.
+export async function updatePassword(
+  _state: UpdatePasswordState,
+  formData: FormData,
+): Promise<UpdatePasswordState> {
+  const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+  if (password.length < 8) {
+    return { error: "Password must be at least 8 characters." };
+  }
+  if (password !== confirm) {
+    return { error: "The two passwords do not match." };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "This reset link has expired. Please request a new one." };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) return { error: error.message };
+
+  redirect("/customer");
 }
 
 export async function signOut() {
@@ -147,19 +179,17 @@ export async function deleteAccount(
     return { error: "Not authenticated." };
   }
 
-  // Delete profile (cascades to cook_profiles, dishes, availability, reviews, payouts).
-  // Orders are kept (on delete restrict) — we soft-delete by anonymising.
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .delete()
-    .eq("id", user.id);
+  // Deletes the auth user; the profile and its shop cascade from it.
+  // Orders are kept (on delete restrict), so an account with orders
+  // cannot be removed yet.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error: deleteError } = await (supabase as any).rpc("delete_own_account");
 
-  if (profileError) {
-    // Generic error to prevent account enumeration of order state.
-    if (profileError.message.includes("restrict")) {
+  if (deleteError) {
+    if (deleteError.message.includes("foreign key")) {
       return {
         error:
-          "Cannot delete account at this time. Please ensure all orders are completed or cancelled.",
+          "This account has orders on record, so it cannot be deleted yet. Please contact us.",
       };
     }
     return { error: "Cannot delete account at this time. Please try again later." };

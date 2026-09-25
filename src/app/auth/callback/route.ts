@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { createClient } from "@/lib/supabase/server";
+import { safeNextPath } from "@/lib/safe-redirect";
 
 /**
  * Supabase email-confirmation callback. When a user clicks the magic
@@ -15,8 +16,8 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const rawNext = url.searchParams.get("next");
-  // Prevent open-redirect: only allow relative paths starting with /
-  const next = rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+  // Prevent open-redirect: only allow same-site paths
+  const next = safeNextPath(rawNext);
 
   if (!code) {
     return NextResponse.redirect(new URL("/sign-in?error=missing_code", url));
