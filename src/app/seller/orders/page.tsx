@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/constants";
 
 export const metadata = {
-  title: "Orders — HomeMade Market",
+  title: "Orders | Meso Craft",
 };
 
 export default async function SellerOrdersPage() {
@@ -44,7 +44,7 @@ export default async function SellerOrdersPage() {
         <h1 className="text-2xl font-bold text-stone-900">Orders</h1>
       </header>
 
-      <Section title="New — needs your attention" orders={buckets.new ?? []} emptyText="No new orders." />
+      <Section title="New: needs your attention" orders={buckets.new ?? []} emptyText="No new orders." />
       <Section title="In progress" orders={buckets.in_progress ?? []} emptyText="Nothing in flight." />
       <Section title="Done" orders={buckets.done ?? []} emptyText="No completed or cancelled orders yet." />
     </div>
@@ -75,7 +75,7 @@ function Section({
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-stone-900">
-                        {o.quantity}× {o.products?.name ?? "—"}
+                        {o.quantity}× {o.products?.name ?? "-"}
                       </p>
                       <Badge tone={statusTone(o.status)}>{o.status}</Badge>
                     </div>

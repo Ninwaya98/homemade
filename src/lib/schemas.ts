@@ -44,7 +44,7 @@ export const sellerOnboardingSchema = z.object({
     .max(200, "Shop name is too long (max 200 characters)."),
   shop_description: z
     .string()
-    .min(20, "Tell customers more about your shop — at least 20 characters.")
+    .min(20, "Tell customers more about your shop (at least 20 characters).")
     .max(2000, "Shop description is too long (max 2000 characters)."),
   category: z
     .string()
@@ -59,7 +59,7 @@ export const sellerOnboardingSchema = z.object({
 });
 
 // =====================================================================
-// Admin seller edit — mirrors sellerOnboardingSchema but every field
+// Admin seller edit: mirrors sellerOnboardingSchema but every field
 // is individually optional so partial patches are valid
 // =====================================================================
 

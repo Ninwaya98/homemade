@@ -93,7 +93,7 @@ export function ProductOrderForm({
         ))}
       </div>
 
-      {/* Step 1 — Choose */}
+      {/* Step 1: Choose */}
       {step === "choose" && (
         <>
           <Card>
@@ -211,7 +211,7 @@ export function ProductOrderForm({
         </>
       )}
 
-      {/* Step 2 — Ingredients (food products only) */}
+      {/* Step 2: Ingredients (food products only) */}
       {step === "ingredients" && (
         <>
           <Card className="border-violet-200">

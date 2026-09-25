@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { productCategoryLabel } from "@/lib/constants";
 
 export const metadata = {
-  title: "All sellers — HomeMade Admin",
+  title: "All sellers | Meso Craft Admin",
 };
 
 export default async function AllSellersPage({
@@ -84,14 +84,14 @@ export default async function AllSellersPage({
                   <td className="px-3 py-3">
                     {s.rating_count > 0
                       ? `★ ${Number(s.avg_rating).toFixed(1)} (${s.rating_count})`
-                      : "—"}
+                      : "-"}
                   </td>
                   <td className="px-3 py-3">{s.active_products}</td>
                   <td className="px-3 py-3">{s.orders_last_7d}</td>
                   <td className="px-3 py-3 text-xs text-stone-500">
                     {s.last_order_at
                       ? new Date(s.last_order_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-                      : "—"}
+                      : "-"}
                   </td>
                 </tr>
               ))}

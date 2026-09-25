@@ -29,7 +29,7 @@ export default async function AccountLayout({
         <div className="mx-auto max-w-3xl px-5 py-3">
           <div className="flex items-center justify-between">
             <Link href="/customer" className="text-lg font-black tracking-tight">
-              <span className="gradient-text-animate">HomeMade</span>
+              <span className="gradient-text-animate">Meso Craft</span>
             </Link>
             <div className="flex items-center gap-2">
               <Link

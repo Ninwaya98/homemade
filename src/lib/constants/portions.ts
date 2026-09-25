@@ -1,5 +1,5 @@
 // =====================================================================
-// HomeMade — portion size constants
+// Meso Craft: portion size constants
 // =====================================================================
 
 // Portion sizes for dishes. Each size consumes a different number of

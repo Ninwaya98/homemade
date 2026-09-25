@@ -1,8 +1,8 @@
 // =====================================================================
-// HomeMade — pricing & platform constants
+// Meso Craft: pricing & platform constants
 // =====================================================================
 
-// Platform commission. Brief says 15-18% — start at 16% as a sane default.
+// Platform commission. Brief says 15-18%: start at 16% as a sane default.
 export const PLATFORM_COMMISSION_RATE = 0.16; // Used internally by splitOrderTotal
 
 // Money helper. Stored as cents (integer) in DB; this formats for display.
@@ -33,8 +33,8 @@ export function splitOrderTotal(grossCents: number) {
 }
 
 // Pre-order cutoff: orders for "next day" pre-order close 24h before midnight.
-export const PREORDER_CUTOFF_HOURS = 24; // TODO: unused in frontend — for future use
+export const PREORDER_CUTOFF_HOURS = 24; // TODO: unused in frontend, for future use
 
 // Inactive flag: cook with no orders OR no schedule for this many days
 // gets auto-flagged in admin dashboard.
-export const INACTIVE_THRESHOLD_DAYS = 14; // TODO: unused in frontend — for future use
+export const INACTIVE_THRESHOLD_DAYS = 14; // TODO: unused in frontend, for future use

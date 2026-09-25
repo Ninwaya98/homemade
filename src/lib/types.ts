@@ -24,7 +24,7 @@ export type UserRole = PublicEnums["user_role"];
 export type OrderType = PublicEnums["order_type"];
 export type OrderStatus = PublicEnums["order_status"];
 
-// Seller types (tables from migration 007 — until types are regenerated, define manually)
+// Seller types (tables from migration 007: until types are regenerated, define manually)
 export type SellerStatus = "pending" | "approved" | "suspended";
 export type ProductStatus = "active" | "paused" | "out_of_stock";
 export type ProductCategory = "crafts_art" | "clothing_accessories" | "home_decor" | "food_products";

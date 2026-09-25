@@ -5,7 +5,7 @@ import { LinkButton } from "@/components/ui/Button";
 import { productCategoryLabel } from "@/lib/constants";
 
 export const metadata = {
-  title: "My shop — HomeMade Market",
+  title: "My shop | Meso Craft",
 };
 
 export default async function SellerHome({
@@ -30,7 +30,7 @@ export default async function SellerHome({
       <div className="space-y-6">
         <Card>
           <h1 className="text-2xl font-bold text-stone-900">
-            Welcome to HomeMade Market
+            Welcome to Meso Craft
           </h1>
           <p className="mt-2 text-stone-600">
             Set up your shop in a few minutes. Tell us about yourself,
@@ -57,7 +57,7 @@ export default async function SellerHome({
               Submitted for review
             </h2>
             <p className="mt-1 text-sm text-emerald-900/80">
-              Thanks {profile!.full_name.split(" ")[0]} — our team will
+              Thanks {profile!.full_name.split(" ")[0]}, our team will
               review your shop within 1–2 days.
             </p>
           </Card>
@@ -95,7 +95,7 @@ export default async function SellerHome({
     );
   }
 
-  // Approved — show shop dashboard.
+  // Approved: show shop dashboard.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { count: totalProducts } = await (supabase as any).from("products")
     .select("*", { count: "exact", head: true })
@@ -122,7 +122,7 @@ export default async function SellerHome({
             {pendingOrders.map((o: { id: string; quantity: number; products: { name: string } | null }) => (
               <li key={o.id} className="flex items-center justify-between py-2.5">
                 <p className="text-sm font-medium text-violet-900">
-                  {o.quantity}× {o.products?.name ?? "—"}
+                  {o.quantity}× {o.products?.name ?? "-"}
                 </p>
                 <LinkButton
                   href={`/seller/orders/${o.id}`}

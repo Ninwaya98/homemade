@@ -14,7 +14,7 @@ export default async function AdminLayout({
 }) {
   const profile = await requireRole("admin");
 
-  // Admin might also own a seller shop — surface the dashboard link in
+  // Admin might also own a seller shop: surface the dashboard link in
   // their profile dropdown if so.
   const supabase = await createClient();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,7 +42,7 @@ export default async function AdminLayout({
               href="/admin"
               className="text-lg font-black tracking-tight"
             >
-              <span className="gradient-text-animate">HomeMade</span>
+              <span className="gradient-text-animate">Meso Craft</span>
               <span className="ml-1 text-slate-600">Admin</span>
             </Link>
             <nav className="flex gap-4 text-sm">

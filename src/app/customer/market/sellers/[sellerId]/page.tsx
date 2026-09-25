@@ -10,7 +10,7 @@ import { RatingBar } from "@/components/ui/RatingBar";
 import { ProductRecommendations } from "@/components/feed/Recommendations";
 
 export const metadata = {
-  title: "Seller — HomeMade Market",
+  title: "Seller | Meso Craft",
 };
 
 export default async function SellerDetailPage({
@@ -85,7 +85,7 @@ export default async function SellerDetailPage({
           <div>
             <h1 className="text-xl font-bold text-stone-900">{seller.shop_name}</h1>
             <p className="text-sm text-stone-500">
-              by {profile.full_name} · {profile.location ?? "—"}
+              by {profile.full_name} · {profile.location ?? "-"}
             </p>
             <div className="mt-1.5 flex items-center gap-2">
               <Badge tone="neutral">{productCategoryLabel(seller.category)}</Badge>

@@ -27,7 +27,7 @@ export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
 
 /**
  * Ensures the user is authenticated. Redirects to /sign-in if not.
- * Does NOT check role — any logged-in user passes.
+ * Does NOT check role: any logged-in user passes.
  */
 export async function requireAuth(): Promise<Profile> {
   const profile = await getCurrentProfile();
@@ -39,7 +39,7 @@ export async function requireAuth(): Promise<Profile> {
 
 /**
  * Use at the top of a route handler / server component to enforce a
- * specific role. Only used for admin now — seller uses capability checks.
+ * specific role. Only used for admin now: seller uses capability checks.
  * Redirects to /sign-in if unauthenticated, or to the user's own home
  * if they have the wrong role.
  */

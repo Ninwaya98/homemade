@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/constants";
 import { SellerOrderActions } from "./order-actions";
 
-export const metadata = { title: "Order — HomeMade Market" };
+export const metadata = { title: "Order | Meso Craft" };
 
 export default async function SellerOrderDetail({
   params,
@@ -54,7 +54,7 @@ export default async function SellerOrderDetail({
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold text-stone-900">
-                {order.quantity}× {product?.name ?? "—"}
+                {order.quantity}× {product?.name ?? "-"}
               </h1>
               <Badge tone={statusTone(order.status)}>{order.status}</Badge>
             </div>
@@ -71,7 +71,7 @@ export default async function SellerOrderDetail({
       <Card>
         <h2 className="text-sm font-bold text-stone-900">Customer</h2>
         <div className="mt-2 space-y-1">
-          <p className="text-sm font-medium text-stone-700">{customer?.full_name ?? "—"}</p>
+          <p className="text-sm font-medium text-stone-700">{customer?.full_name ?? "-"}</p>
           {customer?.phone && <p className="text-sm text-stone-500">{customer.phone}</p>}
           {customer?.location && <p className="text-sm text-stone-500">{customer.location}</p>}
         </div>

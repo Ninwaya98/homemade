@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Terms of Service — HomeMade",
+  title: "Terms of Service | Meso Craft",
 };
 
 export default function TermsPage() {
@@ -23,7 +23,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-semibold text-stone-900">1. About the Platform</h2>
           <p>
-            HomeMade (&quot;we&quot;, &quot;us&quot;, &quot;the platform&quot;) is a
+            Meso Craft (&quot;we&quot;, &quot;us&quot;, &quot;the platform&quot;) is a
             marketplace that connects artisan sellers (&quot;sellers&quot;) with
             customers (&quot;buyers&quot;). We are not a manufacturer or shipping
             service. Each seller operates independently and is solely responsible

@@ -12,7 +12,7 @@ import { syncCurrentSession } from "@/lib/account-switcher";
  */
 export function SessionSyncer() {
   useEffect(() => {
-    // Fire and forget — errors are non-fatal (bag is just a UX convenience).
+    // Fire and forget: errors are non-fatal (bag is just a UX convenience).
     void syncCurrentSession();
   }, []);
 

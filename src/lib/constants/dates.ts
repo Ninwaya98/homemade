@@ -1,5 +1,5 @@
 // =====================================================================
-// HomeMade — ISO date helpers (used by the availability system)
+// Meso Craft: ISO date helpers (used by the availability system)
 // =====================================================================
 
 export function isoDate(d: Date): string {

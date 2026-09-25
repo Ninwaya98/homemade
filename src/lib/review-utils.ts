@@ -1,5 +1,5 @@
 /**
- * Review system utilities — score calculation, color mapping, profile recalculation.
+ * Review system utilities: score calculation, color mapping, profile recalculation.
  *
  * Score = (likes / (likes + validDislikes)) * 100
  * A "valid dislike" = dislike with text, not yet resolved.

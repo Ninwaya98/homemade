@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth";
 
 export const metadata = {
-  title: "Seller approvals — HomeMade Admin",
+  title: "Seller approvals | Meso Craft Admin",
 };
 
 export default async function AdminIndexPage() {

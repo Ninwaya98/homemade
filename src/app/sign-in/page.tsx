@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SignInForm } from "./sign-in-form";
 
 export const metadata = {
-  title: "Sign in — HomeMade",
+  title: "Sign in | Meso Craft",
 };
 
 export default async function SignInPage({

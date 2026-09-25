@@ -5,7 +5,7 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { CreateShopForm } from "./create-shop-form";
 
-export const metadata = { title: "Create shop — HomeMade Admin" };
+export const metadata = { title: "Create shop | Meso Craft Admin" };
 
 export default async function NewSellerForUserPage({
   params,
@@ -28,7 +28,7 @@ export default async function NewSellerForUserPage({
 
   if (!profile) notFound();
   if (existingSeller) {
-    // Already a seller — bounce to their existing detail page.
+    // Already a seller: bounce to their existing detail page.
     redirect(`/admin/sellers/${userId}`);
   }
 
@@ -45,7 +45,7 @@ export default async function NewSellerForUserPage({
         <h1 className="text-2xl font-bold text-stone-900">Create shop</h1>
         <p className="mt-1 text-sm text-stone-500">
           Setting up a shop for <span className="font-medium text-stone-800">{profile.full_name}</span>.
-          Shop is created in <span className="font-medium">approved</span> status — the owner can start
+          Shop is created in <span className="font-medium">approved</span> status, the owner can start
           adding products immediately.
         </p>
       </div>

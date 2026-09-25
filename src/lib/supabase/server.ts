@@ -9,7 +9,7 @@ import type { Database } from "@/lib/database.types";
  *
  * Cookies are read from the incoming request and written via the
  * Next.js cookies() API. In a pure Server Component (no mutation
- * context) the setAll calls will throw — we swallow that case because
+ * context) the setAll calls will throw: we swallow that case because
  * the proxy.ts at the project root is responsible for refreshing the
  * session cookie on every request.
  */
@@ -30,7 +30,7 @@ export async function createClient() {
               cookieStore.set(name, value, options);
             });
           } catch {
-            // Called from a Server Component — safe to ignore because
+            // Called from a Server Component: safe to ignore because
             // proxy.ts will refresh the session on the next request.
           }
         },

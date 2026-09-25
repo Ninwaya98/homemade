@@ -1,5 +1,5 @@
 // =====================================================================
-// HomeMade — allergen constants
+// Meso Craft: allergen constants
 // =====================================================================
 
 // The 7 allergens from the build brief. Mandatory checklist on every dish.

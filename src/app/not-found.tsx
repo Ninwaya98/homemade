@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Page not found — HomeMade",
+  title: "Page not found | Meso Craft",
 };
 
 export default function NotFound() {

@@ -1,17 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Figtree, Lora } from "next/font/google";
 
 import "./globals.css";
 import { ToastProvider } from "@/lib/toast";
 import { ThemeProvider } from "@/lib/theme";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const body = Figtree({
+  variable: "--font-body",
   subsets: ["latin"],
 });
 
+const heading = Lora({
+  variable: "--font-heading",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "HomeMade — Handmade goods from local artisans",
+  title: "Meso Craft | Handmade in Iraq",
   description:
     "A marketplace for handmade goods from local artisans in your neighbourhood.",
 };
@@ -19,7 +25,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#f8f7ff",
+  themeColor: "#f6f3ec",
 };
 
 export default function RootLayout({
@@ -28,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${body.variable} ${heading.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full text-slate-900 dark:text-stone-100 font-sans">
         <ThemeProvider>
           <ToastProvider>

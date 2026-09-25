@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/ui/Card";
 import { SellerApprovalRow } from "./seller-approval-row";
 
 export const metadata = {
-  title: "Seller approvals — HomeMade Admin",
+  title: "Seller approvals | Meso Craft Admin",
 };
 
 export default async function SellerApprovalsPage() {

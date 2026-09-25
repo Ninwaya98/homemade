@@ -5,7 +5,7 @@ import { requireAuth } from "@/lib/auth";
 import { SellerOnboardingForm } from "./onboarding-form";
 
 export const metadata = {
-  title: "Set up your shop — HomeMade Market",
+  title: "Set up your shop | Meso Craft",
 };
 
 export default async function SellerOnboardingPage() {

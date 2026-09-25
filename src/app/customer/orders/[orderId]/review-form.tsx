@@ -101,7 +101,7 @@ export function ReviewForm({
         </button>
       </div>
 
-      {/* Text area — appears after choosing sentiment */}
+      {/* Text area: appears after choosing sentiment */}
       {sentiment && (
         <div className="mt-4">
           <textarea

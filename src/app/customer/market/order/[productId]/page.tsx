@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth";
 import { ProductOrderForm } from "./order-form";
 
 export const metadata = {
-  title: "Order — HomeMade Market",
+  title: "Order | Meso Craft",
 };
 
 export default async function OrderProductPage({
@@ -65,7 +65,7 @@ export default async function OrderProductPage({
         }}
         seller={{
           shop_name: seller.shop_name,
-          full_name: seller.profiles.full_name ?? "—",
+          full_name: seller.profiles.full_name ?? "-",
           location: seller.profiles.location ?? null,
           photo_url: seller.photo_url,
         }}

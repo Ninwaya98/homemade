@@ -1,7 +1,7 @@
 import { ResetPasswordForm } from "./reset-password-form";
 
 export const metadata = {
-  title: "Choose a new password — HomeMade",
+  title: "Choose a new password | Meso Craft",
 };
 
 export default function ResetPasswordPage() {

@@ -7,7 +7,7 @@ import { requireRole } from "@/lib/auth";
 
 const anthropic = new Anthropic(); // reads ANTHROPIC_API_KEY from env
 
-const SYSTEM_PROMPT = `You are a review moderation assistant for HomeMade, a local marketplace where home cooks sell food and artisans sell handmade goods.
+const SYSTEM_PROMPT = `You are a review moderation assistant for Meso Craft, a marketplace in Iraq where local makers sell handmade goodsisans sell handmade goods.
 
 Your job is to analyze customer reviews and, when present, the seller/cook's response to a complaint.
 

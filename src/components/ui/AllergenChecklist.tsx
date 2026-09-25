@@ -11,7 +11,7 @@ import { ALLERGENS, type AllergenId } from "@/lib/constants";
  *
  * The brief says the allergen checklist must be completed before a
  * dish can be saved. We enforce this with a "no allergens declared"
- * checkbox — the user must EITHER pick at least one allergen OR tick
+ * checkbox: the user must EITHER pick at least one allergen OR tick
  * "I confirm this dish contains none of the listed allergens", but
  * cannot leave both empty. The server action also re-validates.
  */

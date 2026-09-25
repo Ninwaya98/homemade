@@ -1,5 +1,5 @@
 // =====================================================================
-// HomeMade — shared order utilities
+// Meso Craft: shared order utilities
 // =====================================================================
 // Used by seller/actions.ts for market orders. Kept as a standalone
 // module so the order state machine and timestamp logic stay in one

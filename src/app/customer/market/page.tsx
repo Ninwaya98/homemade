@@ -10,7 +10,7 @@ import SearchBar from "@/components/ui/SearchBar";
 import { formatPrice, PRODUCT_CATEGORIES, productCategoryLabel } from "@/lib/constants";
 
 export const metadata = {
-  title: "Market — HomeMade",
+  title: "Market | Meso Craft",
 };
 
 export default async function MarketBrowsePage({
@@ -75,7 +75,7 @@ export default async function MarketBrowsePage({
     <div className="space-y-6">
       <header>
         <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">
-          HomeMade Market
+          Meso Craft Market
         </h1>
         <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">Handmade goods from local artisans and makers</p>
       </header>
@@ -131,7 +131,7 @@ export default async function MarketBrowsePage({
                     {seller.shop_name}
                   </h2>
                   <p className="text-sm text-stone-500">
-                    {seller.profiles?.location ?? "—"}
+                    {seller.profiles?.location ?? "-"}
                     {seller.rating_count > 0 && (
                       <span className="ml-1.5 inline-flex items-center gap-0.5 text-violet-600">
                         <span className="text-xs">★</span>

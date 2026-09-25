@@ -2,7 +2,7 @@ import { requireAuth } from "@/lib/auth";
 import { getAddresses } from "@/app/actions/addresses";
 import { AddressManager } from "./address-manager";
 
-export const metadata = { title: "Delivery Addresses — HomeMade" };
+export const metadata = { title: "Delivery Addresses | Meso Craft" };
 
 export default async function AddressesPage() {
   await requireAuth();

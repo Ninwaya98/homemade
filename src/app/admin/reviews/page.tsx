@@ -3,7 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { Card } from "@/components/ui/Card";
 import { AdminReviewActions } from "./review-actions";
 
-export const metadata = { title: "Review Moderation — HomeMade Admin" };
+export const metadata = { title: "Review Moderation | Meso Craft Admin" };
 
 export default async function AdminReviewsPage() {
   await requireRole("admin");
@@ -166,9 +166,9 @@ export default async function AdminReviewsPage() {
                       {r.sentiment === "like" ? "\uD83D\uDC4D" : "\uD83D\uDC4E"}
                     </span>
                   </td>
-                  <td className="px-4 py-2 text-stone-900">{r.reviewer?.full_name ?? "—"}</td>
-                  <td className="px-4 py-2 text-stone-900">{r.reviewee?.full_name ?? "—"}</td>
-                  <td className="max-w-xs truncate px-4 py-2 text-stone-600">{r.text ?? "—"}</td>
+                  <td className="px-4 py-2 text-stone-900">{r.reviewer?.full_name ?? "-"}</td>
+                  <td className="px-4 py-2 text-stone-900">{r.reviewee?.full_name ?? "-"}</td>
+                  <td className="max-w-xs truncate px-4 py-2 text-stone-600">{r.text ?? "-"}</td>
                   <td className="px-4 py-2">
                     <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
                       r.resolution_status === "none" ? "bg-stone-100 text-stone-500" :

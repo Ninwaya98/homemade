@@ -4,7 +4,7 @@ import { requireRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { Card, EmptyState } from "@/components/ui/Card";
 
-export const metadata = { title: "Create shop for user — HomeMade Admin" };
+export const metadata = { title: "Create shop for user | Meso Craft Admin" };
 
 export default async function NewSellerListPage({
   searchParams,
@@ -19,7 +19,7 @@ export default async function NewSellerListPage({
 
   // Fetch users who are NOT admins AND who don't already own a seller_profile.
   // Supabase-js can't easily express a LEFT JOIN IS NULL, so we fetch seller ids
-  // first and filter in memory — fine for the scale admin deals with (hundreds).
+  // first and filter in memory: fine for the scale admin deals with (hundreds).
   const [{ data: sellerRows }, { data: profiles }] = await Promise.all([
     supabase.from("seller_profiles").select("id"),
     (q

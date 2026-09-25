@@ -75,7 +75,7 @@ export type CreateSellerForUserState =
 /**
  * Admin promotes an existing customer to a seller by creating their
  * seller_profiles row directly (status='approved'). The user keeps
- * their customer role — seller capability is row-based, not role-
+ * their customer role: seller capability is row-based, not role-
  * based, so no role flip needed.
  */
 export async function createSellerForUser(
@@ -346,7 +346,7 @@ export async function getCertificateSignedUrl(certPath: string): Promise<string 
 }
 
 // =====================================================================
-// Admin-side product CRUD — operates on any seller's products by
+// Admin-side product CRUD: operates on any seller's products by
 // explicit sellerId. RLS allows admin UPDATE/INSERT/DELETE on products;
 // these wrappers exist so admins don't need a seller_profiles row.
 // =====================================================================
@@ -575,7 +575,7 @@ export async function adminSetProductStatus(
 }
 
 // =====================================================================
-// Admin-side order status — force any order through the FSM. RLS
+// Admin-side order status: force any order through the FSM. RLS
 // allows admin UPDATE on orders (migration 005 "orders: admin updates
 // all"), but we still run the transition through the shared FSM check
 // so admins don't accidentally put orders into weird states.

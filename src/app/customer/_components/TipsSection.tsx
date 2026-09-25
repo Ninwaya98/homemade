@@ -2,7 +2,7 @@ export function TipsSection() {
   return (
     <section className="relative overflow-hidden rounded-3xl glass-strong p-6">
       <div className="pointer-events-none absolute inset-0 rounded-3xl border-l-[3px] border-t-[3px] border-violet-300/60" />
-      <div className="pointer-events-none absolute inset-0 rounded-3xl" style={{background:"linear-gradient(135deg, rgba(196,181,253,0.25) 0%, transparent 40%)"}} />
+      <div className="pointer-events-none absolute inset-0 rounded-3xl" style={{background:"linear-gradient(135deg, rgba(221,164,130,0.25) 0%, transparent 40%)"}} />
 
       <div className="relative">
         {/* Header */}
@@ -51,7 +51,7 @@ export function TipsSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017a2 2 0 01-.95-.24l-3.296-1.882V12m10-2V6a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905a3.61 3.61 0 01-.608 2.003L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2" />
                 </svg>
                 <p className="text-[11px] leading-relaxed text-stone-600">
-                  <span className="font-semibold text-stone-800">Thumbs up or down</span> — simple and honest. Leave a comment to help sellers improve.
+                  <span className="font-semibold text-stone-800">Thumbs up or down</span>: simple and honest. Leave a comment to help sellers improve.
                 </p>
               </div>
               <div className="flex items-start gap-3 rounded-xl bg-violet-50/50 p-3.5">
@@ -59,7 +59,7 @@ export function TipsSection() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
                 <p className="text-[11px] leading-relaxed text-stone-600">
-                  <span className="font-semibold text-stone-800">Scores improve</span> — when sellers address your feedback, resolved ratings lift their score.
+                  <span className="font-semibold text-stone-800">Scores improve</span> when sellers address your feedback, resolved ratings lift their score.
                 </p>
               </div>
             </div>

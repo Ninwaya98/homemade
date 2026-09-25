@@ -9,7 +9,7 @@ import { LinkButton } from "@/components/ui/Button";
 import { formatPrice, productCategoryLabel } from "@/lib/constants";
 
 export const metadata = {
-  title: "Products — HomeMade Market",
+  title: "Products | Meso Craft",
 };
 
 export default async function SellerProductsPage({
@@ -89,7 +89,7 @@ export default async function SellerProductsPage({
                       </p>
                       {p.stock_quantity === 0 ? (
                         <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-700">
-                          No stock — tap to restock
+                          No stock, tap to restock
                         </span>
                       ) : p.stock_quantity <= 3 ? (
                         <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-700">

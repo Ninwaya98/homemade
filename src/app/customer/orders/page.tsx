@@ -7,7 +7,7 @@ import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { dayLabel, formatPrice } from "@/lib/constants";
 
-export const metadata = { title: "My orders — HomeMade" };
+export const metadata = { title: "My orders | Meso Craft" };
 
 export default async function CustomerOrdersPage({
   searchParams,
@@ -79,12 +79,12 @@ export default async function CustomerOrdersPage({
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-semibold text-stone-900">
-                          {o.quantity}× {itemName ?? "—"}
+                          {o.quantity}× {itemName ?? "-"}
                         </p>
                         <Badge tone={statusTone(o.status)}>{o.status}</Badge>
                       </div>
                       <p className="text-xs text-stone-500">
-                        from {fromName ?? "—"}
+                        from {fromName ?? "-"}
                         {o.scheduled_for && ` · ${dayLabel(o.scheduled_for)}`}
                         {` · ${o.type}`}
                       </p>
@@ -101,7 +101,7 @@ export default async function CustomerOrdersPage({
       ) : (
         <EmptyState
           title="No orders yet"
-          body="Browse HomeMade and place your first order."
+          body="Browse Meso Craft and place your first order."
         />
       )}
     </div>

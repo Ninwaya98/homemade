@@ -11,7 +11,7 @@ import { dayLabel, formatPrice } from "@/lib/constants";
 import { CancelOrderButton } from "./cancel-button";
 import { ReviewForm } from "./review-form";
 
-export const metadata = { title: "Order — HomeMade" };
+export const metadata = { title: "Order | Meso Craft" };
 
 export default async function CustomerOrderDetail({
   params,
@@ -39,7 +39,7 @@ export default async function CustomerOrderDetail({
 
   if (!order) notFound();
 
-  // Cast — order is untyped due to seller joins
+  // Cast: order is untyped due to seller joins
   const o = order as Record<string, unknown> & {
     id: string; status: string; quantity: number; total_cents: number;
     commission_cents: number; cook_payout_cents: number; type: string;
@@ -104,7 +104,7 @@ export default async function CustomerOrderDetail({
               )}
               <div>
                 <p className="text-sm font-semibold text-stone-900">
-                  {o.quantity}× {itemName ?? "—"}
+                  {o.quantity}× {itemName ?? "-"}
                 </p>
                 <p className="text-xs text-stone-500">
                   {o.scheduled_for ? dayLabel(o.scheduled_for) : o.type}
@@ -144,7 +144,7 @@ export default async function CustomerOrderDetail({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold text-stone-900">
-                {o.quantity}× {itemName ?? "—"}
+                {o.quantity}× {itemName ?? "-"}
               </h1>
               <Badge tone={statusTone(o.status)}>{o.status}</Badge>
             </div>
@@ -230,7 +230,7 @@ export default async function CustomerOrderDetail({
           <div>
             <p className="text-sm font-semibold text-stone-900">{providerName}</p>
             <p className="text-xs text-stone-500">
-              {providerLocation ?? "—"}
+              {providerLocation ?? "-"}
               {o.status !== "pending" && o.status !== "cancelled" && providerPhone && (
                 <> · {providerPhone}</>
               )}

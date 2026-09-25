@@ -117,7 +117,7 @@ export function ProfileDropdown({
                 onClick={closeAll}
               />
 
-              {/* Switch account — opens sub-view */}
+              {/* Switch account: opens sub-view */}
               <button
                 type="button"
                 onClick={() => setView("switcher")}

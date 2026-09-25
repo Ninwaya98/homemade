@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ProductForm } from "@/app/seller/products/product-form";
 import { adminUpdateProduct } from "@/app/admin/actions";
 
-export const metadata = { title: "Edit product — HomeMade Admin" };
+export const metadata = { title: "Edit product | Meso Craft Admin" };
 
 export default async function AdminEditProductPage({
   params,
@@ -46,7 +46,7 @@ export default async function AdminEditProductPage({
       <div>
         <h1 className="text-2xl font-bold text-stone-900">Edit product</h1>
         <p className="mt-1 text-sm text-stone-500">
-          {product.name} — {seller.shop_name}
+          {product.name}, {seller.shop_name}
         </p>
       </div>
       <ProductForm

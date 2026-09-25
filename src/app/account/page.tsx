@@ -8,7 +8,7 @@ import { LinkButton } from "@/components/ui/Button";
 import { DeleteAccountForm } from "./delete-account-form";
 
 export const metadata = {
-  title: "Account Settings — HomeMade",
+  title: "Account Settings | Meso Craft",
 };
 
 export default async function AccountPage() {
@@ -40,7 +40,7 @@ export default async function AccountPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-semibold text-slate-900">
-                  HomeMade Art{sellerProfile.shop_name ? ` — ${sellerProfile.shop_name}` : ""}
+                  Your shop{sellerProfile.shop_name ? `: ${sellerProfile.shop_name}` : ""}
                 </p>
                 <p className="text-sm text-slate-500">You applied to sell</p>
               </div>
@@ -63,7 +63,7 @@ export default async function AccountPage() {
               <div className="flex-1">
                 <p className="font-semibold text-slate-900">Open a Shop</p>
                 <p className="mt-1 text-sm text-slate-500">
-                  Sell your handmade goods — crafts, clothing, decor, and more.
+                  Sell your handmade goods: crafts, clothing, decor, and more.
                 </p>
                 <div className="mt-3">
                   <LinkButton href="/seller/onboarding" size="sm">

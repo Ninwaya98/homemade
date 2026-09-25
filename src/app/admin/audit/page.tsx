@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, EmptyState } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 
-export const metadata = { title: "Audit log — HomeMade Admin" };
+export const metadata = { title: "Audit log | Meso Craft Admin" };
 
 type AuditRow = {
   id: string;
@@ -59,7 +59,7 @@ export default async function AdminAuditPage({
       <div>
         <h1 className="text-2xl font-bold text-stone-900">Audit log</h1>
         <p className="mt-1 text-sm text-stone-500">
-          Who did what, and when. Append-only — entries cannot be edited
+          Who did what, and when. Append-only: entries cannot be edited
           or deleted.
         </p>
       </div>

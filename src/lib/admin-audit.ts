@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 
 /**
  * Append an entry to admin_audit_log. Callers must have already run
- * requireRole("admin") — this helper trusts its inputs and does not
+ * requireRole("admin"): this helper trusts its inputs and does not
  * re-check auth. Failures are swallowed (logged to stderr) so a
  * transient audit-log outage never blocks the real admin operation.
  */
@@ -34,7 +34,7 @@ export async function logAdminAction(entry: AdminAuditEntry): Promise<void> {
       notes: entry.notes ?? null,
     });
     if (error) {
-      // Log but don't throw — audit write failure shouldn't fail the
+      // Log but don't throw: audit write failure shouldn't fail the
       // actual admin action.
       console.error("[admin-audit] failed to write log entry", {
         action: entry.action,

@@ -38,7 +38,7 @@ export default async function SellerLayout({
         <div className="mx-auto max-w-3xl px-5 py-4">
           <div className="flex items-center justify-between">
             <Link href="/seller" className="text-lg font-black tracking-tight">
-              <span className="gradient-text-animate">HomeMade</span>
+              <span className="gradient-text-animate">Meso Craft</span>
               <span className="ml-1 text-slate-600 dark:text-stone-300">Art</span>
             </Link>
             <div className="flex items-center gap-2">
@@ -59,7 +59,7 @@ export default async function SellerLayout({
           <p className="mt-1 text-sm text-slate-500">
             Hi <span className="font-medium text-slate-700 dark:text-stone-200">{profile.full_name.split(" ")[0]}</span>
             {sellerProfile?.shop_name && (
-              <> — {sellerProfile.shop_name}</>
+              <>: {sellerProfile.shop_name}</>
             )}
           </p>
         </div>

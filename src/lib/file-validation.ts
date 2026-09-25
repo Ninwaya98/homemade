@@ -1,8 +1,8 @@
 // =====================================================================
-// HomeMade — shared file validation helpers
+// Meso Craft: shared file validation helpers
 // =====================================================================
 
-// Allowed file types for certificate uploads (legacy — retained for any
+// Allowed file types for certificate uploads (legacy: retained for any
 // dormant kitchen certificate files still referenced by migrations).
 export const ALLOWED_CERT_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
 export const ALLOWED_CERT_EXTS = new Set(["pdf", "jpg", "jpeg", "png", "webp"]);

@@ -1,6 +1,6 @@
 /**
  * Client-side image processing: square crop + compress to ≤1MB.
- * Uses Canvas API — no dependencies.
+ * Uses Canvas API: no dependencies.
  */
 
 const MAX_SIZE_BYTES = 1_000_000; // 1MB

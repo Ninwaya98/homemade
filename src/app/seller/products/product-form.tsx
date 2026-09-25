@@ -74,7 +74,7 @@ export function ProductForm({
             name="description"
             defaultValue={product?.description ?? ""}
             rows={4}
-            placeholder="Tell customers about this product — what makes it special?"
+            placeholder="Tell customers about this product. What makes it special?"
           />
           <div className="grid gap-5 sm:grid-cols-2">
             <Field
@@ -171,7 +171,7 @@ export function ProductForm({
       <Card>
         <h2 className="text-base font-semibold text-stone-900">Photos</h2>
         <p className="mt-1 text-sm text-stone-600">
-          Add up to 5 photos. Any format — auto-cropped to square, compressed to &lt;1 MB.
+          Add up to 5 photos. Any format, auto-cropped to square, compressed to &lt;1 MB.
         </p>
 
         {retainedPhotos.length > 0 && (

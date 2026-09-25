@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/Card";
 import { formatPrice } from "@/lib/constants";
 
 export const metadata = {
-  title: "Earnings — HomeMade Market",
+  title: "Earnings | Meso Craft",
 };
 
 export default async function SellerEarningsPage() {
@@ -75,7 +75,7 @@ export default async function SellerEarningsPage() {
               <li key={o.id} className="flex items-center justify-between py-3">
                 <div>
                   <p className="text-sm font-medium text-stone-900">
-                    {o.quantity}× {o.products?.name ?? "—"}
+                    {o.quantity}× {o.products?.name ?? "-"}
                   </p>
                   <p className="text-xs text-stone-500">
                     {new Date(o.created_at).toLocaleDateString("en-US", {

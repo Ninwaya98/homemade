@@ -42,7 +42,7 @@ export default async function CustomerLayout({
     },
     {
       href: "/customer/market",
-      label: "HomeMade Art",
+      label: "Market",
       exact: false,
       defaultClass: "flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-slate-600 transition hover:bg-sky-50 hover:text-sky-700",
       activeClass: "flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 bg-sky-100 text-sky-800 font-medium shadow-sm",
@@ -62,7 +62,7 @@ export default async function CustomerLayout({
         <div className="mx-auto max-w-3xl px-5 py-3">
           <div className="flex items-center justify-between">
             <Link href="/customer" className="text-lg font-black tracking-tight">
-              <span className="gradient-text-animate">HomeMade</span>
+              <span className="gradient-text-animate">Meso Craft</span>
             </Link>
             <div className="flex items-center gap-2">
               {isLoggedIn ? (

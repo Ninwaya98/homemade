@@ -5,7 +5,7 @@ import { LinkButton } from "@/components/ui/Button";
 import { ProductCard } from "@/components/feed/ProductCard";
 import FavoriteButton from "@/components/ui/FavoriteButton";
 
-export const metadata = { title: "My favorites — HomeMade" };
+export const metadata = { title: "My favorites | Meso Craft" };
 
 export default async function FavoritesPage() {
   const profile = await requireAuth();
@@ -46,10 +46,10 @@ export default async function FavoritesPage() {
       {isEmpty ? (
         <EmptyState
           title="No favorites yet"
-          body="Browse HomeMade and tap the heart icon to save items you love."
+          body="Browse Meso Craft and tap the heart icon to save items you love."
           action={
             <LinkButton href="/customer" size="sm">
-              Browse HomeMade
+              Browse Meso Craft
             </LinkButton>
           }
         />

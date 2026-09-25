@@ -25,7 +25,7 @@ export async function toggleFavorite(formData: FormData) {
     .select("id");
 
   if (!deleted || deleted.length === 0) {
-    // Didn't exist — insert it
+    // Didn't exist: insert it
     await sb.from("favorites").insert({
       user_id: user.id,
       product_id: productId,

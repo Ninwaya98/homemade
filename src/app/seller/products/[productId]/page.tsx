@@ -5,7 +5,7 @@ import { requireSellerProfile } from "@/lib/auth";
 import { ProductForm } from "../product-form";
 
 export const metadata = {
-  title: "Edit product — HomeMade Market",
+  title: "Edit product | Meso Craft",
 };
 
 export default async function EditProductPage({

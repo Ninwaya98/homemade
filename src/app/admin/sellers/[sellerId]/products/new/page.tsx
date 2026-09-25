@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ProductForm } from "@/app/seller/products/product-form";
 import { adminCreateProduct } from "@/app/admin/actions";
 
-export const metadata = { title: "Add product — HomeMade Admin" };
+export const metadata = { title: "Add product | Meso Craft Admin" };
 
 export default async function AdminNewProductPage({
   params,

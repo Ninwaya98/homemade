@@ -86,7 +86,7 @@ export default function AddressPicker({ name = "delivery_address", defaultValue 
       >
         {addresses.map((a) => (
           <option key={a.id} value={a.id}>
-            {a.label} — {a.address_line}{a.city ? `, ${a.city}` : ""}
+            {a.label}, {a.address_line}{a.city ? `, ${a.city}` : ""}
           </option>
         ))}
         <option value="__custom">Enter new address...</option>

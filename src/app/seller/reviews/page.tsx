@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/Card";
 import { RatingBar } from "@/components/ui/RatingBar";
 import { SellerReviewResponseForm } from "./response-form";
 
-export const metadata = { title: "Reviews — HomeMade Art" };
+export const metadata = { title: "Reviews | Meso Craft" };
 
 export default async function SellerReviewsPage() {
   const { sellerProfile: seller } = await requireSellerProfile();

@@ -54,7 +54,7 @@ function writeBag(bag: Bag) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(bag));
   } catch {
-    /* quota exceeded or storage disabled — silent */
+    /* quota exceeded or storage disabled: silent */
   }
 }
 

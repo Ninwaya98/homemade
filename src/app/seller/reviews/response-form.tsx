@@ -24,7 +24,7 @@ export function SellerReviewResponseForm({ reviewId }: { reviewId: string }) {
     return (
       <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
         <p className="text-xs font-medium text-amber-700">
-          Response submitted — pending admin approval.
+          Response submitted, pending admin approval.
         </p>
       </div>
     );

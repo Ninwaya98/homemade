@@ -1,8 +1,8 @@
 // =====================================================================
-// HomeMade — product constants
+// Meso Craft: product constants
 // =====================================================================
 
-// Product categories for HomeMade Art.
+// Product categories for Meso Craft Art.
 export const PRODUCT_CATEGORIES = [
   { id: "crafts_art",             label: "Crafts & Art" },
   { id: "clothing_accessories",   label: "Clothing & Accessories" },

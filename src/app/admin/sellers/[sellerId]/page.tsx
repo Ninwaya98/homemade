@@ -17,7 +17,7 @@ import {
 } from "@/app/admin/actions";
 import { AdminSellerEditForm } from "./edit-form";
 
-export const metadata = { title: "Seller detail — HomeMade Admin" };
+export const metadata = { title: "Seller detail | Meso Craft Admin" };
 
 export default async function AdminSellerDetailPage({
   params,
@@ -39,7 +39,7 @@ export default async function AdminSellerDetailPage({
 
   if (!seller) notFound();
 
-  const ownerName = seller.profiles?.full_name ?? "—";
+  const ownerName = seller.profiles?.full_name ?? "-";
   const ownerPhone = seller.profiles?.phone ?? "";
   const ownerLocation = seller.profiles?.location ?? "";
 
@@ -333,7 +333,7 @@ export default async function AdminSellerDetailPage({
               <li key={o.id} className="flex flex-wrap items-center gap-2 py-2.5">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-stone-900">
-                    {o.quantity}× {o.products?.name ?? "—"}
+                    {o.quantity}× {o.products?.name ?? "-"}
                   </p>
                   <p className="text-xs text-stone-500">
                     {new Date(o.created_at).toLocaleDateString("en-US", {

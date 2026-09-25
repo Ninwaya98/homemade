@@ -28,7 +28,7 @@ export async function leaveReview(formData: FormData) {
     return;
   }
 
-  // Determine reviewee — could be cook or seller depending on vertical
+  // Determine reviewee: could be cook or seller depending on vertical
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const orderFull = order as any;
   const revieweeId = orderFull.cook_id ?? orderFull.seller_id;

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Privacy Policy — HomeMade",
+  title: "Privacy Policy | Meso Craft",
 };
 
 export default function PrivacyPage() {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SignUpForm } from "./sign-up-form";
 
 export const metadata = {
-  title: "Sign up — HomeMade",
+  title: "Sign up | Meso Craft",
 };
 
 export default function SignUpPage() {
@@ -18,7 +18,7 @@ export default function SignUpPage() {
             &larr; Back
           </Link>
           <h1 className="mt-6 text-3xl font-bold text-stone-900">
-            Join HomeMade
+            Join Meso Craft
           </h1>
           <p className="mt-2 text-stone-500">
             Handmade goods from your community.

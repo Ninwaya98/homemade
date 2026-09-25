@@ -60,7 +60,7 @@ export function SellerApprovalRow({ seller }: { seller: Seller }) {
             </Badge>
           </div>
           <p className="text-sm text-stone-600">
-            by {seller.profiles.full_name} · {seller.profiles.location ?? "—"}
+            by {seller.profiles.full_name} · {seller.profiles.location ?? "-"}
           </p>
           {seller.profiles.phone && (
             <p className="text-xs text-stone-500">{seller.profiles.phone}</p>

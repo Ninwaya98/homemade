@@ -13,7 +13,7 @@ import { TipsSection } from "./_components/TipsSection";
 import { ShopCTASection } from "./_components/ShopCTASection";
 
 export const metadata = {
-  title: "HomeMade -- Handmade goods, made by real people",
+  title: "Meso Craft | Handmade in Iraq",
 };
 
 export default async function FeedPage() {
@@ -103,15 +103,15 @@ export default async function FeedPage() {
         {!hasContent && (
           <EmptyState
             title="Our marketplace is just getting started"
-            body="Check back soon — sellers are setting up!"
+            body="Check back soon, sellers are setting up!"
             action={<LinkButton href="/seller/onboarding">Open your shop</LinkButton>}
           />
         )}
 
-        {/* ════════════ HomeMade Art ════════════ */}
+        {/* ════════════ Makers ════════════ */}
         {((products ?? []).length > 0 || (topSellers ?? []).length > 0) && (
           <ZoneWrapper>
-            <SectionHeader title="HomeMade Art" seeAllHref="/customer/market" tone="sky" />
+            <SectionHeader title="From the makers" seeAllHref="/customer/market" tone="sky" />
 
             {/* Featured Products */}
             {(products ?? []).length > 0 && (
@@ -170,7 +170,7 @@ export default async function FeedPage() {
         {/* ════════════ Tips ════════════ */}
         <TipsSection />
 
-        {/* Seller — Dashboard or CTA */}
+        {/* Seller: Dashboard or CTA */}
         <ShopCTASection
           isLoggedIn={isLoggedIn}
           hasSellerShop={hasSellerShop}
@@ -180,7 +180,7 @@ export default async function FeedPage() {
 
         {/* Footer */}
         <footer className="pb-4 text-center text-[11px] text-stone-400">
-          <span className="gradient-text-animate font-bold">HomeMade</span>
+          <span className="gradient-text-animate font-bold">Meso Craft</span>
           {" "}&middot;{" "}
           <a href="/terms" className="hover:text-violet-600">Terms</a>
           {" "}&middot;{" "}
